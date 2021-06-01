@@ -23,27 +23,35 @@ sudo docker run --name urpc --publish 8888:8888 urpc
 
 1. Для начала нужно установить python3 и сопутствующие:
 
+```bash
 sudo apt-get install python3
 sudo apt-get install python3-pip
 sudo apt-get install python3-venv
+```
 
 Сервер запускали и тестировали на python3.6, именно эту версию лучше и использовать
 
 2. Создать venv для запуска сервера
 
+```bash
 python3.6 -m venv venv
+```
 
 (второй аргумент - путь до venv, в случае команды выше venv создастся в папке venv текущей директории)
 
 3. В новосозданный venv установить все необходимые для работы пакеты:
 
+```bash
 ./venv/bin/python -m pip install -r requirements.txt
+```
 
 Дождаться окончания установки.
 
 3. Запустить сервер:
 
+```bash
 ./venv/bin/python main.py
+```
 
 Если всё в порядке, никаких сообщений не появится, main.py просто запустится
 
