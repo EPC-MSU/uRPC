@@ -1,0 +1,140 @@
+{% extends "../base.html" %}
+
+{% block body %}
+
+{% from tornado.httputil import url_concat %}
+{% from urpc.util.cconv import clang_primitives, type_to_cstr %}
+
+<div class="pure-u-1 pure-u-md-3-4">
+    {% block breadcrumbs %}
+    <div class="pure-u-md-1-1 breadcrumbs">
+       {% if breadcrumbs %}
+           <a href="{{ reverse_url("main")[1:]}}">Home</a>
+           {% for link in breadcrumbs %}
+           &nbsp;&#124;&nbsp;
+           <a href="{{link["value"]}}">{{link["name"]}}</a>
+           {% end %}
+       {% end %}
+       <form class="pure-form pure-form-stacked right-align" action="{{ reverse_url("project", "undo")[1:] }}" method="get">
+       <button type="submit" class="pure-button pure-button-primary" disabled>Last snapshot</button>
+       </form>
+    </div>
+    {% end %}
+    {% block editor %}{% end %}
+</div>
+<div class="pure-u-1 pure-u-md-1-4">
+    <div class="vertical_line"></div>
+    <p class="form-legend">Project</p>
+    <form class="pure-form pure-form-stacked" enctype="multipart/form-data" action="{{ reverse_url("project", "load")[1:] }}" method="post">
+    <fieldset>
+        <input type="file" name="project">
+        <button type="submit" class="pure-button pure-button-primary">Load</button>
+    </fieldset>
+    </form>
+    <form class="pure-form pure-form-stacked" action="{{ reverse_url("project", "save")[1:] }}" method="get">
+    <button type="submit" class="pure-button pure-button-primary">Save</button>
+    </form>
+
+    <p class="form-legend">Firmware</p>
+    <form class="pure-form" action="{{ reverse_url("project", "generate_firmware")[1:] }}" method="get">
+    <fieldset>
+        <select name="device">
+            <option value="K1921BK01T">NIIET K1921BK01T</option>
+            <option value="K1921BK01T-UART">NIIET K1921BK01T UART</option>
+            <option value="K1986BE92QI">Milandr K1986BE92QI</option>
+            <option value="K1986BE92QI-UART">Milandr K1986BE92QI UART</option>
+            <option value="TM4C1294KCPDT">TI TM4C1294KCPDT</option>
+            <option value="LM3S5R31">TI LM3S5R31</option>
+            <option value="STM32F103C6">ST STM32F103C6</option>
+            <option value="STM32F103C6-UART">ST STM32F103C6 UART</option>
+            <option value="STM32L053C8">ST STM32L053C8</option>
+            <option value="STM32L053C8-UART">ST STM32L053C8 UART</option>
+			<option value="STM32F429ZI">ST STM32F429ZI</option>
+            <option value="STM32F429ZI-UART">ST STM32F429ZI UART</option>
+        </select>
+        <button type="submit" class="pure-button pure-button-primary">Generate</button>
+    </fieldset>
+    </form>
+
+    <p class="form-legend">Documentation</p>
+    <form class="pure-form" action="{{ reverse_url("project", "generate_documentation")[1:] }}" method="get">
+    <fieldset>
+        <select id="format" name="format">
+            <option>Textile</option>
+            <option>Sphinx</option>
+        </select>
+
+        <button type="submit" class="pure-button pure-button-primary">Generate</button>
+    </fieldset>
+    </form>
+    <p class="form-legend">Library</p>
+    <form class="pure-form" action="{{ reverse_url("project", "generate_library")[1:] }}" method="get">
+    <fieldset>
+        <button type="submit" class="pure-button pure-button-primary">Generate</button>
+    </fieldset>
+    </form>
+
+
+    <p class="form-legend">Abstract device</p>
+    <form class="pure-form" action="{{ reverse_url("project", "generate_abstract_device")[1:] }}" method="get">
+    <fieldset>
+        <select name="is_namespaced">
+            <option value=True>Namespaced (PC)</option>
+            <option value=False>Not namespaced (Firmware)</option>
+        </select>
+        <button type="submit" class="pure-button pure-button-primary">Generate</button>
+    </fieldset>
+    </form>
+
+
+    <p class="form-legend">TANGO Device Server</p>
+    <form class="pure-form" action="{{ reverse_url("project", "generate_tango")[1:] }}" method="get">
+    <fieldset>
+        <button type="submit" class="pure-button pure-button-primary">Generate</button>
+    </fieldset>
+    </form>
+
+    <p class="form-legend">QT debugger</p>
+    <form class="pure-form" action="{{ reverse_url("project", "generate_debugger")[1:] }}" method="get">
+    <fieldset>
+        <button type="submit" class="pure-button pure-button-primary">Generate</button>
+    </fieldset>
+    </form>
+
+    <p class="form-legend">Bindings</p>
+    <form class="pure-form" action="{{ reverse_url("project", "generate_bindings")[1:] }}">
+    <fieldset>
+        <select name="format">
+            <option>Python</option>
+{#            <option>Java</option>#}
+{#            <option>C</option>#}
+            <option>C#</option>
+        </select>
+
+        <button type="submit" class="pure-button pure-button-primary">Generate</button>
+    </fieldset>
+    </form>
+
+    <p class="form-legend">Profiles assembler</p>
+    <form class="pure-form pure-form-stacked" enctype="multipart/form-data" action="{{ reverse_url("project", "assembly_profiles")[1:] }}" method="post">
+    <fieldset>
+        <input type="file" name="profiles" multiple="True">
+        <button type="submit" class="pure-button pure-button-primary">Assemble</button>
+    </fieldset>
+    </form>
+
+    <summary><p class="form-legend">Python profiles assembler</p></summary>
+    <fieldset>
+        <p class="form-legend">uRPC extension for Ximc</p>
+        <details>
+        <form class="pure-form pure-form-stacked" enctype="multipart/form-data" action="{{ reverse_url("project", "ximcstyle_assembly_profiles")[1:] }}" method="post">
+        <fieldset>
+            <input type="file" name="profiles" multiple="True">
+            <button type="submit" class="pure-button pure-button-primary">Assemble</button>
+        </fieldset>
+        </form>
+        </details>
+    </fieldset>
+
+</div>
+{% end %}

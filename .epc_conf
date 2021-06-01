@@ -1,0 +1,17 @@
+{
+    "release": {
+        "hg_archive_args": [
+            "-X", ".epc_conf",
+            "-X", ".flake8"
+        ],
+
+        "package": "xigen2",
+
+        "setuptools_args": {
+            "description": "uRPC Generator",
+            "author": "EPC MSU",
+            "author_email": "info@physlab.ru",
+            "url": "physlab.ru" 
+        }
+    }
+}

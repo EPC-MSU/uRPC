@@ -1,0 +1,8 @@
+[flake8]
+exclude = .git, .hg, __pycache__, urpc/builder/library/resources/vendor/liburpc, venv
+max-complexity = 14
+inline-quotes = double
+multiline-quotes = """
+builtins = _
+verbose = 2
+max-line-length = 120
