@@ -124,6 +124,12 @@
     </form>
 
     <summary><p class="form-legend">Python profiles assembler</p></summary>
+    <form class="pure-form pure-form-stacked" enctype="multipart/form-data" action="{{ reverse_url("project", "urmcstyle_assembly_profiles")[1:] }}" method="post">
+    <fieldset>
+        <input type="file" name="profiles" multiple="True">
+        <button type="submit" class="pure-button pure-button-primary">Assemble</button>
+    </fieldset>
+    </form>
     <fieldset>
         <p class="form-legend">uRPC extension for Ximc</p>
         <details>

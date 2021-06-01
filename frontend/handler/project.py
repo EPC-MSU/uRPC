@@ -194,7 +194,7 @@ class ProjectHandler(BaseRequestHandler):
             self.set_header("Content-Type", mime)
             self.set_header("Content-Disposition", 'attachment; filename="' + file_name + '"')
 
-        elif action == "ximcstyle_assembly_profiles":
+        elif ((action == "ximcstyle_assembly_profiles") or (action == "urmcstyle_assembly_profiles")):
             protocol = self._sessions[self.current_user]
 
             output_buffer, file_name, mime = BytesIO(), "", ""
@@ -206,7 +206,10 @@ class ProjectHandler(BaseRequestHandler):
             for profile in files_info:
                 profiles_list.append((profile["filename"], profile["body"]))
 
-            pythonprofiles.ximcstyle_build(protocol, profiles_list, output_buffer, is_namespaced=True)
+            if action == "ximcstyle_assembly_profiles":
+                pythonprofiles.style_build(protocol, profiles_list, output_buffer, is_namespaced=True, style="ximc")
+            elif action == "urmcstyle_assembly_profiles":
+                pythonprofiles.style_build(protocol, profiles_list, output_buffer, is_namespaced=True)
 
             file_name = "{}.zip".format(_normalize_target_name(protocol, "profiles"))
             mime = "application/zip"
