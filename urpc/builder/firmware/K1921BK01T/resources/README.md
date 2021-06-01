@@ -22,7 +22,7 @@
    Если требуется история изменений, репозиторий библиотеки: https://anonymous:anonymous@hg.ximc.ru/niietcm4_pd
 
 4. В каталог с проектами (важно использовать тот же каталог с проектами, правильная работа завязана на относительные пути) распаковать архив с USB проектом библиотеки для K1921BK01T  в папку C:\Projects\\Niiet\k1921bk01t.
-        hg clone https://anonymous:anonymous@hg.ximc.ru/niietcm4_usb
+        hg clone https://anonymous:anonymous@hg.ximc.ru/mcu_libraries/niietcm4_usb
    Архив можно скачать по ссылке: https://download.urpc.kea.su/firmware/niiet/k1921bk01t/niietcm4_usb.zip
 
    Если требуется история изменений, репозиторий библиотеки: https://anonymous:anonymous@hg.ximc.ru/niietcm4_usb/

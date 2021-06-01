@@ -341,8 +341,15 @@ def get_static_part(protocol):
 
 def get_ru_static_part(protocol):
     s = dedent("""
+                msgid ""
+                msgstr ""
+                "MIME-Version: 1.0\\n"
+                "Content-Type: text/plain; charset=UTF-8\\n"
+                "Content-Transfer-Encoding: 8bit\\n"
+                "Language: ru\\n"
+
                 msgid "Communication protocol specification"
-                msgstr "Описание протокола обмена."
+                msgstr "Описание протокола обмена"
 
                 msgid "Communication protocol v{0}"
                 msgstr "Описание протокола v{0}"
@@ -485,14 +492,14 @@ def get_ru_static_part(protocol):
                 msgid "**The example of CRC calculation:**"
                 msgstr "**Пример расчёта CRC:**"
 
-                msgid "**Command code (CMD):** \"home\" or 0x656D6F68"
-                msgstr "**Код команды (CMD):** \"home\" или 0x656D6F68."
+                msgid "**Command code (CMD):** \\"home\\" or 0x656D6F68"
+                msgstr "**Код команды (CMD):** \\"home\\" или 0x656D6F68"
 
-                msgid "**Command code (CMD):** \"gpos\" or 0x736F7067"
-                msgstr "**Код команды (CMD):** \"gpos\" или 0x736F7067."
+                msgid "**Command code (CMD):** \\"gpos\\" or 0x736F7067"
+                msgstr "**Код команды (CMD):** \\"gpos\\" или 0x736F7067"
 
-                msgid "**Command code (CMD):** \"movr\" or 0x72766F6D"
-                msgstr "**Код команды (CMD):** \"movr\" или 0x72766F6D."
+                msgid "**Command code (CMD):** \\"movr\\" or 0x72766F6D"
+                msgstr "**Код команды (CMD):** \\"movr\\" или 0x72766F6D"
 
                 msgid "Transmission errors"
                 msgstr "Сбои передачи"
@@ -516,7 +523,7 @@ def get_ru_static_part(protocol):
                 "применения в условиях сильно нестабильной связи. В частности в таких условиях "
                 "редко возможно выполнение не той команды, что была послана."
 
-                msgid "Missing byte, controller side"
+                msgid "Missing byte, controller side \\""
                 msgstr "Исчезновение байта на стороне контроллера"
 
                 msgid ""
@@ -836,5 +843,6 @@ def get_ru_static_part(protocol):
 
                 msgid "All controller commands"
                 msgstr "Все команды контроллера"
+
                """.format(protocol.version))
     return s[1:]  # remove first line

@@ -119,7 +119,10 @@ class ProjectHandler(BaseRequestHandler):
             is_namespaced = self.get_query_argument("is_namespaced", "False") == "True"
 
             device.build_full(protocol, output_buffer, is_namespaced=is_namespaced)
-            file_name = "{}.zip".format(_normalize_target_name(protocol, "abstract_device"))
+            if is_namespaced:
+                file_name = "{}.zip".format(_normalize_target_name(protocol, "abstract_device"))
+            else:
+                file_name = "{}.zip".format(_normalize_target_name(protocol, "abstract_device_firmware"))
             mime = "application/zip"
 
         elif action == "generate_tango":
