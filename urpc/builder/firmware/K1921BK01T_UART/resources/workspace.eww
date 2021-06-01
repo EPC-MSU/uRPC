@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<workspace>
+  <project>
+    <path>$WS_DIR$\firmware\firmware.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\..\Niiet\k1921bk01t\niietcm4_pd\Libs\Periph_Driver\driverlib.ewp</path>
+  </project>
+  <batchBuild/>
+</workspace>
+
+

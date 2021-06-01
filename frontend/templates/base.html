@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>uRPC {{ version }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{static_url("vendor/pure-release-0.6.0/pure-min.css")[1:]}}">
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="{{static_url("vendor/pure-release-0.6.0/grids-responsive-old-ie-min.css")[1:]}}">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+    <link rel="stylesheet" href="{{static_url("vendor/pure-release-0.6.0/grids-responsive-min.css")[1:]}}">
+    <!--<![endif]-->
+    <link rel="stylesheet" href="{{static_url("vendor/font-awesome-4.5.0/css/font-awesome.min.css")[1:]}}">
+    <link rel="stylesheet" href="{{static_url("css/custom.css")[1:]}}">
+
+    <link rel="stylesheet" href="{{static_url("highlight/styles/googlecode.css")[1:]}}">
+    <script src="{{static_url("highlight/highlight.pack.js")[1:]}}"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+<body>
+
+<div class="header">
+    <div class="pure-menu pure-menu-horizontal">
+        <div class="pure-menu-heading logo">
+            <a href="{{ reverse_url("main")[1:]}}">
+                <img src="{{static_url("img/urpc_logo.png")[1:]}}" width="90" height="39" />
+            </a>
+        </div>
+
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item pure-menu-selected"><a class="pure-menu-link" href="{{ reverse_url("main")[1:]}}">Editor</a></li>
+            <li class="pure-menu-item"><a class="pure-menu-link" href="help">Help</a></li>
+        </ul>
+    </div>
+</div>
+<div class="pure-g">
+{% block body %}{% end %}
+</div>
+</body>
+</html>

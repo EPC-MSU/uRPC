@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block editor %}
+<p class="form-legend">Edit constant properties</p>
+<form class="pure-form" action="" method="post">
+<fieldset>
+    <input type="hidden" name="action" value="update">
+    <input type="hidden" name="handle" value="{{ constant.uid }}">
+    <input type="text" name="name" value="{{ constant.name }}" placeholder="Name">
+    <input type="text" name="value" value="{{ constant.value }}" placeholder="Value">
+    {% for code, text in constant.description.items() %}
+        <textarea name="{{ code }}_description" placeholder="{{ code }}">{{ text }}</textarea>
+    {% end %}
+    <textarea name="extra_options" value="" placeholder="Extra options in format: Opt1=Value1, Opt2=Value, ...">{{ constant.extra_options }}</textarea>
+    <button type="submit" class="pure-button pure-button-primary">Update</button>
+    <span class="error-message">{{ messages.get("constant-message", "") }}</span>
+</fieldset>
+</form>
+{% end %}

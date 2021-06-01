@@ -1,0 +1,57 @@
+{% extends "help.html" %}
+
+{% block help %}
+
+<h2>TANGO (генерируется uRPC)</h2>
+<i>Требует: сгенерированной <a href="/helplibrary">библиотеки</a></i>
+<h3> Описание </h3>
+<p align="justify">
+    Результатом работы этого генератора является исходный код <a href="https://www.tango-controls.org">
+    TANGO</a> Device server на языке C\C++ и файл CMakeLists для сборки адаптера в разных IDE\C компиляторах
+    <br>
+    Больше информации о том, что такое TANGO Device server, как его написать и как работать с ним, на
+    <a href="https://tango-controls.readthedocs.io/en/latest/development/device-api/device-server-writing.html">
+        официальном сайте
+    </a>
+
+</p>
+<h3> Инструкция по сборке </h3>
+<p align="justify">
+    <ul>
+        <li>Для сборки понадобится CMake, компилятор C\C++ (msvc, redistributable packages на Windows,
+            build-essential на Linux ), пакет TANGO (установить по инструкции:
+            https://tango-controls.readthedocs.io/en/latest/installation/index.html)
+        </li>
+        <li>
+            В директорую с исходными кодами TANGO Device Server поместить заголовочный файл и библиотеку из собранной
+            <a href="/helplibrary">библиотеки</a>
+        </li>
+        <li>
+            Запустить CMake, а затем сборку по аналогии с запуском CMake и сборкой <a href="/helplibrary">библиотеки</a>
+        </li>
+    </ul>
+</p>
+
+<h3>Инструкция по запуску</h3>
+<p align="justify">
+    <ul>
+        <li>
+            Для работы программы требуется &lt;имя проекта&gt;.dll и dll-ки от Qt (если Qt прописана в системные пути, то
+            Qt-шные библиотеки должны найтись сами). <br />
+            Под linux потребуются библиотеки .so. Путь к библиотеке должен быть прописан в переменной окружения
+            LD_LIBRARY_PATH (см. выше "Сборка под linux"). В некоторых версиях linux после копирования библиотеки
+            нужно вызвать команду
+            <p><font face = "Terminal">sudo ldconfig</font></p>
+            для обновления кэша библиотек
+        </li>
+        <li>
+            Можно запускать собранный Tango Device Server. Чтобы посмотреть аргументы командной строки для запуска,
+            запустите програму с флагом
+            <p><font face = "Terminal">--help</font></p> инструкцию по работе с TANGO серверами смотрите на
+            <a href="https://tango-controls.readthedocs.io">сайте</a> TANGO
+        </li>
+    </ul>
+</p>
+<h3>
+
+{% end %}

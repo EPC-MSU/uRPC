@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block editor %}
+<div class="pure-g">
+    <div class="pure-u-1-1 form-block">
+        <h2>General:</h2>
+        <form class="pure-form" action="{{ reverse_url("editor")[1:] }}" method="post">
+        <fieldset>
+            <p class="form-legend">Project name</p>
+            <input type="hidden" name="handle" value="{{ protocol.uid }}">
+            <input type="text" name="project_name" value="{{ protocol.name }}">
+            <p class="form-legend">Version</p>
+            <input type="text" name="version" value="{{ protocol.version }}">
+            <input type="hidden" name="action" value="update">
+            <p class="form-legend">Extra options</p>
+            <textarea name="extra_options" value="" placeholder="Extra options in format: Opt1=Value1, Opt2=Value, ...">{{ protocol.extra_options }}</textarea>
+            <p></p>
+            <button type="submit" class="pure-button pure-button-primary">Update</button>
+        </fieldset>
+        </form>
+    </div>
+
+    <div class="pure-u-1-1 form-block">
+        <h2>Commands:</h2>
+        <p class="form-legend">Add command</p>
+        <form class="pure-form" action="{{ reverse_url("editor")[1:] }}" method="post">
+        <fieldset>
+            <input type="hidden" name="handle" value="{{ protocol.uid }}">
+            <input type="hidden" name="action" value="create_command">
+            <input type="text" name="cid" placeholder="CID">
+            <input type="text" name="command_name" placeholder="Name">
+            <button type="submit" class="pure-button pure-button-primary">Create</button>
+            <span class="error-message">{{ messages.get("command-message", "") }}</span>
+        </fieldset>
+        </form>
+        <table class="pure-table pure-table-horizontal">
+            <thead>
+            <tr>
+                <th>CID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for cmd in sorted(protocol.commands, key=lambda x:x.cid.upper()) %}
+            <tr>
+                <td>{{ cmd.cid }}</td>
+                <td>
+                    {{ cmd.name }}
+                    {% set tags = get_tags(cmd) %}
+                    {% for tag in tags %}
+                    <img src="/static/tags/{{ tag }}" alt="{{ tag }}">
+                    {% end %}
+                </td>
+                <td>{{ cmd.description["english"] }}</td>
+                <td>
+                    <a name="{{cmd.uid}}" class="button-xsmall pure-button" href="{% raw url_concat(reverse_url("editor")[1:], {'action': "view", 'handle': cmd.uid}) %}">Edit</a>
+                    <form action="{{ reverse_url("editor")[1:] }}" method="post">
+                    <input type="hidden" name="handle" value="{{ cmd.uid }}">
+                    <input type="hidden" name="action" value="delete">
+                    <button type="submit" class="button-xsmall pure-button">Remove</button>
+                    </form>
+                </td>
+            </tr>
+            {% end %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pure-u-1-1 form-block">
+        <a name="___accessor"></a>
+        <h2>Accessors:</h2>
+        <p class="form-legend">Add accessor</p>
+        <form class="pure-form" action="{{ reverse_url("editor")[1:] }}" method="post">
+        <fieldset>
+            <input type="hidden" name="handle" value="{{ protocol.uid }}">
+            <input type="hidden" name="action" value="create_accessor">
+            <input type="text" name="aid" placeholder="AID">
+            <input type="text" name="accessor_name" placeholder="Name">
+            <button type="submit" class="pure-button pure-button-primary">Create</button>
+            <span class="error-message">{{  messages.get("accessor-message", "") }}</span>
+        </fieldset>
+        </form>
+        <table class="pure-table pure-table-horizontal">
+            <thead>
+            <tr>
+                <th>AID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for acc in sorted(protocol.accessors, key=lambda x:x.aid.upper()) %}
+            <tr>
+                <td>{{ acc.aid }}</td>
+                <td>
+                    {{ acc.name }}
+                    {% for tag in get_tags(acc) %}
+                    <img src="/static/tags/{{ tag }}" alt="{{ tag }}">
+                    {% end %}
+                </td>
+                <td>{{ acc.name }}</td>
+                <td>{{ acc.getter.description["english"] }}</td>
+                <td>
+                    <a name="{{acc.uid}}" class="button-xsmall pure-button" href="{% raw url_concat(reverse_url("editor")[1:], {'action': "view", 'handle': acc.uid}) %}">Edit</a>
+                    <form action="{{ reverse_url("editor")[1:] }}" method="post">
+                    <input type="hidden" name="handle" value="{{ acc.uid }}">
+                    <input type="hidden" name="action" value="delete">
+                    <button type="submit" class="button-xsmall pure-button">Remove</button>
+                    </form>
+                </td>
+            </tr>
+            {% end %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% end %}

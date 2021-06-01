@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block editor %}
+<div class="pure-g">
+    <a name="___accessor"></a>
+    <div class="pure-u-1-1 form-block">
+        <h2>General:</h2>
+        <p class="form-legend">Edit accessor properties</p>
+        <form class="pure-form" action="" method="post">
+        <fieldset>
+            <input type="hidden" name="action" value="update">
+            <input type="hidden" name="handle" value="{{ accessor.uid }}">
+            <input type="text" name="aid" value="{{ accessor.aid }}" placeholder="AID">
+            <input type="text" name="accessor_name" value="{{ accessor.name }}" placeholder="Name">
+            {% for code, text in accessor.getter.description.items() %}
+                <textarea name="{{ code }}_description" placeholder="{{ code }}">{{ text }}</textarea>
+            {% end %}
+            <textarea name="extra_options" value="" placeholder="Extra options in format: Opt1=Value1, Opt2=Value, ...">{{ accessor.extra_options }}</textarea>
+            <button type="submit" class="pure-button pure-button-primary">Update</button>
+            <span class="error-message">{{ messages.get("accessor-message", "") }}</span>
+        </fieldset>
+        </form>
+    </div>
+    <div class="pure-u-1-1 form-block">
+        <h2>Arguments:</h2>
+        <p class="form-legend">Add accessor argument</p>
+        <form class="pure-form" action="" method="post">
+        <fieldset>
+            <input type="hidden" name="action" value="create_argument">
+            <input type="hidden" name="handle" value="{{ accessor.uid }}">
+            <input type="text" name="name" placeholder="Name">
+            <select name="value_type">
+                {% for k in clang_primitives.keys() %}
+                <option value="{{ k }}">{{ k }}</option>
+                {% end %}
+            </select>
+            <input type="text" name="type_length" placeholder="Length">
+
+            <button type="submit" class="pure-button pure-button-primary">Create</button>
+            <span class="error-message">{{ messages.get("argument-message", "") }}</span>
+        </fieldset>
+        </form>
+        <table class="pure-table pure-table-horizontal">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i, arg in enumerate(accessor.getter.response.args) %}
+            <tr>
+                <td>{{ i }}</td>
+                <td>{{ arg.name }}</td>
+                <td>{{ "".join(type_to_cstr(arg.type_)) }}</td>
+                <td>{{ arg.description["english"] }}</td>
+                <td>
+                    <a name="{{arg.uid}}" class="button-xsmall pure-button" href="{% raw url_concat(reverse_url("editor")[1:], {'action': "view", 'handle': arg.uid}) %}">Edit</a>
+                    <form action="" method="post">
+                        <input type="hidden" name="handle" value="{{ arg.uid }}">
+                        <input type="hidden" name="action" value="delete">
+                        <button type="submit" class="button-xsmall pure-button">Remove</button>
+                    </form>
+                    <form action="" method="post">
+                        <input type="hidden" name="handle" value="{{ arg.uid }}">
+                        <input type="hidden" name="action" value="raise">
+                        <button type="submit" class="button-xsmall pure-button">Up</button>
+                    </form>
+                    <form action="" method="post">
+                        <input type="hidden" name="handle" value="{{ arg.uid }}">
+                        <input type="hidden" name="action" value="lower">
+                        <button type="submit" class="button-xsmall pure-button">Down</button>
+                    </form>
+                </td>
+            </tr>
+            {% end %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% end %}

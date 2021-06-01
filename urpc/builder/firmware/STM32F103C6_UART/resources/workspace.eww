@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<workspace>
+  <project>
+    <path>$WS_DIR$\..\ST\stm32f1xx\stm32f1xx-ll-driver\Drivers\STM32F1xx_LL_Driver\driverlib.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\firmware\firmware.ewp</path>
+  </project>
+  <batchBuild>
+    <batchDefinition>
+      <name>Debug</name>
+      <member>
+        <project>driverlib</project>
+        <configuration>Debug</configuration>
+      </member>
+      <member>
+        <project>firmware</project>
+        <configuration>Debug</configuration>
+      </member>
+    </batchDefinition>
+    <batchDefinition>
+      <name>Release</name>
+      <member>
+        <project>driverlib</project>
+        <configuration>Release</configuration>
+      </member>
+      <member>
+        <project>firmware</project>
+        <configuration>Release</configuration>
+      </member>
+    </batchDefinition>
+  </batchBuild>
+</workspace>
