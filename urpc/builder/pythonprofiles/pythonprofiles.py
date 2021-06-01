@@ -112,26 +112,26 @@ def unsig(value):
     return value
 
 
-def style_underscore_arg(name, style):
+def style_underscore_arg(name, style="urmc"):
     return name if style == "ximc" else underscore(name)
 
 
-def style_camelize_arg(name, style):
+def style_camelize_arg(name, style="urmc"):
     return name if style == "ximc" else "modul."+camelize(name[:-2])+"Request"
 
 
-def write_argument_array(arg, profile_command, output, cmd):
+def write_argument_array(arg, profile_command, output, cmd, style="urmc"):
     if _c_type(arg.type_) in ("char", "int8_t"):
         values = "bytes([" + str.join(", ", [str(unsig(val)) for val in profile_command[arg.name]]) + "])"
         output.write("    {name}.{field} = {values}\n".format(type=_c_type(arg.type_),
                                                               name=_accessor_name(cmd),
-                                                              field=arg.name,
+                                                              field=style_underscore_arg(arg.name, style),
                                                               size=len(arg.type_),
                                                               values=values))
     else:
         for i in range(len(arg.type_)):
             output.write("    {name}.{field}[{i}] = {value}\n".format(name=_accessor_name(cmd),
-                                                                      field=arg.name,
+                                                                      field=style_underscore_arg(arg.name, style),
                                                                       i=i,
                                                                       value=profile_command[arg.name][i]))
 
@@ -175,7 +175,7 @@ def style_write_argument_scalar(arg, profile_command, namespaced, cmd, output, s
 
 def style_write_argument(arg, profile_command, namespaced, output, cmd, style="urmc"):
     if isinstance(arg.type_, ast.ArrayType):
-        write_argument_array(arg, profile_command, output, cmd)
+        write_argument_array(arg, profile_command, output, cmd, style)
     else:
         style_write_argument_scalar(arg, profile_command, namespaced, cmd, output, style)
 
