@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<workspace>
+  <project>
+    <path>$WS_DIR$\firmware\firmware.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\..\emdr1986x-std-per-lib\MDR32F9Qx_StdPeriph_Driver\stdperiphlib-cm3.ewp</path>
+  </project>
+  <batchBuild/>
+</workspace>
+
+
