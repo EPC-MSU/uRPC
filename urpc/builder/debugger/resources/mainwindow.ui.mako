@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>uRPC Debugger (${protocol.name})</string>
+   <string>${protocol.name}_debugger</string>
   </property>
   <property name="windowIcon">
    <iconset>

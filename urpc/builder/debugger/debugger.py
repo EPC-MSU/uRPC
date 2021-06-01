@@ -48,7 +48,7 @@ class DebuggerView(ClangView):
 
         # Search libraries in current directory
         link_directories(${{CMAKE_SOURCE_DIR}})
-        
+
         set (USE_QT5 FALSE)
 
         if(${{FORCE_QT4}})
@@ -66,15 +66,15 @@ class DebuggerView(ClangView):
                 message("Qt5 will be used")
                 set (USE_QT5 TRUE)
             else()
-                message(FATAL_ERROR "No Qt4/Qt5 found")		
+                message(FATAL_ERROR "No Qt4/Qt5 found")
             endif()
         endif()
-        
+
         if(NOT ${{USE_QT5}})
             find_package(Qt4 REQUIRED QtCore QtGui QtMain)
             include(${{QT_USE_FILE}})
         endif()
-        
+
         if(${{USE_QT5}})
             find_package(Qt5Widgets REQUIRED)
             include_directories(${{Qt5Widgets_INCLUDES}})
