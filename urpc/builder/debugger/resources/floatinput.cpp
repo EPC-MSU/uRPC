@@ -1,6 +1,8 @@
 #include "floatinput.h"
 #include "ui_floatinput.h"
 
+#include <QDoubleValidator>
+
 #define DECIMALS 10
 
 FloatInput::FloatInput(QWidget *parent, QString ArgName, QString ArgType, float minvalue, float maxvalue) :

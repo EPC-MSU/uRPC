@@ -37,6 +37,8 @@ class DebuggerView(ClangView):
 
         # Tell CMake to run moc when necessary:
         set(CMAKE_AUTOMOC ON)
+        set(CMAKE_AUTORCC ON)
+        set(CMAKE_AUTOUIC ON)
         if(${{CMAKE_VERSION}} VERSION_GREATER_EQUAL "3.10.0")
             cmake_policy(SET CMP0071 OLD)
         endif()
@@ -46,13 +48,39 @@ class DebuggerView(ClangView):
 
         # Search libraries in current directory
         link_directories(${{CMAKE_SOURCE_DIR}})
+        
+        set (USE_QT5 FALSE)
 
-        # Add QT libs
-        find_package(Qt4 REQUIRED QtCore QtGui QtMain)
-        include(${{QT_USE_FILE}})
-
-        # set all .h files visible from output directory
-        set(CMAKE_INCLUDE_CURRENT_DIR, ON)
+        if(${{FORCE_QT4}})
+            set (USE_QT5 FALSE)
+        elseif(${{FORCE_QT5}})
+            set (USE_QT5 TRUE)
+        else()
+            # Detect QT version
+            find_package(Qt4 QUIET)
+            find_package(Qt5Widgets QUIET)
+            if(${{Qt4_FOUND}})
+                message("Qt4 will be used")
+                set (USE_QT5 FALSE)
+            elseif(${{Qt5Widgets_FOUND}})
+                message("Qt5 will be used")
+                set (USE_QT5 TRUE)
+            else()
+                message(FATAL_ERROR "No Qt4/Qt5 found")		
+            endif()
+        endif()
+        
+        if(NOT ${{USE_QT5}})
+            find_package(Qt4 REQUIRED QtCore QtGui QtMain)
+            include(${{QT_USE_FILE}})
+        endif()
+        
+        if(${{USE_QT5}})
+            find_package(Qt5Widgets REQUIRED)
+            include_directories(${{Qt5Widgets_INCLUDES}})
+            add_definitions(${{QtWidgets_DEFINITIONS}})
+            set(CMAKE_CXX_FLAGS "${{Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}}")
+        endif()
 
         set(SOURCES
             main.cpp
@@ -101,8 +129,6 @@ class DebuggerView(ClangView):
             intarroutput.ui
             container.ui)
 
-        qt4_wrap_ui(GENERATED_SOURCES ${{UIS}})
-
         source_group("Generated Sources - Do Not Edit" FILES ${{GENERATED_SOURCES}})
 
         include_directories(${{CMAKE_BINARY_DIR}})
@@ -117,7 +143,13 @@ class DebuggerView(ClangView):
              ${{UIS}}
              ${{RESOURCES}})
 
-        target_link_libraries(uRPC_debugger ${{QT_LIBRARIES}} {self.name} ${{CMAKE_THREAD_LIBS_INIT}})
+        if(${{USE_QT5}})
+            set(QT_LIBS Qt5::Widgets)
+        else()
+            set(QT_LIBS ${{QT_LIBRARIES}})
+        endif()
+
+        target_link_libraries(uRPC_debugger ${{QT_LIBS}} {self.name} ${{CMAKE_THREAD_LIBS_INIT}})
 
         if(WIN32)
             set_property(DIRECTORY ${{CMAKE_CURRENT_SOURCE_DIR}} PROPERTY VS_STARTUP_PROJECT uRPC_debugger)
