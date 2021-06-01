@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<workspace>
+  <project>
+    <path>$WS_DIR$\..\stm32f10x-stdperiph-driver\Libraries\STM32F10x_StdPeriph_Driver\driverlib.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\firmware\firmware.ewp</path>
+  </project>
+  <batchBuild/>
+</workspace>

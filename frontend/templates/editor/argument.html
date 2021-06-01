@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block editor %}
+<div class="pure-g">
+    <div class="pure-u-1-1 form-block">
+        <a name="___argument"></a>
+        <h2>General:</h2>
+        <p class="form-legend">Edit argument properties</p>
+        <form class="pure-form" action="" method="post">
+        <fieldset>
+            <input type="hidden" name="action" value="update">
+            <input type="hidden" name="handle" value="{{ argument.uid }}">
+            <input type="text" name="name" value="{{ argument.name }}" placeholder="Name">
+            <select name="value_type">
+                {% for k, v in clang_primitives.items() %}
+                <option {% if v == argument.type or (hasattr(argument.type, "type") and v == argument.type.type ) %} selected="selected" {% end %} value="{{ k }}">{{ k }}</option>
+                {% end %}
+            </select>
+            <input type="text" name="type_length" placeholder="Length" value="{% if hasattr(argument.type, "__len__")%}{{ len(argument.type) }}{% else %}{% end %}">
+            {% for code, text in argument.description.items() %}
+                <textarea name="{{ code }}_description" placeholder="{{ code }}">{{ text }}</textarea>
+            {% end %}
+            <textarea name="extra_options" placeholder="Extra options in format: Opt1=Value1, Opt2=Value, ...">{{ argument.extra_options }}</textarea>
+            <button type="submit" class="pure-button pure-button-primary">Update</button>
+            <span class="error-message">{{ messages.get("argument-message", "") }}</span>
+        </fieldset>
+        </form>
+    </div>
+
+    <div class="pure-u-1-1 form-block">
+        <h2>Argument:</h2>
+        <p class="form-legend">Add constant</p>
+        <form class="pure-form" action="" method="post">
+        <fieldset>
+            <input type="hidden" name="action" value="create_constant">
+            <input type="hidden" name="handle" value="{{ argument.uid }}">
+            <input type="text" name="name" placeholder="Name">
+            <input type="text" name="value" placeholder="Value">
+            <button type="submit" class="pure-button pure-button-primary">Create</button>
+            <span class="error-message">{{ messages.get("constant-message", "") }}</span>
+        </fieldset>
+        </form>
+        <table class="pure-table pure-table-horizontal">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Value</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i, const in sorted(enumerate(argument.consts), key=lambda x:x[1].name.upper()) %}
+            <tr>
+                <td>{{ i }}</td>
+                <td>{{ const.name }}</td>
+                <td>{{ const.value }}</td>
+                <td>{{ const.description["english"] }}</td>
+                <td>
+                    <a name="{{const.uid}}" class="button-xsmall pure-button" href="{% raw url_concat(reverse_url("editor")[1:], {'action': "view", 'handle': const.uid}) %}">Edit</a>
+                    <form action="{{ reverse_url("editor")[1:]}}" method="post">
+                        <input type="hidden" name="handle" value="{{ const.uid }}">
+                        <input type="hidden" name="action" value="delete">
+                        <button type="submit" class="button-xsmall pure-button">Remove</button>
+                    </form>
+                </td>
+            </tr>
+            {% end %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% end %}

@@ -1,0 +1,3 @@
+[submodule "urpc/builder/library/resources/vendor/liburpc"]
+	path = urpc/builder/library/resources/vendor/liburpc
+	url = https://github.com/epc-msu/liburpc
