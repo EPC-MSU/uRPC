@@ -16,14 +16,14 @@
 3. В каталог с проектами (рекомендуется использовать путь - C:\projects\) склонировать проект библиотеки периферии для K1921BK01T:
 
         cd C:\projects\
-        hg clone https://anonymous:anonymous@hg.ximc.ru/niietcm4_pd
+        hg clone https://anonymous:anonymous@hg.ximc.ru/mcu_libraries/niietcm4_pd
         cd C:\projects\niietcm4_pd
         hg update tip
 
 4. В каталог с проектами (важно использовать тот же каталог с проектами, правильная работа завязана на относительные пути) склонировать проект USB библиотеки для K1921BK01T:
 
         cd C:\projects\
-        hg clone https://anonymous:anonymous@hg.ximc.ru/niietcm4_usb
+        hg clone https://anonymous:anonymous@hg.ximc.ru/mcu_libraries/niietcm4_usb
         cd C:\projects\niietcm4_usb
         hg update tip
 

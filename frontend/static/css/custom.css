@@ -76,3 +76,8 @@ hr {
 .right-align {
     float: right;
 }
+
+.left-border
+{
+	margin-left: 15px;
+}

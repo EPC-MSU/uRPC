@@ -14,6 +14,7 @@
  */
 #include "niietcm4_irq.h"
 #include "niietcm4_rcc.h"
+#include "usb_dev.h"
 #include "usb_otg_irq.h"
 #include "usb_cdc_vcp.h"
 #include "callback.h"     // For buffer cleaning after timeout
@@ -38,16 +39,13 @@ void USB_Init(void)
   IOBuffer_Init(&RxBuffer);
   IOBuffer_Init(&TxBuffer);
 
-  Usb_CDC_SetVID(0x1CBE);  // Place VID here
-  Usb_CDC_SetPID(0x0007);  // Place PID here
-
-  Usb_CDC_SetSerialNum(0x12345678);  // Place serial number here
-  Usb_CDC_SetManufacturer("MANUFACTURER");  // Place manufacturer here
-  Usb_CDC_SetProduct("PRODUCT");  // Place product name here
-
   Callback_Init();
 
   Callback_SetHandler(USB_CLEANING_INDEX, RxBufferCleaner);
+
+  USBDev_SetManufacturer("MANUFACTURER");  // Place manufacturer here
+  USBDev_SetProduct("PRODUCT");  // Place product name here
+  USBDev_SetSerial(0x12345678);  // Place serial number here
 
   /*
    * Disable the reset state and enable clock.

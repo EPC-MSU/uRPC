@@ -16,7 +16,7 @@
 3. В каталог с проектами (рекомендуется использовать путь - C:\projects\) склонировать проект библиотеки для MDR32F9Qx:
 
     cd C:\projects\
-    hg clone https://anonymous:anonymous@hg.ximc.ru/emdr1986x-std-per-lib
+    hg clone https://anonymous:anonymous@hg.ximc.ru/mcu_libraries/emdr1986x-std-per-lib
     cd C:\projects\emdr1986x-std-per-lib
     hg update tip
 

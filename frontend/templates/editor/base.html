@@ -6,21 +6,23 @@
 {% from urpc.util.cconv import clang_primitives, type_to_cstr %}
 
 <div class="pure-u-1 pure-u-md-3-4">
-    {% block breadcrumbs %}
-    <div class="pure-u-md-1-1 breadcrumbs">
-       {% if breadcrumbs %}
-           <a href="{{ reverse_url("main")[1:]}}">Home</a>
-           {% for link in breadcrumbs %}
-           &nbsp;&#124;&nbsp;
-           <a href="{{link["value"]}}">{{link["name"]}}</a>
+    <div class="left-border">
+        {% block breadcrumbs %}
+        <div class="pure-u-md-1-1 breadcrumbs">
+           {% if breadcrumbs %}
+               <a href="{{ reverse_url("main")[1:]}}">Home</a>
+               {% for link in breadcrumbs %}
+               &nbsp;&#124;&nbsp;
+               <a href="{{link["value"]}}">{{link["name"]}}</a>
+               {% end %}
            {% end %}
-       {% end %}
-       <form class="pure-form pure-form-stacked right-align" action="{{ reverse_url("project", "undo")[1:] }}" method="get">
-       <button type="submit" class="pure-button pure-button-primary">Last snapshot</button>
-       </form>
+           <form class="pure-form pure-form-stacked right-align" action="{{ reverse_url("project", "undo")[1:] }}" method="get">
+           <button type="submit" class="pure-button pure-button-primary">Last snapshot</button>
+           </form>
+        </div>
+        {% end %}
+        {% block editor %}{% end %}
     </div>
-    {% end %}
-    {% block editor %}{% end %}
 </div>
 <div class="pure-u-1 pure-u-md-1-4">
     <div class="vertical_line"></div>

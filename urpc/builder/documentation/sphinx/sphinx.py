@@ -17,8 +17,9 @@ _module_path = abspath(dirname(__file__))
 
 
 def _prepare_text_sphinx(text):
-    out = sub("['`]", '"', text)
-    out = out.replace(",", "\\,")
+    out = sub('["`]', "'", text)
+    out = out.replace("\n", " ")
+    out = out.replace("\r", " ")
     return out
 
 
@@ -33,10 +34,22 @@ def _get_description_ru(arg):
 def _build_ru_file(protocol, out):
     out.write(get_ru_static_part(protocol))
 
+    cache = set()
+
+    # Because these translations are already in static.py
+    # TODO: parse static.py for automatically exclude static.py duplications
+    cache.add("**Answer:** (4 bytes)")
+    cache.add("uint32_t")
+
     def write_ru_en_pair(en, ru):
-        out.write("msgid '{0}'\n".format(en))
-        out.write("msgstr '{0}'\n".format(ru))
+        if en in cache:
+            return  # Duplications prohibited
+        if not en:
+            return  # Ignore empty descriptions
+        out.write('msgid "{0}"\n'.format(en))
+        out.write('msgstr "{0}"\n'.format(ru))
         out.write("\n")
+        cache.add(en)
 
     def write_en_en_pair(en):
         write_ru_en_pair(en, en)
@@ -58,7 +71,6 @@ def _build_ru_file(protocol, out):
                     write_en_en_pair(c.name)
                     write_en_en_pair("{0} - {1}".format(hex(c.value), c.name))
 
-    write_ru_en_pair("**Description:**", "**Описание**")
     write_ru_en_pair("Checksum", "Контрольная сумма")
     write_ru_en_pair("Command", "Команда")
     write_en_en_pair("CMD")
@@ -77,8 +89,8 @@ def _build_ru_file(protocol, out):
         write_ru_en_pair("Command {0}".format(cmd.cid.upper()),
                          "Команда {0}".format(cmd.cid.upper()))
 
-        write_ru_en_pair("**Command code (CMD)**: '{0}' or {1}.".format(cmd.cid, ascii_to_hex(cmd.cid)),
-                         "**Код команды (CMD)**: '{0}' или {1}.".format(cmd.cid, ascii_to_hex(cmd.cid)))
+        write_ru_en_pair('**Command code (CMD)**: \\"{0}\\" or {1}.'.format(cmd.cid, ascii_to_hex(cmd.cid)),
+                         '**Код команды (CMD)**: \\"{0}\\" или {1}.'.format(cmd.cid, ascii_to_hex(cmd.cid)))
 
         write_ru_en_pair("**Description:** {0}".format(_get_description(cmd)),
                          "**Описание:** {0}".format(_get_description_ru(cmd)))
@@ -108,20 +120,20 @@ def _build_en_file(protocol, out, namespaced):
 
         def message_field(arg):
             base_type, length = type_to_cstr(arg.type_)
-            return "'{0}', '{1}', '{2}'\n".format(base_type, arg.name, _get_description(arg))
+            return '"{0}", "{1}", "{2}"\n'.format(base_type, arg.name, _get_description(arg))
 
         out_l = StringIO()
-        out_l.write("'{0}', 'CMD', 'Command'\n".format(type_to_cstr(ast.Integer32u)[0]))
+        out_l.write('"{0}", "CMD", "Command"\n'.format(type_to_cstr(ast.Integer32u)[0]))
         for arg in msg.args:
             if arg.name == "reserved":
-                out_l.write("'{0}', 'Reserved [{1}]', 'Reserved ({1} bytes)'\n".format(type_to_cstr(ast.Integer8u)[0],
+                out_l.write('"{0}", "Reserved [{1}]", "Reserved ({1} bytes)"\n'.format(type_to_cstr(ast.Integer8u)[0],
                                                                                        len(arg.type_)))
             else:
                 out_l.write(message_field(arg))
             for c in arg.consts:
-                out_l.write("'', '{0} - {1}', '{2}'\n".format(hex(c.value), c.name, _get_description(c)))
+                out_l.write('"", "{0} - {1}", "{2}"\n'.format(hex(c.value), c.name, _get_description(c)))
         if len(msg.args) > 0:
-            out_l.write("'{0}', 'CRC', 'Checksum'\n".format(type_to_cstr(ast.Integer16u)[0]))
+            out_l.write('"{0}", "CRC", "Checksum"\n'.format(type_to_cstr(ast.Integer16u)[0]))
 
         return out_l.getvalue()
 
@@ -149,7 +161,7 @@ def _build_en_file(protocol, out, namespaced):
         out.write(indent(func, "   ") + "\n")
 
         out.write("\n")
-        out.write("**Command code (CMD)**: '{0}' or {1}.\n".format(cmd.cid, ascii_to_hex(cmd.cid)))
+        out.write('**Command code (CMD)**: "{0}" or {1}.\n'.format(cmd.cid, ascii_to_hex(cmd.cid)))
         out.write("\n")
         out.write("**Request:** ({0} bytes)\n".format(get_msg_len(cmd.request)))
         out.write("\n")
