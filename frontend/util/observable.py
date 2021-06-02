@@ -59,8 +59,8 @@ class Observable:
         events = [e for e in chain(added, deleted)]
         # grab strong ref
         listeners = tuple(self._listeners)
-        for l in listeners:
-            l(events)
+        for ll in listeners:
+            ll(events)
 
 
 class ObservableChildrenNodes(MutableSequence, Observable):
@@ -107,8 +107,8 @@ class ObservableChildrenNodes(MutableSequence, Observable):
         current_node = self._wrapped.node
         while current_node:
             listeners = tuple(current_node._listeners)
-            for l in listeners:
-                l(events)
+            for ll in listeners:
+                ll(events)
             current_node = current_node.parent
 
 

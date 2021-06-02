@@ -42,8 +42,8 @@ def _build_doxygen(spec):
                 return True
 
     def normalize(s, loc, toks):
-        decommented = (l.strip() for l in toks[0].replace("*", "").split("\n"))
-        cleaned = " ".join(l.strip() for l in decommented if not is_meta(l))
+        decommented = (ll.strip() for ll in toks[0].replace("*", "").split("\n"))
+        cleaned = " ".join(ll.strip() for ll in decommented if not is_meta(ll))
         languages = OneOrMore(_language).parseString(cleaned, parseAll=True)
         return [languages]
 
