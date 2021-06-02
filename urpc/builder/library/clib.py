@@ -245,7 +245,7 @@ class _ClibBuilderImpl(ClangView):
     def __generate_open_func(self, signature_only=False):
         descr = ""
         if signature_only:
-            descr = dedent(f"""\
+            descr = dedent("""\
             /**
              * \\~english
              * Open a device by name \\a name and return identifier of the device which can be used in calls.
