@@ -123,10 +123,8 @@ def style_camelize_arg(name, style="urmc"):
 def write_argument_array(arg, profile_command, output, cmd, style="urmc"):
     if _c_type(arg.type_) in ("char", "int8_t"):
         values = "bytes([" + str.join(", ", [str(unsig(val)) for val in profile_command[arg.name]]) + "])"
-        output.write("    {name}.{field} = {values}\n".format(type=_c_type(arg.type_),
-                                                              name=_accessor_name(cmd),
+        output.write("    {name}.{field} = {values}\n".format(name=_accessor_name(cmd),
                                                               field=style_underscore_arg(arg.name, style),
-                                                              size=len(arg.type_),
                                                               values=values))
     else:
         for i in range(len(arg.type_)):
@@ -157,8 +155,7 @@ def style_write_argument_scalar(arg, profile_command, namespaced, cmd, output, s
                                                                                        value=flag))
             else:
                 if style == "ximc":
-                    output.write(" | {field}_.{value}".format(name=_accessor_name(cmd),
-                                                              field=arg.name,
+                    output.write(" | {field}_.{value}".format(field=arg.name,
                                                               value=flag))
                 elif style == "urmc":
                     output.write(" | {name}.{field}.{value}".format(name=_accessor_name(cmd),
