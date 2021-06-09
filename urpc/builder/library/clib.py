@@ -990,6 +990,39 @@ class _ClibBuilderImpl(ClangView):
     def generate_commands_impl_file(self):
         return self.__generate_commands_aspect(for_header_inclusion=False)
 
+    def generate_example_file(self):
+        project_name = self.name
+
+        open_func = namespace_symbol(self.__protocol, "open_device")
+        close_func = namespace_symbol(self.__protocol, "close_device")
+
+        result = dedent(f"""\
+        #include <iostream>
+        #include "{project_name}.h"
+
+        int main()
+        {{
+            // Enter path here, for example: com:///dev/ttyACM0, com:\\\\.\\COM1
+            device_t device = {open_func}("<PATH_HERE>");
+            if (device == device_undefined)
+            {{
+                std::cout << "Unable to open device" << std::endl;
+                return 1;
+            }}
+            else
+            {{
+                std::cout << "Open OK" << std::endl;
+            }}
+
+            // Some commands here...
+
+            {close_func}(&device);
+            std::cout << "Close device" << std::endl;
+            return 0;
+        }}
+        """)
+        return result
+
     def generate_header_file(self):
         library_name = self.__get_library_name()
         include_guard_name = "INC_{}_H".format(library_name.upper())
@@ -1158,6 +1191,11 @@ class _ClibBuilderImpl(ClangView):
             "Link libgcc and libstdc++ statically, if available"
             NO
         )
+        OPTION(
+            {library_name_uppercase}_BUILD_EXAMPLE
+            "Build console example"
+            OFF
+        )
         IF(${{{library_name_uppercase}_HIDE_SYMBOLS}})
             set(
                 CMAKE_SHARED_LINKER_FLAGS
@@ -1236,6 +1274,15 @@ class _ClibBuilderImpl(ClangView):
         )
         INSTALL(FILES "${{PROJECT_BINARY_DIR}}/{library_target}Config.cmake"
                 DESTINATION ${{CMAKE_INSTALL_DATAROOTDIR}}/{library_target}/cmake)
+
+        IF({library_name_uppercase}_BUILD_EXAMPLE)
+            ADD_EXECUTABLE({library_name_uppercase}_example example.cpp)
+            TARGET_LINK_LIBRARIES({library_name_uppercase}_example {library_target})
+            IF(WIN32)
+                SET_PROPERTY(DIRECTORY ${{CMAKE_CURRENT_SOURCE_DIR}}
+                             PROPERTY VS_STARTUP_PROJECT {library_name_uppercase}_example)
+            ENDIF()
+        ENDIF()
         """).format(
             BUILDER_VERSION=BUILDER_VERSION,
             library_target=library_target_name,
@@ -1282,6 +1329,10 @@ def build(protocol, output):
         archive.writestr(
             join_path(path_prefix_in_archive, "version.rc"),
             view.generate_rc_file()
+        )
+        archive.writestr(
+            join_path(path_prefix_in_archive, "example.cpp"),
+            view.generate_example_file()
         )
         archive.writestr(
             join_path(path_prefix_in_archive, "cmake", "{}Config.cmake.in".format(view.name)),
