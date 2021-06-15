@@ -37,8 +37,6 @@ class DebuggerView(ClangView):
 
         # Tell CMake to run moc when necessary:
         set(CMAKE_AUTOMOC ON)
-        set(CMAKE_AUTORCC ON)
-        set(CMAKE_AUTOUIC ON)
         if(${{CMAKE_VERSION}} VERSION_GREATER_EQUAL "3.10.0")
             cmake_policy(SET CMP0071 OLD)
         endif()
@@ -128,6 +126,12 @@ class DebuggerView(ClangView):
             floatarroutput.ui
             intarroutput.ui
             container.ui)
+
+        if(${{USE_QT5}})
+            qt5_wrap_ui(GENERATED_SOURCES ${{UIS}})
+        else()
+            qt4_wrap_ui(GENERATED_SOURCES ${{UIS}})
+        endif()
 
         source_group("Generated Sources - Do Not Edit" FILES ${{GENERATED_SOURCES}})
 
