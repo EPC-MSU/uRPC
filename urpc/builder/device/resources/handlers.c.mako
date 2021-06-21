@@ -32,7 +32,7 @@ ${create_regular_handler(cmd)}
 
 }
 
-%endfor\
+%endfor
 /*
  * Regular commands without input data must be below (maybe with output).
  */
@@ -42,7 +42,7 @@ ${create_noinput_handler(cmd)}
 
 }
 
-%endfor\
+%endfor
 /*
  * Accessors like S*** handlers must be below.
  */
