@@ -642,9 +642,10 @@ class EditorHandler(BaseRequestHandler):
 
     def get_extra_options_dict(self, cmd):
         res = []
-        for sub in cmd.extra_options.split(","):
-            if "=" in sub:
-                res.append(map(str.strip, sub.split("=", 1)))
+        if cmd.extra_options:
+            for sub in cmd.extra_options.split(","):
+                if "=" in sub:
+                    res.append(map(str.strip, sub.split("=", 1)))
         return dict(res)
 
     def get_tags(self, cmd):
