@@ -52,3 +52,4 @@ if __name__ == "__main__":
     logging.info("Starting server on port {}...".format(Settings.port))
     app.listen(Settings.port, max_buffer_size=100 * 1024 * 1024)
     asyncio.get_event_loop().run_forever()
+    # test
