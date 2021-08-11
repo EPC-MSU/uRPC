@@ -1,5 +1,7 @@
 # uRPC
 
+[![Static Analysis Status](https://github.com/epc-msu/urpc/workflows/Linter/badge.svg)](https://github.com/epc-msu/urpc/actions?workflow=Linter)
+
 https://v10.urpc.ximc.ru/help
 
 uRPC - это RPC для работы с микроконтроллерами. Имея описание протокола (имя отправляемой команды, тип 
