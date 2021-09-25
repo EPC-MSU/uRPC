@@ -10,7 +10,8 @@ from urpc.storage.oldxi.common import identifier, exclude_attributes, include_at
 
 def _build_ctype():
     tlist = (
-        "int64s", "int64u", "int32s", "int32u", "int16u", "int16s", "int8u", "int8s", "float", "double", "char", "byte"
+        "int64s", "int64u", "int32s", "int32u", "int16u", "int16s", "int8u", "int8s",
+        "cdfloat", "cfloat", "float", "double", "char", "byte"
     )
     types = Or(CaselessLiteral(s) for s in tlist)
     return types
@@ -22,6 +23,10 @@ _array = Optional(Suppress("[") + Word(nums) + Suppress("]"))
 
 def str2ast_type(type_str, type_len=None):
     def extract_base_type(type_str):
+        if type_str == "cdfloat":
+            return ast_base.Float
+        if type_str == "cfloat":
+            return ast_base.Float
         if type_str == "float":
             return ast_base.Float
         elif type_str == "int64s":
@@ -145,15 +150,18 @@ _attributes = _build_attributes()
 def _build_command():
     def normalize(s, loc, toks):
         cmd = ast.Command(
-            toks[3],
-            toks[4].asList(),
-            toks[5],
             toks[6],
-            toks[7],
+            toks[7].asList(),
+            toks[8],
+            toks[9],
+            toks[10],
             ast.CommandDescription(
                 toks[0],
                 toks[1],
-                toks[2]
+                toks[2],
+                toks[3],
+                toks[4],
+                toks[5]
             )
         )
 
@@ -162,6 +170,9 @@ def _build_command():
     reader_descr = Optional(doxygen.reader, [])
     writer_descr = Optional(doxygen.writer, [])
     struct_descr = Optional(doxygen.struct, [])
+    reader_descr_calb = Optional(doxygen.reader_calb, [])
+    writer_descr_calb = Optional(doxygen.writer_calb, [])
+    struct_descr_calb = Optional(doxygen.struct_calb, [])
 
     name = QuotedString('"')
     header = Optional(Suppress("service")) + Suppress("command") + name + _roles + _attributes
@@ -170,7 +181,8 @@ def _build_command():
     answer = Optional(Suppress("answer:") + Group(ZeroOrMore(_field)), [])
 
     # return description + _build_header() + request + response
-    command = reader_descr + writer_descr + struct_descr + header + fields + answer
+    command = reader_descr + writer_descr + struct_descr
+    command += reader_descr_calb + writer_descr_calb + struct_descr_calb + header + fields + answer
     return command.setParseAction(normalize)
 
 

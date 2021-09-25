@@ -50,10 +50,13 @@ Role = namedtuple("Role", ("type", "cid", "size"))
 
 
 class CommandDescription:
-    def __init__(self, reader, writer, struct):
+    def __init__(self, reader, writer, struct, reader_calb, writer_calb, struct_calb):
         self.reader = reader
         self.writer = writer
         self.struct = struct
+        self.reader_calb = reader_calb
+        self.writer_calb = writer_calb
+        self.struct_calb = struct_calb
 
 
 class Command:
