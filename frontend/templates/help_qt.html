@@ -14,13 +14,15 @@
 <h3>Инструкция по сборке qt-отладчика</h3>
 <h3>Сборка под Windows</h3>
 <ul>
-    <li>Установить Qt 4.8.x</li>
-    <li>По аналогии со сборкой <a href="/helplibrary">библиотеки</a> открыть CMake GUI, выбрать папку с проектом</li>
-    <li>Попробовать сконфигурировать проект. Если CMake не может найти Qt, в CMake переменной QT_QMAKE_EXECUTABLE
+    <li>Загрузить Qt 4.8.x с официального сайта или с нашего <a href="https://download.urpc.kea.su/qt_debugger/qt486_msvc2013_full.7z">сервера</a>.</li>
+    <li>Установить Qt на диск C так, чтобы путь до бинарных файлов имел следующий вид <code>C:\Qt\msvc2013\4.8.6_x64\bin\</code>.</li>
+    <li><a href="https://msdn.microsoft.com/ru-ru/library/office/ee537574.aspx" target="_blank">Прописать в системные пути</a>: каталог <code>C:\Qt\msvc2013\4.8.6_x64\bin\</code></li>
+    <li>По аналогии со сборкой <a href="/helplibrary" target="_blank">библиотеки</a> открыть CMake GUI, выбрать папку с проектом</li>
+    <li>Cконфигурировать проект для MSVC 2013. Если CMake не может найти Qt, в CMake переменной QT_QMAKE_EXECUTABLE
         вручную укажите путь до вашего сборщика qmake
         (он должен быть в папке с установленным Qt)
     </li>
-    <li>Сгенерировать проект по аналогии со сборкой <a href="/helplibrary">библиотеки</a></li>
+    <li>Cгенерировать проект.</li>
     <li>Открыть в Visual Studio сгенерированный CMake-ом файл uRPC_debugger.vcxproj</li>
     <li>Кинуть в каталог проекта файлы &lt;имя проекта&gt;.dll, &lt;имя проекта&gt;.lib, &lt;имя проекта&gt;.h от предварительно
         скомпилированной библиотеки</li>
