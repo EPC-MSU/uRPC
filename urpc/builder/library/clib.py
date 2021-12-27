@@ -9,6 +9,7 @@ from urpc.builder.util.resource import resources
 from urpc.util.cconv import type_to_cstr
 from version import BUILDER_VERSION_MAJOR, BUILDER_VERSION_MINOR, BUILDER_VERSION_BUGFIX, BUILDER_VERSION_SUFFIX, \
     BUILDER_VERSION
+import logging
 
 
 def _get_msg_buffer_size(msg):
@@ -1122,7 +1123,16 @@ class _ClibBuilderImpl(ClangView):
 
     def generate_rc_file(self):
 
-        major, minor, release = self.__protocol.version.split(".")
+        major, minor, release = 0, 0, 0
+        if self.__protocol.version.count(".") == 2:
+            major, minor, release = self.__protocol.version.split(".")
+
+        if self.__protocol.version.count(".") == 1:
+            major, minor = self.__protocol.version.split(".")
+
+        if self.__protocol.version.isdigit():
+            major = self.__protocol.version
+
         libname = self.__protocol.name.lower()
         text = dedent(f"""\
         #include <windows.h>
