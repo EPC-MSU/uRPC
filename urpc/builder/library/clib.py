@@ -9,7 +9,6 @@ from urpc.builder.util.resource import resources
 from urpc.util.cconv import type_to_cstr
 from version import BUILDER_VERSION_MAJOR, BUILDER_VERSION_MINOR, BUILDER_VERSION_BUGFIX, BUILDER_VERSION_SUFFIX, \
     BUILDER_VERSION
-import logging
 
 
 def _get_msg_buffer_size(msg):
