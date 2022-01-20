@@ -5,6 +5,7 @@ from tornado.httputil import url_concat
 from tornado.web import HTTPError
 
 from frontend.handler.base import BaseRequestHandler
+from frontend.handler.editor import EditorHandler
 from urpc.builder import bindings
 from urpc.builder import firmware
 from urpc.builder.adapters import tango
@@ -143,7 +144,8 @@ class ProjectHandler(BaseRequestHandler):
 
     def post(self, action):
         if action == "load":
-            if not self.request.files or len(self.request.files) == 0:  # if user hasn"t recently loaded project file
+            if not self.request.files:
+                EditorHandler.messages["load-message"] = "No input file"
                 self.redirect(".." + self.reverse_url("main"))
             file_info = self.request.files["project"][0]
             ext = os.path.splitext(file_info["filename"])[1]
@@ -160,6 +162,9 @@ class ProjectHandler(BaseRequestHandler):
 
             output_buffer, file_name, mime = BytesIO(), "", ""
 
+            if not self.request.files:
+                EditorHandler.messages["assembly-profiles-message"] = "No input file"
+                self.redirect(".." + self.reverse_url("main"))
             files_info = self.request.files["profiles"]
 
             profiles_list = []
