@@ -29,6 +29,7 @@
     <fieldset>
         <input type="file" name="project">
         <button type="submit" class="pure-button pure-button-primary">Load</button>
+        <span class="error-message">{{ messages.get("load-message", "") }}</span>
     </fieldset>
     </form>
     <form class="pure-form pure-form-stacked" action="{{ reverse_url("project", "save")[1:] }}" method="get">
@@ -120,6 +121,7 @@
     <fieldset>
         <input type="file" name="profiles" multiple="True">
         <button type="submit" class="pure-button pure-button-primary">Assemble</button>
+        <span class="error-message">{{ messages.get("assembly-profiles-message", "") }}</span>
     </fieldset>
     </form>
 

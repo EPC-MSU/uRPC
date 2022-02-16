@@ -3,7 +3,7 @@ import os
 import logging
 
 from tornado.platform.asyncio import AsyncIOMainLoop
-from tornado.web import Application
+from tornado.web import Application, StaticFileHandler
 
 from frontend.handler import editor, generic, project
 from frontend.util.session import SessionManager
@@ -40,7 +40,9 @@ def make_app():
         (Settings.url_prefix + r"/editor$", editor.EditorHandler, {"sessions": sessions}, "editor"),
         (Settings.url_prefix + r"/project/(?P<action>[a-z_]+)?$",
          project.ProjectHandler, {"sessions": sessions}, "project"),
-        (Settings.url_prefix + r"/(?P<action>[a-z_]+)?$", generic.MainHandler, {"sessions": sessions}, "upload")
+        (Settings.url_prefix + r"/(?P<action>[a-z_]+)?$", generic.MainHandler, {"sessions": sessions}, "upload"),
+        (Settings.url_prefix + r"/(favicon\.ico)", StaticFileHandler),
+        (Settings.url_prefix + r"/(robots\.txt)", StaticFileHandler),
     ), **settings)
 
 

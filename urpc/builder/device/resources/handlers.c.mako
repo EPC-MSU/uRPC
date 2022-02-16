@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <%namespace file="handlers.h.mako" import="get_struct_type, create_noinput_handler"></%namespace>\
 <%namespace file="handlers.h.mako" import="create_regular_handler"></%namespace>\
 <%namespace file="handlers.h.mako" import="create_setter_handler"></%namespace>\
