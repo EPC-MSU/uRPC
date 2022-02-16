@@ -2,15 +2,17 @@
 
 {% block help %}
 
-<h2>TANGO (генерируется uRPC)</h2>
-<i>Требует: сгенерированной <a href="/helplibrary">библиотеки</a></i>
+<h1>TANGO Device Server (TDS)</h1>
+<p>TDS генерируется с помощью кнопки <b>TANGO Device Server</b>.</p>
+<p>Для сборки требуется: сгенерированная и собранная <a href="/helplibrary">библиотека</a>.</p>
 <p align="justify">Для работы TDS требуется наличие команды GINF 
     со стандартным набором параметров с информацией об устройстве.
     Без этой команды TDS даже не соберётся.
     Если Вы не знаете, что такое команда GINF, обратитесь к разработчикам uRPC:
     <a href="mailto:info@physlab.ru">info@physlab.ru</a>.
 </p>
-<h3> Описание </h3>
+
+<h2>Описание</h2>
 <p align="justify">
     Результатом работы этого генератора является исходный код <a href="https://www.tango-controls.org">
     TANGO</a> Device server на языке C\C++ и файл CMakeLists для сборки адаптера в разных IDE\C компиляторах
@@ -21,19 +23,23 @@
     </a>
 
 </p>
-<h3> Инструкция по сборке (linux only) </h3>
+
+<h2>Инструкция по сборке на Windows</h2>
+<p>В настоящее время TDS могут быть собраны только на Linux.</p>
+
+<h2>Инструкция по сборке на Linux</h2>
 <p align="justify">
     <ul>
-        <li>Для сборки понадобится CMake, компилятор C\C++ (build-essential), пакет TANGO (установить по инструкции:
-            https://tango-controls.readthedocs.io/en/latest/installation/index.html) и собранная и установленная
-            <a href="/helplibrary">библиотека</a>
+        <li>Для сборки понадобится CMake, компилятор C\C++ (build-essential), пакет TANGO
+        (установить по <a href="https://tango-controls.readthedocs.io/en/latest/installation/index.html">инструкции</a>)
+        и собранная и установленная <a href="/helplibrary">библиотека</a>.
         </li>
         <li>
             В директорию с исходными кодами TANGO Device Server поместить заголовочный файл и библиотеку из собранной
-            <a href="/helplibrary">библиотеки</a>
+            <a href="/helplibrary">библиотеки</a>.
         </li>
         <li>
-            Запустить CMake, а затем сборку по аналогии с запуском CMake и сборкой <a href="/helplibrary">библиотеки</a>
+            Запустить CMake, а затем сборку по аналогии с запуском CMake и сборкой <a href="/helplibrary">библиотеки</a>.
         </li>
     </ul>
 </p>
@@ -46,13 +52,13 @@
             переменной окружения LD_LIBRARY_PATH (см. выше "Сборка под linux"). В некоторых версиях linux после
             копирования библиотеки нужно вызвать команду
             <p><font face = "Terminal">sudo ldconfig</font></p>
-            для обновления кэша библиотек
+            для обновления кэша библиотек.
         </li>
         <li>
             Можно запускать собранный Tango Device Server. Чтобы посмотреть аргументы командной строки для запуска,
             запустите программу с флагом
             <p><font face = "Terminal">--help</font></p> инструкцию по работе с TANGO серверами смотрите на
-            <a href="https://tango-controls.readthedocs.io">сайте</a> TANGO
+            <a href="https://tango-controls.readthedocs.io">сайте</a> TANGO.
         </li>
     </ul>
 </p>
