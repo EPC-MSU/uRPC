@@ -323,6 +323,26 @@ cmake -D ENABLE_XINET=ON CMakeLists.txt
         <li>Можно работать</li>
     </ul>
 <p><a name="Documentation"></a></p>
+
+<h2>Сборка TANGO Device серверов</h2>
+<p>В настоящий момент TANGO Device сервера могут быть собраны только на Linux.</p>
+<h4> Инструкция по сборке TDS на Linux</h4>
+<p align="justify">
+    <ul>
+        <li>Для сборки понадобится CMake, компилятор C\C++ (build-essential), пакет TANGO (установить по 
+            <a href="https://tango-controls.readthedocs.io/en/latest/installation/index.html">инструкции</a>)
+            и собранная и установленная библиотека.
+        </li>
+        <li>
+            В директорию с исходными кодами TANGO Device Server поместить заголовочный файл и библиотеку из собранной
+            библиотеки.
+        </li>
+        <li>
+            Запустить CMake, а затем сборку по аналогии с запуском CMake и сборкой библиотеки.
+        </li>
+    </ul>
+</p>
+
 <h2>Генерация документации</h2>
 <h4> Описание </h4>
 <p align="justify">
