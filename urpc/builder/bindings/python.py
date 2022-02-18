@@ -313,6 +313,10 @@ def _build_file(protocol, out):
     simple_commands, accessors = list(simple_commands), list(accessors)
     argstructs = get_argstructs(simple_commands, accessors)
 
+    # Unconditionally used types
+    all_used_c_type_names = set(["c_void_p", "c_char_p", "c_wchar_p", "c_size_t", "c_int"])
+
+    # Collect types from protocol commands
     all_used_c_types = set()
     for command in protocol.commands:
         for arg in chain(command.request.args, command.response.args):
@@ -320,8 +324,10 @@ def _build_file(protocol, out):
                 all_used_c_types.add(arg.type_.type_)
             else:
                 all_used_c_types.add(arg.type_)
-    all_used_c_types = {_get_python_ctype(type_) for type_ in all_used_c_types}
-    C_USED_TYPES = ", ".join(all_used_c_types)
+
+    # Merge type name sets
+    all_used_c_type_names = all_used_c_type_names.union({_get_python_ctype(type_) for type_ in all_used_c_types})
+    C_USED_TYPES = ", ".join(all_used_c_type_names)
 
     out.write(dedent("""\
         \"""
@@ -332,7 +338,6 @@ def _build_file(protocol, out):
         import struct
         from ctypes import CDLL, Structure, Array, CFUNCTYPE, byref, create_string_buffer, cast
         from ctypes import {C_USED_TYPES}
-        from ctypes import c_void_p, c_char_p, c_wchar_p, c_size_t, c_int
         import atexit
         try:
             from typing import overload, Union, Sequence, Optional
@@ -439,7 +444,6 @@ def _build_file(protocol, out):
 
 
         def _load_specific_lib(path):
-            from os.path import isfile
             try:
                 lib = CDLL(path)
                 _logger.debug("Load library " + path + ": success")
@@ -609,6 +613,7 @@ def _build_file(protocol, out):
     out.write(indent(dedent("""\
         def get_profile(self):
             buffer = c_char_p()
+
             @CFUNCTYPE(c_void_p, c_size_t)
             def allocate(size):
                 # http://bugs.python.org/issue1574593
