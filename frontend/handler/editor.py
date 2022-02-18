@@ -9,7 +9,7 @@ from tornado.httputil import url_concat
 from tornado.web import HTTPError
 
 from frontend.handler.base import BaseRequestHandler
-from frontend.util.validator import check_if_empty, check_if_number
+from frontend.util.validator import check_if_empty, check_if_number, check_if_version, check_project_name
 from urpc import ast
 from urpc.util.accessor import split_by_type
 from urpc.util.cconv import cstr_to_type
@@ -706,12 +706,17 @@ class EditorHandler(BaseRequestHandler):
             project_name = self.get_body_argument("project_name", None)
             version = self.get_body_argument("version")
             extra_options = self.get_body_argument("extra_options", "")
-            self._editor.update_protocol(
-                handle=handle,
-                project_name=project_name,
-                version=version,
-                extra_options=extra_options
-            )
+            try:
+                check_project_name(project_name)
+                check_if_version(version)
+                self._editor.update_protocol(
+                    handle=handle,
+                    project_name=project_name,
+                    version=version,
+                    extra_options=extra_options
+                )
+            except ValueError as e:
+                EditorHandler.messages["project-message"] = str(e)
             self.redirect(url_concat(self.reverse_url("editor")[1:], {"action": "view", "handle": handle}))
         elif action == "create_command":
             cid, name = self.get_body_argument("cid"), self.get_body_argument("command_name")
