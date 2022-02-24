@@ -701,41 +701,65 @@ class EditorHandler(BaseRequestHandler):
             raise HTTPError(404)
         EditorHandler.messages = {}
 
+    def _process_protocol_post_properties_update(self, handle):
+        project_name = self.get_body_argument("project_name", None)
+        version = self.get_body_argument("version")
+        extra_options = self.get_body_argument("extra_options", "")
+
+        error_message = ""
+        try:
+            check_project_name(project_name)
+        except ValueError as e:
+            error_message += str(e) + " "
+
+        try:
+            check_if_version(version)
+        except ValueError as e:
+            error_message += str(e) + " "
+
+        try:
+            if error_message != "":
+                raise ValueError(error_message)
+
+            self._editor.update_protocol(
+                handle=handle,
+                project_name=project_name,
+                version=version,
+                extra_options=extra_options
+            )
+        except ValueError as e:
+            EditorHandler.messages["project-message"] = str(e)
+
+    def _process_protocol_post_create_command(self, handle):
+        cid, name = self.get_body_argument("cid"), self.get_body_argument("command_name")
+        try:
+            check_if_empty(name, "Name")
+            self._editor.create_command(handle, cid, name)
+        except ValueError as e:
+            EditorHandler.messages["command-message"] = str(e)
+
+    def _process_protocol_post_create_accessor(self, handle):
+        aid = self.get_body_argument("aid")
+        name = self.get_body_argument("accessor_name")
+        try:
+            check_if_empty(name, "Name")
+            self._editor.create_accessor(handle, aid, name)
+        except ValueError as e:
+            EditorHandler.messages["accessor-message"] = str(e)
+
     def _protocol_post(self, action, handle):
         if action == "update":
-            project_name = self.get_body_argument("project_name", None)
-            version = self.get_body_argument("version")
-            extra_options = self.get_body_argument("extra_options", "")
-            try:
-                check_project_name(project_name)
-                check_if_version(version)
-                self._editor.update_protocol(
-                    handle=handle,
-                    project_name=project_name,
-                    version=version,
-                    extra_options=extra_options
-                )
-            except ValueError as e:
-                EditorHandler.messages["project-message"] = str(e)
+            self._process_protocol_post_properties_update(handle)
             self.redirect(url_concat(self.reverse_url("editor")[1:], {"action": "view", "handle": handle}))
         elif action == "create_command":
-            cid, name = self.get_body_argument("cid"), self.get_body_argument("command_name")
-            try:
-                check_if_empty(name, "Name")
-                self._editor.create_command(handle, cid, name)
-            except ValueError as e:
-                EditorHandler.messages["command-message"] = str(e)
+            self._process_protocol_post_create_command(handle)
             self.redirect(url_concat(self.reverse_url("editor")[1:], {"action": "view", "handle": handle}))
         elif action == "create_accessor":
-            aid = self.get_body_argument("aid")
-            name = self.get_body_argument("accessor_name")
-            try:
-                check_if_empty(name, "Name")
-                self._editor.create_accessor(handle, aid, name)
-            except ValueError as e:
-                EditorHandler.messages["accessor-message"] = str(e)
-            self.redirect(url_concat(self.reverse_url("editor")[1:],
-                                     {"action": "view", "handle": handle}) + "#___accessor")
+            self._process_protocol_post_create_accessor(handle)
+            self.redirect(url_concat(
+                self.reverse_url("editor")[1:],
+                {"action": "view", "handle": handle}) + "#___accessor"
+            )
 
     def _accessor_post(self, action, handle):
         if action == "delete":
