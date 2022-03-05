@@ -37,10 +37,20 @@ class DebuggerView(ClangView):
 
         # Tell CMake to run moc when necessary:
         set(CMAKE_AUTOMOC ON)
+              
+        # Tell what qt module win version should be used
+        if (WIN32)
+            set(QT_QMAKE_EXECUTABLE "C:/Qt/msvc2013/4.8.6_x64/bin/qmake.exe")
+            if(CMAKE_SIZEOF_VOID_P EQUAL 4) 
+                set (QT_QMAKE_EXECUTABLE "C:/Qt/msvc2013/4.8.6/bin/qmake.exe")
+            endif()    
+        endif()
+        message ("QMake found in ${{QT_QMAKE_EXECUTABLE}}.")        
+        
         if(${{CMAKE_VERSION}} VERSION_GREATER_EQUAL "3.10.0")
             cmake_policy(SET CMP0071 OLD)
         endif()
-
+        
         # Include current directory
         set (CMAKE_INCLUDE_CURRENT_DIR ON)
 
