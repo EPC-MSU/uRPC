@@ -20,9 +20,9 @@
 -   Разместить пример так, чтобы данный файл имел следующую вложенность
     **C:\projects\example\README.md**
     
--   Создать директорию **C:\Projects\ST\stm32f4xx** и распаковать архив с проектом библиотеки.
+-   В директории  **C:\projects**  распаковать архив с проектом библиотеки. Если с помощью 7z, то правой кнопкой из меню выбрать распаковать здесь.  Путь к распакованной библиотеке будет иметь следующий вид **C:\projects\ST\stm32f4xx**.
     
-    Архив можно скачать по ссылке: https://download.urpc.kea.su/firmware/stm32/f429zi/stm32f4xx-ll-driver.zip
+-   Архив можно скачать по ссылке: https://download.urpc.kea.su/firmware/stm32/f429zi/stm32f4xx-ll-driver.zip
     
     Если требуется история изменений, репозиторий библиотеки: https://github.com/Nikita-Presnov/stm32f4xx-ll-driver
     
