@@ -907,6 +907,7 @@ class _ClibBuilderImpl(ClangView):
             #include <map>
             #include <mutex>
             #include <cstring>
+            #include <zf_log.h>
             #include "urpc.h"
             static std::map<device_t, urpc_device_handle_t> impl_by_handle;
             static std::mutex impl_by_handle_mutex;
@@ -964,6 +965,7 @@ class _ClibBuilderImpl(ClangView):
             GENERATE_POP(int32_t)
             GENERATE_POP(int16_t)
             GENERATE_POP(int8_t)
+            ZF_LOG_DEFINE_GLOBAL_OUTPUT_LEVEL = ZF_LOG_WARN;
             """)
         result += self.__generate_open_func(signature_only=for_header_inclusion) + "\n"
         result += self.__generate_lib_version_func(signature_only=for_header_inclusion) + "\n"
@@ -1213,7 +1215,7 @@ class _ClibBuilderImpl(ClangView):
             )
         ELSE()
             MESSAGE(
-                WARNING
+                NOTICE 
                 "Will not hide non-API symbols of library. Note, on some platforms it may cause segmentation faults."
             )
         ENDIF()
