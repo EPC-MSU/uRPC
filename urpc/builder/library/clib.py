@@ -177,9 +177,32 @@ class _ClibBuilderImpl(ClangView):
                     func.in_arg_name, arg, self.__generate_put_into_buffer_statement
                 ) + "\n"
         call_expression = __generate_call_expression()
-        body += "if({} != urpc_result_ok)".format(call_expression) + dedent("""
+        body += "urpc_result_t res;\n"
+        body += "if((res = {}) != urpc_result_ok)".format(call_expression) + dedent("""
         {
-            return result_error;
+            result_t new_res;
+            switch (res)
+	        {
+	        case urpc_result_ok:
+		         new_res = result_ok;
+		         break;
+	        case urpc_result_error:
+	             new_res = result_error;
+		         break;
+	        case urpc_result_value_error:
+		         new_res = result_value_error;
+		         break;
+	        case urpc_result_nodevice:
+		         new_res = result_nodevice;
+		         break;
+	        case urpc_result_timeout:
+		         new_res = result_timeout;
+		         break;
+        	default:
+		         new_res = res;
+		         break;
+            } 
+            return new_res;
         }
         """)
         if has_output:
@@ -1095,6 +1118,16 @@ class _ClibBuilderImpl(ClangView):
         #define result_not_implemented (-2)
         #define result_value_error (-3)
         #define result_nodevice (-4)
+        #define result_timeout (-5)
+        
+        #define STR_result_ok_0 "result_ok 0"
+        #define STR_device_undefined_1 "device_undefined (-1)"
+        #define STR_result_error_1 "result_error (-1)"
+        #define STR_result_not_implemented_2 "result_not_implemented (-2)"
+        #define STR_result_value_error_3 "result_value_error (-3)"
+        #define STR_result_nodevice_4 "result_nodevice (-4)"
+        #define STR_result_timeout_5 "result_timeout (-5)"
+        
         """) + self.__generate_logging_aspect(
             for_header_inclusion=True
         ) + self.__generate_commands_aspect(
