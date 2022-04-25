@@ -182,26 +182,26 @@ class _ClibBuilderImpl(ClangView):
         {
             result_t new_res;
             switch (res)
-	        {
-	        case urpc_result_ok:
-		         new_res = result_ok;
-		         break;
-	        case urpc_result_error:
-	             new_res = result_error;
-		         break;
-	        case urpc_result_value_error:
-		         new_res = result_value_error;
-		         break;
-	        case urpc_result_nodevice:
-		         new_res = result_nodevice;
-		         break;
-	        case urpc_result_timeout:
-		         new_res = result_timeout;
-		         break;
-        	default:
-		         new_res = res;
-		         break;
-            } 
+            {
+            case urpc_result_ok:
+                 new_res = result_ok;
+                 break;
+            case urpc_result_error:
+                 new_res = result_error;
+                 break;
+            case urpc_result_value_error:
+                 new_res = result_value_error;
+                 break;
+            case urpc_result_nodevice:
+                 new_res = result_nodevice;
+                 break;
+            case urpc_result_timeout:
+                 new_res = result_timeout;
+                 break;
+            default:
+                 new_res = res;
+                 break;
+            }
             return new_res;
         }
         """)
@@ -516,28 +516,28 @@ class _ClibBuilderImpl(ClangView):
              * \\~russian
              * Уровень логирования - ошибка
              */
-            #define LOGLEVEL_ERROR 		0x01
+            #define LOGLEVEL_ERROR         0x01
             /**
              * \\~english
              * Logging level - warning
              * \\~russian
              * Уровень логирования - предупреждение
              */
-            #define LOGLEVEL_WARNING 	0x02
+            #define LOGLEVEL_WARNING     0x02
             /**
              * \\~english
              * Logging level - info
              * \\~russian
              * Уровень логирования - информация
              */
-            #define LOGLEVEL_INFO		0x03
+            #define LOGLEVEL_INFO        0x03
             /**
              * \\~english
              * Logging level - debug
              * \\~russian
              * Уровень логирования - отладка
              */
-            #define LOGLEVEL_DEBUG		0x04
+            #define LOGLEVEL_DEBUG        0x04
             //@}
             """) + dedent("""
             /**
@@ -1119,7 +1119,7 @@ class _ClibBuilderImpl(ClangView):
         #define result_value_error (-3)
         #define result_nodevice (-4)
         #define result_timeout (-5)
-        
+
         #define STR_result_ok_0 "result_ok 0"
         #define STR_device_undefined_1 "device_undefined (-1)"
         #define STR_result_error_1 "result_error (-1)"
@@ -1127,7 +1127,7 @@ class _ClibBuilderImpl(ClangView):
         #define STR_result_value_error_3 "result_value_error (-3)"
         #define STR_result_nodevice_4 "result_nodevice (-4)"
         #define STR_result_timeout_5 "result_timeout (-5)"
-        
+
         """) + self.__generate_logging_aspect(
             for_header_inclusion=True
         ) + self.__generate_commands_aspect(
@@ -1248,7 +1248,7 @@ class _ClibBuilderImpl(ClangView):
             )
         ELSE()
             MESSAGE(
-                NOTICE 
+                NOTICE
                 "Will not hide non-API symbols of library. Note, on some platforms it may cause segmentation faults."
             )
         ENDIF()
