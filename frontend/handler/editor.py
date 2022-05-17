@@ -583,8 +583,6 @@ class EditorSession:
         assert self._draft
 
         protocol = self._handles[handle]
-        for cmd in protocol.commands:
-            print(cmd.name)
 
         assert isinstance(protocol, AccessorProtocol)
 
@@ -684,11 +682,6 @@ class EditorHandler(BaseRequestHandler):
 
         if action == "view":
             if kind is ResourceKind.protocol:
-                print(f"View handle {handle}")
-                for cmd in self._editor._handles[handle].commands:
-                    print(cmd.name)
-                print('-----------------')
-                
                 self.render("editor/protocol.html", protocol=self._editor.read_protocol(handle),
                             messages=EditorHandler.messages,
                             breadcrumbs=[], version=BUILDER_VERSION,

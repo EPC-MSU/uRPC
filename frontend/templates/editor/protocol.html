@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block editor %}
-<div class="pure-g" style="margin-left: 5px;">
+<div class="pure-g" style="margin-left: 5px; min-width: 100px; ">
     <div class="pure-u-1-1 form-block">
         <h2>General:</h2>
         <form class="pure-form" action="{{ reverse_url("editor")[1:] }}" method="post">
@@ -21,7 +21,7 @@
         </form>
     </div>
 
-    <div class="pure-u-1-1 form-block">
+    <div class="pure-u-1-1 form-block" style="overflow: scroll">
         <h2>Commands:</h2>
         <p class="form-legend">Add command</p>
         <form class="pure-form" action="{{ reverse_url("editor")[1:] }}" method="post">
@@ -102,7 +102,6 @@
                     <img src="/static/tags/{{ tag }}" alt="{{ tag }}">
                     {% end %}
                 </td>
-                <td>{{ acc.name }}</td>
                 <td>{{ acc.getter.description["english"] }}</td>
                 <td>
                     <a name="{{acc.uid}}" class="button-xsmall pure-button" href="{% raw url_concat(reverse_url("editor")[1:], {'action': "view", 'handle': acc.uid}) %}">Edit</a>

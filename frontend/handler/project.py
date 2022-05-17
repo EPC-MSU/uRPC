@@ -236,12 +236,13 @@ class ProjectHandler(BaseRequestHandler):
         elif action == "remove_service_commands":
             to_delete = set()
             protocol = copy.deepcopy(self._sessions[self.current_user])
-            for child in protocol.children:
-                if isinstance(child, Command):
-                    for opt in child.extra_options.lower().split(','):
-                        opt = ''.join(opt.split())
-                        if "is_service_command=true" in opt:
-                            to_delete.add(child)
+            for command in protocol.commands:
+                # Bring option string to lowercase, split by separator
+                for opt in command.extra_options.lower().split(','):
+                    # remove whitespace from option
+                    opt = ''.join(opt.split())
+                    if "is_service_command=true" in opt:
+                        to_delete.add(command)
             for command in to_delete:
                 protocol.children.remove(command)
                 print("removed !! " + command.name)

@@ -5,7 +5,7 @@
 {% from tornado.httputil import url_concat %}
 {% from urpc.util.cconv import clang_primitives, type_to_cstr %}
 
-<div class="pure-u-1 pure-u-md-3-4">
+<div class="pure-u-1 pure-u-md-3-4" style="width: 70%">
     {% block breadcrumbs %}
     <div class="pure-u-md-1-1 breadcrumbs">
        {% if breadcrumbs %}
@@ -22,8 +22,8 @@
     {% end %}
     {% block editor %}{% end %}
 </div>
-<div class="pure-u-1 pure-u-md-1-4" style="min-width: 320px; position: fixed; right: 0">
-    <div class="vertical_line"></div>
+<div class="vertical_line" style="position: fixed; right: 25%"></div>
+<div class="pure-u-1 pure-u-md-1-4" style="width: 25%; padding-left: 5%">
     <p class="form-legend">Project</p>
     <form class="pure-form pure-form-stacked" enctype="multipart/form-data" action="{{ reverse_url("project", "load")[1:] }}" method="post">
     <fieldset>
@@ -36,7 +36,7 @@
     <button type="submit" class="pure-button pure-button-primary">Save</button>
     </form>
     <form class="pure-form pure-form-stacked" action="{{ reverse_url("project", "remove_service_commands")[1:] }}" method="post" style="padding-top:15px">
-    <button type="submit" class="pure-button pure-button-primary">Remove Service Commands</button>
+    <button type="submit" class="pure-button pure-button-primary" style="white-space: normal; width: 150px">Remove Service Commands</button>
     </form>
 
     <p class="form-legend">Firmware</p>
