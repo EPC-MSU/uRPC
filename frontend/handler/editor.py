@@ -674,12 +674,7 @@ class EditorHandler(BaseRequestHandler):
             kind = self._editor.get_kind_by_handle(handle)
         except ValueError:
             self.redirect("main")
-        if action == "refresh":
-            protocol = sessions[self.current_user]
-            self._editor = EditorSession(protocol)
-            self._cached_editors[protocol] = self._editor
-            self.redirect(url_concat(self.reverse_url("editor")[1:], {"action": "view", "handle": handle}))
-
+        
         if action == "view":
             if kind is ResourceKind.protocol:
                 self.render("editor/protocol.html", protocol=self._editor.read_protocol(handle),
