@@ -674,7 +674,7 @@ class EditorHandler(BaseRequestHandler):
             kind = self._editor.get_kind_by_handle(handle)
         except ValueError:
             self.redirect("main")
-        
+
         if action == "view":
             if kind is ResourceKind.protocol:
                 self.render("editor/protocol.html", protocol=self._editor.read_protocol(handle),
