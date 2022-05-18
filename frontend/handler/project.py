@@ -18,7 +18,6 @@ from urpc.builder.library import clib
 from urpc.builder.profiles import profiles
 from urpc.builder.pythonprofiles import pythonprofiles
 from urpc.storage import JsonStorage, OldxiStorage
-from urpc.ast import Command
 
 
 def _normalize_protocol_name(protocol):
@@ -100,6 +99,34 @@ class ProjectHandler(BaseRequestHandler):
         mime = "application/zip"
         return file_name, mime
 
+    def _remove_service_commands(self):
+        to_delete = set()
+        protocol = copy.deepcopy(self._sessions[self.current_user])
+        for command in protocol.commands:
+            # Bring option string to lowercase, split by separator
+            for opt in command.extra_options.lower().split(','):
+                # remove whitespace from option
+                opt = ''.join(opt.split())
+                if "is_service_command=true" in opt:
+                    to_delete.add(command)
+        for command in to_delete:
+            protocol.children.remove(command)
+
+        self._sessions[self.current_user] = protocol
+
+    def _assembly_profiles_list(self, protocol):
+        if not self.request.files:
+            EditorHandler.messages["assembly-profiles-message"] = "No input file"
+            self.redirect(".." + self.reverse_url("main"))
+        files_info = self.request.files["profiles"]
+
+        profiles_list = []
+
+        for profile in files_info:
+            profiles_list.append((profile["filename"], profile["body"]))
+
+        return profiles_list
+
     def get(self, action):
         protocol = self._sessions[self.current_user]
 
@@ -140,7 +167,7 @@ class ProjectHandler(BaseRequestHandler):
 
         elif action == "generate_bindings":
             file_name, mime = self._generate_bind(protocol, output_buffer)
-        
+
         else:
             raise HTTPError(404)
 
@@ -155,7 +182,6 @@ class ProjectHandler(BaseRequestHandler):
         self.set_header("Content-Type", mime)
         self.set_header("Content-Disposition", 'attachment; filename="' + file_name + '"')
 
-
     def post(self, action):
         if action == "load":
             if not self.request.files:
@@ -166,25 +192,15 @@ class ProjectHandler(BaseRequestHandler):
 
             content = BytesIO(file_info["body"])
             protocol = (self._json_storage if ext == ".json" else self._oldxi_storage).load(content)
-            
+
             self._sessions[self.current_user] = protocol
 
             self.redirect(url_concat(self.reverse_url("editor"), {"action": "view", "handle": protocol.uid}))
 
         elif action == "assembly_profiles":
             protocol = self._sessions[self.current_user]
-
             output_buffer, file_name, mime = BytesIO(), "", ""
-
-            if not self.request.files:
-                EditorHandler.messages["assembly-profiles-message"] = "No input file"
-                self.redirect(".." + self.reverse_url("main"))
-            files_info = self.request.files["profiles"]
-
-            profiles_list = []
-
-            for profile in files_info:
-                profiles_list.append((profile["filename"], profile["body"]))
+            profiles_list = self._assembly_profiles_list(protocol)
 
             profiles.build(protocol, profiles_list, output_buffer, is_namespaced=True)
 
@@ -204,15 +220,8 @@ class ProjectHandler(BaseRequestHandler):
 
         elif ((action == "ximcstyle_assembly_profiles") or (action == "urmcstyle_assembly_profiles")):
             protocol = self._sessions[self.current_user]
-
             output_buffer, file_name, mime = BytesIO(), "", ""
-
-            files_info = self.request.files["profiles"]
-
-            profiles_list = []
-
-            for profile in files_info:
-                profiles_list.append((profile["filename"], profile["body"]))
+            profiles_list = self._assembly_profiles_list(protocol)
 
             if action == "ximcstyle_assembly_profiles":
                 pythonprofiles.style_build(protocol, profiles_list, output_buffer, is_namespaced=True, style="ximc")
@@ -232,24 +241,14 @@ class ProjectHandler(BaseRequestHandler):
 
             self.set_header("Content-Type", mime)
             self.set_header("Content-Disposition", 'attachment; filename="' + file_name + '"')
-        
+
         elif action == "remove_service_commands":
-            to_delete = set()
-            protocol = copy.deepcopy(self._sessions[self.current_user])
-            for command in protocol.commands:
-                # Bring option string to lowercase, split by separator
-                for opt in command.extra_options.lower().split(','):
-                    # remove whitespace from option
-                    opt = ''.join(opt.split())
-                    if "is_service_command=true" in opt:
-                        to_delete.add(command)
-            for command in to_delete:
-                protocol.children.remove(command)
-                print("removed !! " + command.name)
-            
-            self._sessions[self.current_user] = protocol
-            
-            self.redirect(url_concat(self.reverse_url("editor"), {"action": "view", "handle": protocol.uid}))
+            self._remove_service_commands()
+
+            self.redirect(url_concat(self.reverse_url("editor"), {
+                "action": "view",
+                "handle": self._sessions[self.current_user].uid
+                }))
 
         else:
             raise HTTPError(404)
