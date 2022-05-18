@@ -5,7 +5,7 @@
 {% from tornado.httputil import url_concat %}
 {% from urpc.util.cconv import clang_primitives, type_to_cstr %}
 
-<div class="pure-u-1 pure-u-md-3-4">
+<div class="pure-u-1 pure-u-md-3-4" style="width: 75%">
     {% block breadcrumbs %}
     <div class="pure-u-md-1-1 breadcrumbs">
        {% if breadcrumbs %}
@@ -22,8 +22,8 @@
     {% end %}
     {% block editor %}{% end %}
 </div>
-<div class="pure-u-1 pure-u-md-1-4">
-    <div class="vertical_line"></div>
+<div class="vertical_line" ></div>
+<div class="pure-u-1 pure-u-md-1-4" style="width: 20%;">
     <p class="form-legend">Project</p>
     <form class="pure-form pure-form-stacked" enctype="multipart/form-data" action="{{ reverse_url("project", "load")[1:] }}" method="post">
     <fieldset>
@@ -32,8 +32,13 @@
         <span class="error-message">{{ messages.get("load-message", "") }}</span>
     </fieldset>
     </form>
-    <form class="pure-form pure-form-stacked" action="{{ reverse_url("project", "save")[1:] }}" method="get">
+    <form class="pure-form pure-form-stacked" action="{{ reverse_url("project", "save")[1:] }}" method="get" >
     <button type="submit" class="pure-button pure-button-primary">Save</button>
+    </form>
+    <form class="pure-form pure-form-stacked" action="{{ reverse_url("project", "remove_service_commands")[1:] }}" method="post">
+    
+    <p class="form-legend">Service commands</p>
+    <button type="submit" class="pure-button pure-button-primary" style="white-space: normal; width: 150px">Remove</button>
     </form>
 
     <p class="form-legend">Firmware</p>

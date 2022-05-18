@@ -1,4 +1,5 @@
 import os
+import copy
 from io import BytesIO
 
 from tornado.httputil import url_concat
@@ -17,6 +18,7 @@ from urpc.builder.library import clib
 from urpc.builder.profiles import profiles
 from urpc.builder.pythonprofiles import pythonprofiles
 from urpc.storage import JsonStorage, OldxiStorage
+from urpc.ast import Command
 
 
 def _normalize_protocol_name(protocol):
@@ -138,7 +140,7 @@ class ProjectHandler(BaseRequestHandler):
 
         elif action == "generate_bindings":
             file_name, mime = self._generate_bind(protocol, output_buffer)
-
+        
         else:
             raise HTTPError(404)
 
@@ -153,6 +155,7 @@ class ProjectHandler(BaseRequestHandler):
         self.set_header("Content-Type", mime)
         self.set_header("Content-Disposition", 'attachment; filename="' + file_name + '"')
 
+
     def post(self, action):
         if action == "load":
             if not self.request.files:
@@ -163,7 +166,7 @@ class ProjectHandler(BaseRequestHandler):
 
             content = BytesIO(file_info["body"])
             protocol = (self._json_storage if ext == ".json" else self._oldxi_storage).load(content)
-
+            
             self._sessions[self.current_user] = protocol
 
             self.redirect(url_concat(self.reverse_url("editor"), {"action": "view", "handle": protocol.uid}))
@@ -229,5 +232,24 @@ class ProjectHandler(BaseRequestHandler):
 
             self.set_header("Content-Type", mime)
             self.set_header("Content-Disposition", 'attachment; filename="' + file_name + '"')
+        
+        elif action == "remove_service_commands":
+            to_delete = set()
+            protocol = copy.deepcopy(self._sessions[self.current_user])
+            for command in protocol.commands:
+                # Bring option string to lowercase, split by separator
+                for opt in command.extra_options.lower().split(','):
+                    # remove whitespace from option
+                    opt = ''.join(opt.split())
+                    if "is_service_command=true" in opt:
+                        to_delete.add(command)
+            for command in to_delete:
+                protocol.children.remove(command)
+                print("removed !! " + command.name)
+            
+            self._sessions[self.current_user] = protocol
+            
+            self.redirect(url_concat(self.reverse_url("editor"), {"action": "view", "handle": protocol.uid}))
+
         else:
             raise HTTPError(404)
