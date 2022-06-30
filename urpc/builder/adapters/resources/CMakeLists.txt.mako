@@ -39,4 +39,9 @@ set(SOURCES
 )
 
 add_executable(${device_name(protocol)} ${"$"}{HEADERS} ${"$"}{SOURCES})
+if(MSVC)
+target_compile_options(${device_name(protocol)} PRIVATE /W3 /WX)
+else()
+target_compile_options(${device_name(protocol)} PRIVATE -Wall -Wextra -Werror -Wno-deprecated)
+endif()
 target_link_libraries(${device_name(protocol)} ${"$"}{CMAKE_THREAD_LIBS_INIT} ${"$"}{TANGO_LIBRARIES} ${library_shared_file(protocol)})

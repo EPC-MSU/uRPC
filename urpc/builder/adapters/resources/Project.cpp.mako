@@ -36,7 +36,6 @@ handle_result(::${namespaced(cmd.name)}(device\
 ), "${cmd.name}")\
 </%def>\
 \
-static const char *RcsId = "$Id:  $";
 //=============================================================================
 //
 // file :        ${device_name(protocol)}.cpp

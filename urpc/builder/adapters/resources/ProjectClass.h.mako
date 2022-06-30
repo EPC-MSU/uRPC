@@ -189,7 +189,7 @@ public:
     ) : Command(name, in, out)
     {}
 
-    virtual CORBA::Any *execute(Tango::DeviceImpl *device, const CORBA::Any &any) {
+    virtual CORBA::Any *execute(Tango::DeviceImpl *device, const CORBA::Any &) {
         cout2 << "${command_class_name(cmd)}::execute(): arrived" << std::endl;
         ((static_cast<${device_name(protocol)} *>(device))->${command_handler_name(cmd)}());
         return new CORBA::Any();
