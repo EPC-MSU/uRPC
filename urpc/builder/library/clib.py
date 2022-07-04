@@ -1136,7 +1136,7 @@ class _ClibBuilderImpl(ClangView):
             CMAKE_POLICY(SET CMP0042 NEW)
         ENDIF()
         if(${CMAKE_SYSTEM_NAME} STREQUAL Windows)
-           add_definitions( -D_CRT_SECURE_NO_WARNINGS) 
+           add_definitions( -D_CRT_SECURE_NO_WARNINGS)
         endif()
         ADD_LIBRARY({library_target} SHARED {library_target_files})
         SET_TARGET_PROPERTIES({library_target} PROPERTIES C_VISIBILITY_PRESET hidden)

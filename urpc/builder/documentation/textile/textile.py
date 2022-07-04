@@ -74,6 +74,11 @@ class _TextileBuilderImpl(ClangView):
         textile = get_static_part() + "\n"
         for cmd in self._commands:
             textile += self._generate_command(cmd) + "\n"
+        if self.__getters != [] and self.__setters != []:
+            for cmd in self.__getters:
+                textile += self._generate_command(cmd) + "\n"
+            for cmd in self.__setters:
+                textile += self._generate_command(cmd) + "\n"
         textile += "\nВерсия генератора " + BUILDER_VERSION
         return textile
 
