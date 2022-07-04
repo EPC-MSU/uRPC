@@ -41,7 +41,14 @@
 #ifndef ${device_name(protocol)}Class_H
 #define ${device_name(protocol)}Class_H
 
-#include <tango.h>
+#if defined (_WIN32)
+    #include <tango.h>	
+#else
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wunused-variable"
+    #include <tango.h>
+    #pragma GCC diagnostic pop
+#endif
 #include "${device_name(protocol)}.h"
 
 
