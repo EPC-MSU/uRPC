@@ -58,7 +58,7 @@ bool ValidIntLineEdit::Valid(QString str)
              n = temp.left(temp.indexOf(' ')).toULongLong(&ok);
 
              // Fix signed and unsigned compare. TODO: more nice solution
-             if((n > max && n > 0) || n < min)
+             if ((n > max && n > 0) || (long long int)n < min)
                  return 0;
 
              temp = temp.right(temp.length()-temp.indexOf(' ')-1);
@@ -72,7 +72,7 @@ bool ValidIntLineEdit::Valid(QString str)
 
          n = temp.toULongLong(&ok);
          // Fix signed and unsigned compare. TODO: more nice solution
-         if((n > max & n > 0) || n < min)
+         if (n > max || (long long)n < min)
                  return 0;
 
          return ok;
@@ -89,7 +89,7 @@ bool ValidIntLineEdit::Valid(QString str)
              n = temp.left(temp.indexOf(' ')).toLongLong(&ok);
 
              // Fix signed and unsigned compare. TODO: more nice solution
-             if((n > max && n > 0) || n < min)
+             if (((unsigned long long)n > max && n > 0) || n < min)
                  return 0;
 
              temp = temp.right(temp.length()-temp.indexOf(' ')-1);
@@ -103,7 +103,7 @@ bool ValidIntLineEdit::Valid(QString str)
 
          n = temp.toLongLong(&ok);
          // Fix signed and unsigned compare. TODO: more nice solution
-         if((n > max & n > 0) || n < min)
+         if (((unsigned long long)n > max && n > 0) || n < min)
                  return 0;
 
          return ok;        

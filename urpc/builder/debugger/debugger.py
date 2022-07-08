@@ -116,6 +116,11 @@ class DebuggerView(ClangView):
              ${{HEADERS}}
              ${{UIS}}
              ${{RESOURCES}})
+        if(MSVC)
+             target_compile_options(uRPC_debugger PRIVATE /W3 /WX)
+        else()
+             target_compile_options(uRPC_debugger PRIVATE -Wall -Wextra -Werror)
+        endif()
 
         target_link_libraries(uRPC_debugger ${{QT_LIBRARIES}} {self.name} ${{CMAKE_THREAD_LIBS_INIT}})
 
