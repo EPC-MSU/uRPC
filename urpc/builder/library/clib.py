@@ -128,6 +128,17 @@ class _ClibBuilderImpl(ClangView):
         has_input, has_output = bool(len(func.request.children)), bool(len(func.response.children))
 
         request_size, response_size = _get_msg_buffer_size(func.request), _get_msg_buffer_size(func.response)
+        
+        def __if_need_cycle():
+            for index, arg in enumerate(func.request.children):
+                base_type, length = type_to_cstr(arg.type_)
+                if (length): 
+                    return bool(1)
+            for index, arg in enumerate(func.response.children):
+                base_type, length = type_to_cstr(arg.type_)
+                if (length): 
+                    return bool(1)
+            return bool(0)        
 
         def __generate_call_expression():
             result = 'urpc_device_send_request(device, "{cid}"'.format(cid=func.cid)
@@ -140,8 +151,11 @@ class _ClibBuilderImpl(ClangView):
         if has_input or has_output:
             body += dedent("""\
             uint8_t *p;
-            unsigned int i;
             """)
+            if __if_need_cycle():
+                body += dedent("""\
+                unsigned int i;
+                """)
         if has_input:
             body += dedent("""\
             uint8_t in_buffer[{size}];
@@ -1144,9 +1158,9 @@ class _ClibBuilderImpl(ClangView):
         SET_TARGET_PROPERTIES({library_target} PROPERTIES VISIBILITY_INLINES_HIDDEN TRUE)
         SET_TARGET_PROPERTIES({library_target} PROPERTIES COMPILE_DEFINITIONS "{build_indicator_macro}")
         if(MSVC)
-           target_compile_options(${{TARGET_NAME}} PRIVATE /W3 /WX)
+           target_compile_options({library_target} PRIVATE /W3 /WX)
         else()
-           target_compile_options(${{TARGET_NAME}} PRIVATE -Wall -Wextra -Werror)
+           target_compile_options({library_target} PRIVATE -Wall -Wextra -Werror)
         endif()
         FUNCTION(ADD_LIBRARY_URPC)
             SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
