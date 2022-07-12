@@ -917,7 +917,9 @@ class _ClibBuilderImpl(ClangView):
             #include <map>
             #include <mutex>
             #include <cstring>
+            #include <zf_log.h>
             #include "urpc.h"
+            ZF_LOG_DEFINE_GLOBAL_OUTPUT_LEVEL;
             static std::map<device_t, urpc_device_handle_t> impl_by_handle;
             static std::mutex impl_by_handle_mutex;
             static void push_data(uint8_t **where, const void *data, size_t size)
@@ -1176,7 +1178,7 @@ class _ClibBuilderImpl(ClangView):
         ENDFUNCTION()
         ADD_LIBRARY_URPC()
         SET_TARGET_PROPERTIES(zf_log PROPERTIES COMPILE_DEFINITIONS ZF_LOG_EXTERN_GLOBAL_OUTPUT)
-        TARGET_INCLUDE_DIRECTORIES({library_target} PRIVATE vendor vendor/liburpc)
+        TARGET_INCLUDE_DIRECTORIES({library_target} PRIVATE vendor vendor/liburpc vendor/liburpc/vendor/zf_log/zf_log)
         set({library_name_uppercase}_LINK_LIBRARIES urpc)
         IF(
             (${{{library_name_uppercase}_STATIC_STD_LIBS}})
