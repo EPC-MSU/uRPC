@@ -1248,7 +1248,7 @@ class _ClibBuilderImpl(ClangView):
             )
         ELSE()
             MESSAGE(
-                NOTICE "NOTICE: Will not hide non-API symbols of library. Note, on some platforms it may cause segmentation faults."
+                NOTICE "NOTICE: Won't hide non-API library symbols. Оn some platforms it may cause segmentation faults."
             )
         ENDIF()
         IF(${{CMAKE_SYSTEM_NAME}} STREQUAL Darwin)
