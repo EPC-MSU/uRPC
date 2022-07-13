@@ -325,7 +325,7 @@ class _ClibBuilderImpl(ClangView):
         return descr + self.__generate_function(
             "result_t", func_name, "char *lib_version",
             body=None if signature_only else dedent("""\
-            char *lib_v = "{LIB_VERSION}";
+            const char *lib_v = "{LIB_VERSION}";
             strcpy(lib_version,lib_v);
             return result_ok;
             """.format(LIB_VERSION=self.__protocol.version)
@@ -380,7 +380,7 @@ class _ClibBuilderImpl(ClangView):
 
     def __generate_logging_callback(self, callback_name, body=None):
         return_type_name = "void"
-        callback_args = "int loglevel, const wchar_t *message, void *user_data"
+        callback_args = "int loglevel, const wchar_t *message, void *"
         return self.__generate_function(return_type_name, callback_name, callback_args, body)
 
     def __generate_wide_logging_callback(self, signature_only):
@@ -429,7 +429,7 @@ class _ClibBuilderImpl(ClangView):
                 }
                 return result;
             }
-            static void zf_log_out_dummy_callback(const zf_log_message *msg, void *data) {}
+            static void zf_log_out_dummy_callback(const zf_log_message *, void *) {}
             ZF_LOG_DEFINE_GLOBAL_OUTPUT = {0, 0, zf_log_out_dummy_callback};
             struct userimpl_data_t
             {
@@ -931,20 +931,9 @@ class _ClibBuilderImpl(ClangView):
             {
                 push_data(where, &value, sizeof(value));
             }
-            static void push_double(uint8_t **where, double value)
-            {
-                push_data(where, &value, sizeof(value));
-            }
             static float pop_float(uint8_t **where)
             {
                 float result;
-                memcpy(&result, *where, sizeof(result));
-                *where += sizeof(result);
-                return result;
-            }
-            static double pop_double(uint8_t **where)
-            {
-                double result;
                 memcpy(&result, *where, sizeof(result));
                 *where += sizeof(result);
                 return result;
@@ -953,7 +942,7 @@ class _ClibBuilderImpl(ClangView):
             static void push_##Type(uint8_t **where, Type value) { \\
                 push_data(where, &value, sizeof(value)); \\
             }
-            GENERATE_PUSH(uint64_t)
+            //GERATE_PUSH(uint64_t)
             GENERATE_PUSH(uint32_t)
             GENERATE_PUSH(uint16_t)
             GENERATE_PUSH(uint8_t)
@@ -968,7 +957,7 @@ class _ClibBuilderImpl(ClangView):
                 *where += sizeof(result); \\
                 return (Type)result; \\
             }
-            GENERATE_POP(uint64_t)
+            //GENERATE_POP(uint64_t)
             GENERATE_POP(uint32_t)
             GENERATE_POP(uint16_t)
             GENERATE_POP(uint8_t)
