@@ -1163,12 +1163,18 @@ class _ClibBuilderImpl(ClangView):
             SET(ZF_LOG_USE_ANDROID_LOG OFF CACHE INTERNAL "")
             SET(ZF_LOG_USE_DEBUGSTRING OFF CACHE INTERNAL "")
             SET(ZF_LOG_USE_NSLOG OFF CACHE INTERNAL "")
+            # SET(XIBRIDGE_ENABLE ON CACHE INTERNAL "")
             ADD_SUBDIRECTORY(vendor/liburpc)
         ENDFUNCTION()
         ADD_LIBRARY_URPC()
         SET_TARGET_PROPERTIES(zf_log PROPERTIES COMPILE_DEFINITIONS ZF_LOG_EXTERN_GLOBAL_OUTPUT)
         TARGET_INCLUDE_DIRECTORIES({library_target} PRIVATE vendor vendor/liburpc vendor/liburpc/vendor/zf_log/zf_log)
         set({library_name_uppercase}_LINK_LIBRARIES urpc)
+        IF(${CMAKE_SYSTEM_NAME} STREQUAL Windows)
+	       set({library_name_uppercase}_LINK_LIBRARIES urpc  Ws2_32)
+		ELSE ()
+		   set({library_name_uppercase}_LINK_LIBRARIES urpc)
+        ENDIF()		
         IF(
             (${{{library_name_uppercase}_STATIC_STD_LIBS}})
             AND (
@@ -1183,7 +1189,6 @@ class _ClibBuilderImpl(ClangView):
             )
         ENDIF()
         TARGET_LINK_LIBRARIES({library_target} ${{{library_name_uppercase}_LINK_LIBRARIES}})
-
         SET({library_name_uppercase}_INCLUDE_DIRS ${{CMAKE_INSTALL_INCLUDEDIR}})
         SET({library_name_uppercase}_LIBRARIES
             ${{CMAKE_INSTALL_LIBDIR}}/${{CMAKE_SHARED_LIBRARY_PREFIX}}{library_target}${{CMAKE_SHARED_LIBRARY_SUFFIX}})
