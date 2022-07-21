@@ -41,7 +41,14 @@
 #ifndef ${device_name(protocol)}Class_H
 #define ${device_name(protocol)}Class_H
 
-#include <tango.h>
+#if defined (_WIN32)
+    #include <tango.h>	
+#else
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wunused-variable"
+    #include <tango.h>
+    #pragma GCC diagnostic pop
+#endif
 #include "${device_name(protocol)}.h"
 
 
@@ -189,7 +196,7 @@ public:
     ) : Command(name, in, out)
     {}
 
-    virtual CORBA::Any *execute(Tango::DeviceImpl *device, const CORBA::Any &any) {
+    virtual CORBA::Any *execute(Tango::DeviceImpl *device, const CORBA::Any &) {
         cout2 << "${command_class_name(cmd)}::execute(): arrived" << std::endl;
         ((static_cast<${device_name(protocol)} *>(device))->${command_handler_name(cmd)}());
         return new CORBA::Any();

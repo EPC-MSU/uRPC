@@ -156,6 +156,11 @@ class DebuggerView(ClangView):
              ${{HEADERS}}
              ${{UIS}}
              ${{RESOURCES}})
+        if(MSVC)
+             target_compile_options(uRPC_debugger PRIVATE /W3 /WX)
+        else()
+             target_compile_options(uRPC_debugger PRIVATE -Wall -Wextra -Werror)
+        endif()
 
         if(${{USE_QT5}})
             set(QT_LIBS Qt5::Widgets)

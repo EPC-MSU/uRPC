@@ -124,6 +124,17 @@ class _ClibBuilderImpl(ClangView):
     def __generate_get_from_buffer_statement(self, base_type, field_access):
         return "{} = pop_{}(&p)".format(field_access, base_type)
 
+    def __need_loop(self, func):
+        for arg in func.request.children:
+            _, length = type_to_cstr(arg.type_)
+            if length != "":
+                return True
+        for arg in func.response.children:
+            _, length = type_to_cstr(arg.type_)
+            if length != "":
+                return True
+        return False
+
     def __generate_command_function_body(self, func):
         has_input, has_output = bool(len(func.request.children)), bool(len(func.response.children))
 
@@ -140,18 +151,25 @@ class _ClibBuilderImpl(ClangView):
         if has_input or has_output:
             body += dedent("""\
             uint8_t *p;
-            unsigned int i;
             """)
+
+            if self.__need_loop(func):
+                body += dedent("""\
+                unsigned int i;
+                """)
+
         if has_input:
             body += dedent("""\
             uint8_t in_buffer[{size}];
             memset(in_buffer, 0, {size});
             """.format(size=request_size))
+
         if has_output:
             body += dedent("""\
             uint8_t out_buffer[{size}];
             memset(out_buffer, 0, {size});
             """.format(size=response_size))
+
         body += dedent("""\
         urpc_device_handle_t device;
         if(handle < 0)
@@ -338,7 +356,7 @@ class _ClibBuilderImpl(ClangView):
         return descr + self.__generate_function(
             "result_t", func_name, "char *lib_version",
             body=None if signature_only else dedent("""\
-            char *lib_v = "{LIB_VERSION}";
+            const char *lib_v = "{LIB_VERSION}";
             strcpy(lib_version,lib_v);
             return result_ok;
             """.format(LIB_VERSION=self.__protocol.version)
@@ -393,7 +411,7 @@ class _ClibBuilderImpl(ClangView):
 
     def __generate_logging_callback(self, callback_name, body=None):
         return_type_name = "void"
-        callback_args = "int loglevel, const wchar_t *message, void *user_data"
+        callback_args = "int loglevel, const wchar_t *message, void *"
         return self.__generate_function(return_type_name, callback_name, callback_args, body)
 
     def __generate_wide_logging_callback(self, signature_only):
@@ -442,7 +460,7 @@ class _ClibBuilderImpl(ClangView):
                 }
                 return result;
             }
-            static void zf_log_out_dummy_callback(const zf_log_message *msg, void *data) {}
+            static void zf_log_out_dummy_callback(const zf_log_message *, void *) {}
             ZF_LOG_DEFINE_GLOBAL_OUTPUT = {0, 0, zf_log_out_dummy_callback};
             struct userimpl_data_t
             {
@@ -932,6 +950,7 @@ class _ClibBuilderImpl(ClangView):
             #include <cstring>
             #include <zf_log.h>
             #include "urpc.h"
+            ZF_LOG_DEFINE_GLOBAL_OUTPUT_LEVEL;
             static std::map<device_t, urpc_device_handle_t> impl_by_handle;
             static std::mutex impl_by_handle_mutex;
             static void push_data(uint8_t **where, const void *data, size_t size)
@@ -943,20 +962,9 @@ class _ClibBuilderImpl(ClangView):
             {
                 push_data(where, &value, sizeof(value));
             }
-            static void push_double(uint8_t **where, double value)
-            {
-                push_data(where, &value, sizeof(value));
-            }
             static float pop_float(uint8_t **where)
             {
                 float result;
-                memcpy(&result, *where, sizeof(result));
-                *where += sizeof(result);
-                return result;
-            }
-            static double pop_double(uint8_t **where)
-            {
-                double result;
                 memcpy(&result, *where, sizeof(result));
                 *where += sizeof(result);
                 return result;
@@ -965,7 +973,7 @@ class _ClibBuilderImpl(ClangView):
             static void push_##Type(uint8_t **where, Type value) { \\
                 push_data(where, &value, sizeof(value)); \\
             }
-            GENERATE_PUSH(uint64_t)
+            //GERATE_PUSH(uint64_t)
             GENERATE_PUSH(uint32_t)
             GENERATE_PUSH(uint16_t)
             GENERATE_PUSH(uint8_t)
@@ -980,7 +988,7 @@ class _ClibBuilderImpl(ClangView):
                 *where += sizeof(result); \\
                 return (Type)result; \\
             }
-            GENERATE_POP(uint64_t)
+            //GENERATE_POP(uint64_t)
             GENERATE_POP(uint32_t)
             GENERATE_POP(uint16_t)
             GENERATE_POP(uint8_t)
@@ -1259,6 +1267,9 @@ class _ClibBuilderImpl(ClangView):
             # It is required to build a rpath framework
             CMAKE_POLICY(SET CMP0042 NEW)
         ENDIF()
+        if(${{CMAKE_SYSTEM_NAME}} STREQUAL Windows)
+           add_definitions( -D_CRT_SECURE_NO_WARNINGS)
+        endif()
         ADD_LIBRARY({library_target} SHARED {library_target_files} version.rc)
         SET_TARGET_PROPERTIES({library_target} PROPERTIES C_VISIBILITY_PRESET hidden)
         SET_TARGET_PROPERTIES({library_target} PROPERTIES CXX_VISIBILITY_PRESET hidden)
@@ -1272,6 +1283,15 @@ class _ClibBuilderImpl(ClangView):
                 LIBRARY DESTINATION ${{CMAKE_INSTALL_LIBDIR}}
                 PUBLIC_HEADER DESTINATION ${{CMAKE_INSTALL_INCLUDEDIR}})
         ENDIF()
+
+        if(MSVC)
+           target_compile_options({library_target} PRIVATE /W3 /WX)
+        endif()
+           
+        if(UNIX)
+           target_compile_options({library_target} PRIVATE -Wall -Wextra -Werror)
+        endif()
+
         FUNCTION(ADD_LIBRARY_URPC)
             SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
             SET(BUILD_SHARED_LIBS OFF CACHE INTERNAL "")
@@ -1287,7 +1307,7 @@ class _ClibBuilderImpl(ClangView):
         ENDFUNCTION()
         ADD_LIBRARY_URPC()
         SET_TARGET_PROPERTIES(zf_log PROPERTIES COMPILE_DEFINITIONS ZF_LOG_EXTERN_GLOBAL_OUTPUT)
-        TARGET_INCLUDE_DIRECTORIES({library_target} PRIVATE vendor vendor/liburpc)
+        TARGET_INCLUDE_DIRECTORIES({library_target} PRIVATE vendor vendor/liburpc vendor/liburpc/vendor/zf_log/zf_log)
         set({library_name_uppercase}_LINK_LIBRARIES urpc)
         IF(
             (${{{library_name_uppercase}_STATIC_STD_LIBS}})

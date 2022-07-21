@@ -105,3 +105,4 @@ venv\Scripts\python -m pip install -r requirements.txt
 venv\Scripts\python main.py
 ```
 Обратите внимание, что если вы используете python более новой версии, то может понадобится локальное обновление библиотек (mako, tornado и т.д.).
+

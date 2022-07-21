@@ -36,7 +36,6 @@ handle_result(::${namespaced(cmd.name)}(device\
 ), "${cmd.name}")\
 </%def>\
 \
-static const char *RcsId = "$Id:  $";
 //=============================================================================
 //
 // file :        ${device_name(protocol)}.cpp
@@ -79,7 +78,14 @@ static const char *RcsId = "$Id:  $";
 #include <algorithm>
 #include <cstring>
 
-#include <tango.h>
+#if defined (_WIN32)
+    #include <tango.h>	
+#else
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wunused-variable"
+    #include <tango.h>
+    #pragma GCC diagnostic pop
+#endif
 
 #include "${device_name(protocol)}.h"
 #include "${device_name(protocol)}Class.h"
