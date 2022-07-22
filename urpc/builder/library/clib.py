@@ -996,7 +996,6 @@ class _ClibBuilderImpl(ClangView):
             GENERATE_POP(int32_t)
             GENERATE_POP(int16_t)
             GENERATE_POP(int8_t)
-            ZF_LOG_DEFINE_GLOBAL_OUTPUT_LEVEL = ZF_LOG_WARN;
             """)
         result += self.__generate_open_func(signature_only=for_header_inclusion) + "\n"
         result += self.__generate_lib_version_func(signature_only=for_header_inclusion) + "\n"
