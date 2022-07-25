@@ -1286,7 +1286,7 @@ class _ClibBuilderImpl(ClangView):
         if(MSVC)
            target_compile_options({library_target} PRIVATE /W3 /WX)
         endif()
-           
+
         if(UNIX)
            target_compile_options({library_target} PRIVATE -Wall -Wextra -Werror)
         endif()
