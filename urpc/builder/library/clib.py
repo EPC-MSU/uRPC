@@ -124,21 +124,21 @@ class _ClibBuilderImpl(ClangView):
     def __generate_get_from_buffer_statement(self, base_type, field_access):
         return "{} = pop_{}(&p)".format(field_access, base_type)
 
+    def __need_loop(self, func):
+        for arg in func.request.children:
+            _, length = type_to_cstr(arg.type_)
+            if length != "":
+                return True
+        for arg in func.response.children:
+            _, length = type_to_cstr(arg.type_)
+            if length != "":
+                return True
+        return False
+
     def __generate_command_function_body(self, func):
         has_input, has_output = bool(len(func.request.children)), bool(len(func.response.children))
 
         request_size, response_size = _get_msg_buffer_size(func.request), _get_msg_buffer_size(func.response)
-        
-        def __if_need_cycle():
-            for index, arg in enumerate(func.request.children):
-                base_type, length = type_to_cstr(arg.type_)
-                if (length): 
-                    return bool(1)
-            for index, arg in enumerate(func.response.children):
-                base_type, length = type_to_cstr(arg.type_)
-                if (length): 
-                    return bool(1)
-            return bool(0)        
 
         def __generate_call_expression():
             result = 'urpc_device_send_request(device, "{cid}"'.format(cid=func.cid)
@@ -152,20 +152,24 @@ class _ClibBuilderImpl(ClangView):
             body += dedent("""\
             uint8_t *p;
             """)
-            if __if_need_cycle():
+
+            if self.__need_loop(func):
                 body += dedent("""\
                 unsigned int i;
                 """)
+
         if has_input:
             body += dedent("""\
             uint8_t in_buffer[{size}];
             memset(in_buffer, 0, {size});
             """.format(size=request_size))
+
         if has_output:
             body += dedent("""\
             uint8_t out_buffer[{size}];
             memset(out_buffer, 0, {size});
             """.format(size=response_size))
+
         body += dedent("""\
         urpc_device_handle_t device;
         if(handle < 0)

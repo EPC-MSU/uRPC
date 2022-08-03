@@ -2,6 +2,7 @@ from collections import Container
 from os import sep, access, R_OK
 from os.path import join, isfile
 from uuid import UUID
+from tempfile import gettempdir
 
 from tornado.ioloop import IOLoop
 
@@ -11,7 +12,7 @@ from urpc.storage.json import JsonStorage
 try:
     from settings import temp_dir
 except ImportError:
-    temp_dir = join(sep, "tmp")  # join("tmp") for Windows
+    temp_dir = gettempdir()
 
 
 class CachedItem:
