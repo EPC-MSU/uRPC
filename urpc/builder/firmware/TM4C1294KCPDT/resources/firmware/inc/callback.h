@@ -3,6 +3,7 @@
 
 #define CALLBACK_NUMBER     1
 #define CALLBACK_MAX_DELAY  0x7FFFFFFFUL  // Half of 32-bits range
+#define CALLBACK_CANCEL_PADDING     0x10L  // Time to substract from current time to guaranty that callback will not be run, issues #63336 and #61465
 
 typedef enum
 {

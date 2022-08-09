@@ -151,8 +151,13 @@ static inline void Cancel(const callback_index_t CallbackNum)
   /*
    * In rare occasions time can change += 1 while Invoke still
    * process callbacks with old time, so the callback will be triggered
+   * Also during initialization there may be even worse discrepancy
+   * because interupts are disabled, but SysTick runs, that were observed
+   * to reach 4 ms in another project. Thus a relatively big value
+   * CALLBACK_CANCEL_PADDING must be used to guaranty disabling of callback.
+   * Related to the issue #63336 and ximc-issue #61465.
    */
-  Callbacks[CallbackNum].Calltime = TimeCache - 2;
+  Callbacks[CallbackNum].Calltime = TimeCache - CALLBACK_CANCEL_PADDING;
 
   __ENABLE_IRQ;
 }
