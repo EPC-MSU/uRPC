@@ -1,8 +1,11 @@
 # Инструкция по использованию xibridge в проекте uRPC
 
-клонировать и собрать проект xibridge, см. readme проекта xibridge (допустим, в папку c:/projects)
+## xibridge-библиотека: сборка или release 
 
-затем в папке проекта uRPC:
+Сборка: клонировать и собрать проект xibridge, см. readme проекта xibridge (допустим, в папку c:/projects).
+Скачать релиз: https://github.com/EPC-MSU/xibridge/releases/tag/v1.0.0   и взять из нужной папки архива содержимое (и полоджить, допустим, в папку c:/projects/xibridge).  
+ 
+ 
 
 git switch t-64722
 
@@ -28,7 +31,7 @@ git submodule update --recursive
 
 ## Cборка библиотеки под Linux
 
-mkdir buid
+mkdir build
 
 cmake CMakeLists.txt -B build -DXIBRIDGE_PATH=<путь до xibridge> -DXIBRIDGE_ENABLE=On
 
