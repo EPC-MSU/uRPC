@@ -1,7 +1,8 @@
 from collections import Container
-from os import sep, access, R_OK
+from os import access, R_OK
 from os.path import join, isfile
 from uuid import UUID
+from tempfile import gettempdir
 
 from tornado.ioloop import IOLoop
 
@@ -11,7 +12,7 @@ from urpc.storage.json import JsonStorage
 try:
     from settings import temp_dir
 except ImportError:
-    temp_dir = join(sep, "tmp")  # join("tmp") for Windows
+    temp_dir = gettempdir()
 
 
 class CachedItem:
@@ -46,7 +47,7 @@ class SessionManager(Container):
                 with open(path, "rb") as f:
                     item.project = self._storage.load(f)
             else:
-                item.project = Protocol(name="Default project", version="0")
+                item.project = Protocol(name="default_project", version="0.0.1")
 
         item.timeout = self._loop.call_later(self._dump_timeout, self._dump_cached, uid)
         return item.project

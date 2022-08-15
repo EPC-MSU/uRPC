@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block editor %}
-<div class="pure-g">
+<div class="pure-g" style="margin-left: 5px; min-width: 100px; ">
     <div class="pure-u-1-1 form-block">
         <h2>General:</h2>
         <form class="pure-form" action="{{ reverse_url("editor")[1:] }}" method="post">
@@ -16,11 +16,12 @@
             <textarea name="extra_options" value="" placeholder="Extra options in format: Opt1=Value1, Opt2=Value, ...">{{ protocol.extra_options }}</textarea>
             <p></p>
             <button type="submit" class="pure-button pure-button-primary">Update</button>
+            <span class="error-message">{{ messages.get("project-message", "") }}</span>
         </fieldset>
         </form>
     </div>
 
-    <div class="pure-u-1-1 form-block">
+    <div class="pure-u-1-1 form-block" style="overflow: scroll">
         <h2>Commands:</h2>
         <p class="form-legend">Add command</p>
         <form class="pure-form" action="{{ reverse_url("editor")[1:] }}" method="post">
@@ -33,7 +34,7 @@
             <span class="error-message">{{ messages.get("command-message", "") }}</span>
         </fieldset>
         </form>
-        <table class="pure-table pure-table-horizontal">
+        <table class="pure-table pure-table-horizontal" style="table-layout: auto; width: 100%">
             <thead>
             <tr>
                 <th>CID</th>
@@ -101,7 +102,6 @@
                     <img src="/static/tags/{{ tag }}" alt="{{ tag }}">
                     {% end %}
                 </td>
-                <td>{{ acc.name }}</td>
                 <td>{{ acc.getter.description["english"] }}</td>
                 <td>
                     <a name="{{acc.uid}}" class="button-xsmall pure-button" href="{% raw url_concat(reverse_url("editor")[1:], {'action': "view", 'handle': acc.uid}) %}">Edit</a>

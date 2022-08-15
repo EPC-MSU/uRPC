@@ -46,7 +46,14 @@
 #include <chrono>
 #include <sys/time.h>
 
-#include <tango.h>
+#if defined (_WIN32)
+    #include <tango.h>	
+#else
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wunused-variable"
+    #include <tango.h>
+    #pragma GCC diagnostic pop
+#endif
 
 #include <${library_header_file(protocol)}.h>
 

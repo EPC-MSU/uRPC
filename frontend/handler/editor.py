@@ -9,7 +9,8 @@ from tornado.httputil import url_concat
 from tornado.web import HTTPError
 
 from frontend.handler.base import BaseRequestHandler
-from frontend.util.validator import check_if_empty, check_if_number
+from frontend.util.validator import check_if_empty, check_if_number, check_if_version, check_project_name
+from frontend.util.validator import check_command_name, check_argument_name, check_constant_name
 from urpc import ast
 from urpc.util.accessor import split_by_type
 from urpc.util.cconv import cstr_to_type
@@ -446,7 +447,6 @@ class EditorSession:
         arg.consts.append(const)
 
         self._add_children_handles(const, arg)
-
         return self._parent_links[const]
 
     def delete_protocol(self, handle):
@@ -701,36 +701,69 @@ class EditorHandler(BaseRequestHandler):
             raise HTTPError(404)
         EditorHandler.messages = {}
 
-    def _protocol_post(self, action, handle):
-        if action == "update":
-            project_name = self.get_body_argument("project_name", None)
-            version = self.get_body_argument("version")
-            extra_options = self.get_body_argument("extra_options", "")
+    def _process_protocol_post_properties_update(self, handle):
+        project_name = self.get_body_argument("project_name", None)
+        version = self.get_body_argument("version")
+        extra_options = self.get_body_argument("extra_options", "")
+
+        error_message = ""
+        try:
+            check_project_name(project_name)
+        except ValueError as e:
+            error_message += str(e) + " "
+
+        try:
+            check_if_version(version)
+        except ValueError as e:
+            error_message += str(e) + " "
+
+        try:
+            if error_message != "":
+                raise ValueError(error_message)
+
             self._editor.update_protocol(
                 handle=handle,
                 project_name=project_name,
                 version=version,
                 extra_options=extra_options
             )
+        except ValueError as e:
+            EditorHandler.messages["project-message"] = str(e)
+
+    def _process_protocol_post_create_command(self, handle):
+        cid, name = self.get_body_argument("cid"), self.get_body_argument("command_name")
+        try:
+            check_if_empty(name, "Name"), check_command_name(name, "Name")
+            self._editor.create_command(handle, cid, name)
+        except ValueError as e:
+            EditorHandler.messages["command-message"] = str(e)
+
+    def _process_protocol_post_create_accessor(self, handle):
+        aid = self.get_body_argument("aid")
+        name = self.get_body_argument("accessor_name")
+        try:
+            check_if_empty(name, "Name")
+        except ValueError as e:
+            EditorHandler.messages["accessor-message"] = str(e)
+        try:
+            check_command_name(name, "Name")
+            self._editor.create_accessor(handle, aid, name)
+        except ValueError as e:
+            EditorHandler.messages["accessor-message"] = str(e)
+
+    def _protocol_post(self, action, handle):
+        if action == "update":
+            self._process_protocol_post_properties_update(handle)
             self.redirect(url_concat(self.reverse_url("editor")[1:], {"action": "view", "handle": handle}))
         elif action == "create_command":
-            cid, name = self.get_body_argument("cid"), self.get_body_argument("command_name")
-            try:
-                check_if_empty(name, "Name")
-                self._editor.create_command(handle, cid, name)
-            except ValueError as e:
-                EditorHandler.messages["command-message"] = str(e)
+            self._process_protocol_post_create_command(handle)
             self.redirect(url_concat(self.reverse_url("editor")[1:], {"action": "view", "handle": handle}))
         elif action == "create_accessor":
-            aid = self.get_body_argument("aid")
-            name = self.get_body_argument("accessor_name")
-            try:
-                check_if_empty(name, "Name")
-                self._editor.create_accessor(handle, aid, name)
-            except ValueError as e:
-                EditorHandler.messages["accessor-message"] = str(e)
-            self.redirect(url_concat(self.reverse_url("editor")[1:],
-                                     {"action": "view", "handle": handle}) + "#___accessor")
+            self._process_protocol_post_create_accessor(handle)
+            self.redirect(url_concat(
+                self.reverse_url("editor")[1:],
+                {"action": "view", "handle": handle}) + "#___accessor"
+            )
 
     def _accessor_post(self, action, handle):
         if action == "delete":
@@ -744,7 +777,7 @@ class EditorHandler(BaseRequestHandler):
             descrs = {c: self.get_body_argument(c + "_description", "") for c in ast.AstNode.Description.codes}
             extra_options = self.get_body_argument("extra_options", "")
             try:
-                check_if_empty(name, "Name")
+                check_if_empty(name, "Name"), check_command_name(name, "Name")
                 self._editor.update_accessor(
                     handle=handle,
                     aid=aid,
@@ -760,6 +793,7 @@ class EditorHandler(BaseRequestHandler):
             name, type_length = self.get_body_argument("name"), self.get_body_argument("type_length", 0)
             try:
                 check_if_empty(name, "Name"), check_if_number(type_length, "Array length")
+                check_argument_name(name, "Name")
                 type_obj = cstr_to_type(self.get_body_argument("value_type"), type_length)
                 self._editor.create_argument(handle, name, type_obj)
             except ValueError as e:
@@ -780,7 +814,7 @@ class EditorHandler(BaseRequestHandler):
             descrs = {c: self.get_body_argument(c + "_description", "") for c in ast.AstNode.Description.codes}
             extra_options = self.get_body_argument("extra_options", None)
             try:
-                check_if_empty(name, "Name")
+                check_if_empty(name, "Name"), check_command_name(name, "Name")
                 self._editor.update_command(
                     handle=handle,
                     cid=cid,
@@ -798,6 +832,7 @@ class EditorHandler(BaseRequestHandler):
             name, type_length = self.get_body_argument("name"), self.get_body_argument("type_length", 0)
             try:
                 check_if_empty(name, "Name"), check_if_number(type_length, "Array length")
+                check_argument_name(name, "Name")
                 type_obj = cstr_to_type(self.get_body_argument("value_type"), type_length)
                 self._editor.create_argument(handle, name, type_obj)
             except ValueError as e:
@@ -822,6 +857,7 @@ class EditorHandler(BaseRequestHandler):
             name, type_length = self.get_body_argument("name"), self.get_body_argument("type_length", 0)
             try:
                 check_if_empty(name, "Name"), check_if_number(type_length, "Array length")
+                check_argument_name(name, "Name")
                 type_obj = cstr_to_type(self.get_body_argument("value_type"), type_length)
                 descrs = {c: self.get_body_argument(c + "_description", "") for c in ast.AstNode.Description.codes}
                 extra_options = self.get_body_argument("extra_options", None)
@@ -841,6 +877,7 @@ class EditorHandler(BaseRequestHandler):
             value = self.get_body_argument("value")
             try:
                 check_if_empty(name, "Name"), check_if_empty(value), check_if_number(value)
+                check_constant_name(name, "Name")
                 value = int(value)
                 self._editor.create_constant(handle, name, value)
             except ValueError as e:
@@ -871,6 +908,7 @@ class EditorHandler(BaseRequestHandler):
             extra_options = self.get_body_argument("extra_options", "")
             try:
                 check_if_empty(name, "Name"), check_if_empty(value), check_if_number(value)
+                check_constant_name(name, "Name")
                 value = int(value)
                 self._editor.update_constant(
                     handle=handle,

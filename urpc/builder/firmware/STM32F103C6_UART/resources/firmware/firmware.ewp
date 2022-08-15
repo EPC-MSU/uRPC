@@ -1512,7 +1512,7 @@
         </option>
         <option>
           <name>AUserIncludes</name>
-          <state>AUserIncludes</state>
+          <state>$PROJ_DIR$\inc</state>
         </option>
         <option>
           <name>AExtraOptionsCheckV2</name>

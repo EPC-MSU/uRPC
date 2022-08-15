@@ -1,10 +1,12 @@
 import os
+import copy
 from io import BytesIO
 
 from tornado.httputil import url_concat
 from tornado.web import HTTPError
 
 from frontend.handler.base import BaseRequestHandler
+from frontend.handler.editor import EditorHandler
 from urpc.builder import bindings
 from urpc.builder import firmware
 from urpc.builder.adapters import tango
@@ -97,6 +99,34 @@ class ProjectHandler(BaseRequestHandler):
         mime = "application/zip"
         return file_name, mime
 
+    def _remove_service_commands(self):
+        to_delete = set()
+        protocol = copy.deepcopy(self._sessions[self.current_user])
+        for command in protocol.commands:
+            # Bring option string to lowercase, split by separator
+            for opt in command.extra_options.lower().split(','):
+                # remove whitespace from option
+                opt = ''.join(opt.split())
+                if "is_service_command=true" in opt:
+                    to_delete.add(command)
+        for command in to_delete:
+            protocol.children.remove(command)
+
+        self._sessions[self.current_user] = protocol
+
+    def _assembly_profiles_list(self, protocol):
+        if not self.request.files:
+            EditorHandler.messages["assembly-profiles-message"] = "No input file"
+            self.redirect(".." + self.reverse_url("main"))
+        files_info = self.request.files["profiles"]
+
+        profiles_list = []
+
+        for profile in files_info:
+            profiles_list.append((profile["filename"], profile["body"]))
+
+        return profiles_list
+
     def get(self, action):
         protocol = self._sessions[self.current_user]
 
@@ -154,7 +184,8 @@ class ProjectHandler(BaseRequestHandler):
 
     def post(self, action):
         if action == "load":
-            if not self.request.files or len(self.request.files) == 0:  # if user hasn"t recently loaded project file
+            if not self.request.files:
+                EditorHandler.messages["load-message"] = "No input file"
                 self.redirect(".." + self.reverse_url("main"))
             file_info = self.request.files["project"][0]
             ext = os.path.splitext(file_info["filename"])[1]
@@ -168,15 +199,8 @@ class ProjectHandler(BaseRequestHandler):
 
         elif action == "assembly_profiles":
             protocol = self._sessions[self.current_user]
-
             output_buffer, file_name, mime = BytesIO(), "", ""
-
-            files_info = self.request.files["profiles"]
-
-            profiles_list = []
-
-            for profile in files_info:
-                profiles_list.append((profile["filename"], profile["body"]))
+            profiles_list = self._assembly_profiles_list(protocol)
 
             profiles.build(protocol, profiles_list, output_buffer, is_namespaced=True)
 
@@ -194,19 +218,15 @@ class ProjectHandler(BaseRequestHandler):
             self.set_header("Content-Type", mime)
             self.set_header("Content-Disposition", 'attachment; filename="' + file_name + '"')
 
-        elif action == "ximcstyle_assembly_profiles":
+        elif ((action == "ximcstyle_assembly_profiles") or (action == "urmcstyle_assembly_profiles")):
             protocol = self._sessions[self.current_user]
-
             output_buffer, file_name, mime = BytesIO(), "", ""
+            profiles_list = self._assembly_profiles_list(protocol)
 
-            files_info = self.request.files["profiles"]
-
-            profiles_list = []
-
-            for profile in files_info:
-                profiles_list.append((profile["filename"], profile["body"]))
-
-            pythonprofiles.ximcstyle_build(protocol, profiles_list, output_buffer, is_namespaced=True)
+            if action == "ximcstyle_assembly_profiles":
+                pythonprofiles.style_build(protocol, profiles_list, output_buffer, is_namespaced=True, style="ximc")
+            elif action == "urmcstyle_assembly_profiles":
+                pythonprofiles.style_build(protocol, profiles_list, output_buffer, is_namespaced=True)
 
             file_name = "{}.zip".format(_normalize_target_name(protocol, "profiles"))
             mime = "application/zip"
@@ -221,5 +241,14 @@ class ProjectHandler(BaseRequestHandler):
 
             self.set_header("Content-Type", mime)
             self.set_header("Content-Disposition", 'attachment; filename="' + file_name + '"')
+
+        elif action == "remove_service_commands":
+            self._remove_service_commands()
+
+            self.redirect(url_concat(self.reverse_url("editor"), {
+                "action": "view",
+                "handle": self._sessions[self.current_user].uid
+                }))
+
         else:
             raise HTTPError(404)

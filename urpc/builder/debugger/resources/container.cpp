@@ -25,7 +25,7 @@ void Container::addTab(QWidget* Tab, QString Name)
     ui->listWidget->setCurrentItem(ui->listWidget->item(0));
 }
 
-void Container::ItemChanged(QListWidgetItem *Current, QListWidgetItem *Prev)
+void Container::ItemChanged(QListWidgetItem *Current, QListWidgetItem *)
 {
     ui->stackedWidget->setCurrentWidget(Widgets[Current->text()]);
 }

@@ -1,4 +1,3 @@
-static const char *RcsId = "$Id:  $";
 //=============================================================================
 //
 // file :        ${device_name(protocol)}ReactiveAttributesPoller.cpp
