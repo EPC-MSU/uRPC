@@ -905,6 +905,13 @@ class _ClibBuilderImpl(ClangView):
     def __generate_commands_aspect(self, for_header_inclusion):
         library_name = self.__get_library_name()
 
+        bits = ['8', '16', '32', '64']
+        primitive_types = []
+        for b in bits:
+            primitive_types.append("uint{}_t".format(b))
+            primitive_types.append("int{}_t".format(b))
+        generated = set()
+
         result = ""
         if for_header_inclusion:
             for index, flagset in enumerate(self.flagsets):
@@ -946,35 +953,28 @@ class _ClibBuilderImpl(ClangView):
             static void push_##Type(uint8_t **where, Type value) { \\
                 push_data(where, &value, sizeof(value)); \\
             }
-            //GERATE_PUSH(uint64_t)
-            GENERATE_PUSH(uint32_t)
-            GENERATE_PUSH(uint16_t)
-            GENERATE_PUSH(uint8_t)
-            GENERATE_PUSH(int64_t)
-            GENERATE_PUSH(int32_t)
-            GENERATE_PUSH(int16_t)
-            GENERATE_PUSH(int8_t)
             #define GENERATE_POP(Type) \\
             static Type pop_##Type(uint8_t **where) { \\
                 Type result; \\
                 memcpy(&result, *where, sizeof(result)); \\
                 *where += sizeof(result); \\
                 return (Type)result; \\
-            }
-            //GENERATE_POP(uint64_t)
-            GENERATE_POP(uint32_t)
-            GENERATE_POP(uint16_t)
-            GENERATE_POP(uint8_t)
-            GENERATE_POP(int64_t)
-            GENERATE_POP(int32_t)
-            GENERATE_POP(int16_t)
-            GENERATE_POP(int8_t)
-            """)
-        result += self.__generate_open_func(signature_only=for_header_inclusion) + "\n"
-        result += self.__generate_lib_version_func(signature_only=for_header_inclusion) + "\n"
+            }\n""")
+
+        functions = ""
+        functions += self.__generate_open_func(signature_only=for_header_inclusion) + "\n"
+        functions += self.__generate_lib_version_func(signature_only=for_header_inclusion) + "\n"
         for f in self.__functions:
-            result += self.__generate_command_func(f, signature_only=for_header_inclusion) + "\n"
-        result += self.__generate_close_func(signature_only=for_header_inclusion) + "\n"
+            functions += self.__generate_command_func(f, signature_only=for_header_inclusion) + "\n"
+        functions += self.__generate_close_func(signature_only=for_header_inclusion) + "\n"
+        for typename in primitive_types:
+            if typename in functions and typename not in generated:
+                generated.add(typename)
+                result += dedent("""
+                GENERATE_PUSH({t})
+                GENERATE_POP({t})
+                """).format(t=typename)
+        result += functions
         return result
 
     def __get_library_name(self):
