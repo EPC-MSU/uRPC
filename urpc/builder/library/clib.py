@@ -1307,7 +1307,11 @@ class _ClibBuilderImpl(ClangView):
         ADD_LIBRARY_URPC()
         SET_TARGET_PROPERTIES(zf_log PROPERTIES COMPILE_DEFINITIONS ZF_LOG_EXTERN_GLOBAL_OUTPUT)
         TARGET_INCLUDE_DIRECTORIES({library_target} PRIVATE vendor vendor/liburpc vendor/liburpc/vendor/zf_log/zf_log)
-        set({library_name_uppercase}_LINK_LIBRARIES urpc)
+        IF(${{CMAKE_SYSTEM_NAME}} STREQUAL Windows)
+	       set({library_name_uppercase}_LINK_LIBRARIES urpc  Ws2_32)
+		ELSE ()
+		   set({library_name_uppercase}_LINK_LIBRARIES urpc)
+        ENDIF()
         IF(
             (${{{library_name_uppercase}_STATIC_STD_LIBS}})
             AND (
