@@ -1326,8 +1326,9 @@ class _ClibBuilderImpl(ClangView):
             )
         ENDIF()
         TARGET_LINK_LIBRARIES({library_target} ${{{library_name_uppercase}_LINK_LIBRARIES}})
-
-        SET({library_name_uppercase}_INCLUDE_DIRS ${{CMAKE_INSTALL_INCLUDEDIR}})
+        #some patch to avoid strange error when build with xibridge package - include in the default lib include install dir of cmake
+        SET (CMAKE_INSTALL_INCLUDEDIR_1 include) 
+        SET({library_name_uppercase}_INCLUDE_DIRS ${{CMAKE_INSTALL_INCLUDEDIR_1}})
         SET({library_name_uppercase}_LIBRARIES
             ${{CMAKE_INSTALL_LIBDIR}}/${{CMAKE_SHARED_LIBRARY_PREFIX}}{library_target}${{CMAKE_SHARED_LIBRARY_SUFFIX}})
         INCLUDE(CMakePackageConfigHelpers)

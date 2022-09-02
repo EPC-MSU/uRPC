@@ -35,7 +35,6 @@
     </li>
     файлы проекта
 	<li>добавить запись (Add entry): имя - XIBRIDGE_PATH, тип - string, значение - путь к xibridge, (допустим c:/projects/xibridge)</li>  
-    <li>поставить галочку ENABLE_XIBRIDGE</li>
     <li>Нажать кнопку "Configure"</li>
     <li>Выбрать среду для сборки. На Windows обычно используется "Visual Studio 12 2013". Стоит обратить внимание на разрядность (Win32 / Win64).
     В старых версиях Cmake она указана в общем списке после имени среды, в новых версиях Cmake 
@@ -61,7 +60,7 @@
 <li>В директории src в распакованном архиве библиотеки запустить командную строку и выполнить cmake:
 <p>
     <font face = "Terminal">
-cmake -D ENABLE_XINET=ON -DXIBRIDGE_PATH=(путь до xibridge) -DXIBRIDGE_ENABLE=On CMakeLists.txt
+cmake -D ENABLE_XINET=ON -DXIBRIDGE_PATH=(путь до xibridge) CMakeLists.txt
     </font>
 </p>
 </li>
