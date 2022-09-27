@@ -1,5 +1,5 @@
 from collections import Container
-from os import sep, access, R_OK
+from os import access, R_OK
 from os.path import join, isfile
 from uuid import UUID
 from tempfile import gettempdir
