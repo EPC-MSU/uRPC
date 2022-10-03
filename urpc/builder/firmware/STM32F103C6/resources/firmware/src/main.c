@@ -19,13 +19,19 @@
 #include "usb.h"
 #include "stm32_assert.h"
 #include "stm32f1xx_ll_rcc.h"
-#include "stm32f1xx_ll_utils.h"
+#include "stm32f1xx_ll_irq.h"
+#include "startup.h"
 
 // FreeRTOS files
 #include "FreeRTOS.h"
 #include "task.h"
 
 static void CPUClockSet(void);
+
+/****  External function prototypes  ****/
+extern void xPortSysTickHandler(void);
+extern void PendSV_Handler(void);
+extern void SVC_Handler(void);
 
 __noreturn int32_t main(void)
 {
@@ -50,6 +56,15 @@ __noreturn int32_t main(void)
   NVIC_SetPriority(DMA1_Channel5_IRQn,    NVIC_EncodePriority(_PRIORITY_GROUP, 6, 0));
   NVIC_SetPriority(USART1_IRQn,           NVIC_EncodePriority(_PRIORITY_GROUP, 6, 0));
   NVIC_SetPriority(USB_LP_CAN1_RX0_IRQn,  NVIC_EncodePriority(_PRIORITY_GROUP, 6, 0));
+  
+  /* Assign interrupt handlers */
+  /* General */
+  LL_IRQ_Init(HardFault_IRQn, FaultISR);
+
+  /* Free RTOS */
+  LL_IRQ_Init(SysTick_IRQn, xPortSysTickHandler);
+  LL_IRQ_Init(PendSV_IRQn, PendSV_Handler);
+  LL_IRQ_Init(SVCall_IRQn, SVC_Handler);
   
   vTaskStartScheduler(); 
   
