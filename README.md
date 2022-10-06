@@ -4,11 +4,13 @@
 
 ## Запуск сервера на linux
 
-Склонировать репозиторий uRPC и обновить подмодули:
+Склонировать репозиторий uRPC, выбрать нужную ветку  и обновить подмодули:
 
 	```
 	git clone https://github.com/EPC-MSU/uRPC/
+	git switch <ветка>
 	git submodule update --init --recursive
+	git submodule update --recursive
 	```
 
 ### Запуск с помощью Docker (для системных администраторов)

@@ -910,8 +910,10 @@ class _ClibBuilderImpl(ClangView):
         for b in bits:
             primitive_types.append("uint{}_t".format(b))
             primitive_types.append("int{}_t".format(b))
-        generated = set()
-
+        primitive_types.append("float")
+   
+        generated_push = set()
+        generated_pop = set()
         result = ""
         if for_header_inclusion:
             for index, flagset in enumerate(self.flagsets):
@@ -938,17 +940,7 @@ class _ClibBuilderImpl(ClangView):
                 memcpy(*where, data, size);
                 *where += size;
             }
-            static void push_float(uint8_t **where, float value)
-            {
-                push_data(where, &value, sizeof(value));
-            }
-            static float pop_float(uint8_t **where)
-            {
-                float result;
-                memcpy(&result, *where, sizeof(result));
-                *where += sizeof(result);
-                return result;
-            }
+            
             #define GENERATE_PUSH(Type) \\
             static void push_##Type(uint8_t **where, Type value) { \\
                 push_data(where, &value, sizeof(value)); \\
@@ -968,12 +960,19 @@ class _ClibBuilderImpl(ClangView):
             functions += self.__generate_command_func(f, signature_only=for_header_inclusion) + "\n"
         functions += self.__generate_close_func(signature_only=for_header_inclusion) + "\n"
         for typename in primitive_types:
-            if typename in functions and typename not in generated:
-                generated.add(typename)
+            pushname =  "push_{}".format(typename)
+            popname = "pop_{}".format(typename)
+            if pushname in functions and typename not in generated_push:
+                generated_push.add(typename)
                 result += dedent("""
                 GENERATE_PUSH({t})
+                """).format(t=typename)
+            if popname in functions and typename not in generated_pop:
+                generated_pop.add(typename)
+                result += dedent("""
                 GENERATE_POP({t})
                 """).format(t=typename)
+ 
         result += functions
         return result
 
