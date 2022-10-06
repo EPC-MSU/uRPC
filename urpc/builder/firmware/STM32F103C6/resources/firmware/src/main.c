@@ -19,6 +19,7 @@
 #include "usb.h"
 #include "stm32_assert.h"
 #include "stm32f1xx_ll_rcc.h"
+#include "stm32f1xx_ll_utils.h"							   
 #include "stm32f1xx_ll_irq.h"
 #include "startup.h"
 
