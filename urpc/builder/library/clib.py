@@ -911,7 +911,7 @@ class _ClibBuilderImpl(ClangView):
             primitive_types.append("uint{}_t".format(b))
             primitive_types.append("int{}_t".format(b))
         primitive_types.append("float")
-   
+
         generated_push = set()
         generated_pop = set()
         result = ""
@@ -940,7 +940,7 @@ class _ClibBuilderImpl(ClangView):
                 memcpy(*where, data, size);
                 *where += size;
             }
-            
+
             #define GENERATE_PUSH(Type) \\
             static void push_##Type(uint8_t **where, Type value) { \\
                 push_data(where, &value, sizeof(value)); \\
@@ -960,7 +960,7 @@ class _ClibBuilderImpl(ClangView):
             functions += self.__generate_command_func(f, signature_only=for_header_inclusion) + "\n"
         functions += self.__generate_close_func(signature_only=for_header_inclusion) + "\n"
         for typename in primitive_types:
-            pushname =  "push_{}".format(typename)
+            pushname = "push_{}".format(typename)
             popname = "pop_{}".format(typename)
             if pushname in functions and typename not in generated_push:
                 generated_push.add(typename)
@@ -972,7 +972,7 @@ class _ClibBuilderImpl(ClangView):
                 result += dedent("""
                 GENERATE_POP({t})
                 """).format(t=typename)
- 
+
         result += functions
         return result
 
