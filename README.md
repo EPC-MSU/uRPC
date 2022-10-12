@@ -12,6 +12,7 @@ C библиотеку для работы с микроконтроллером
 
 	```
 	git clone https://github.com/EPC-MSU/uRPC/
+	cd uRPC
 	git submodule update --init --recursive
 	```
 
