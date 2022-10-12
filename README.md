@@ -2,11 +2,19 @@
 
 [![Static Analysis Status](https://github.com/epc-msu/urpc/workflows/Linter/badge.svg)](https://github.com/epc-msu/urpc/actions?workflow=Linter)
 
-https://v10.urpc.ximc.ru/help
+https://v11.urpc.ximc.ru/help
 
 uRPC - это RPC для работы с микроконтроллерами. Имея описание протокола (имя отправляемой команды, тип 
 передаваемых данных и проч.) с помощью этого инструмента можно быстро сгенерировать: прошивку для микроконтроллера, 
 C библиотеку для работы с микроконтроллером по описанному протоколу, Qt отладчик, документацию и проч.
+
+Склонировать репозиторий uRPC и обновить подмодули:
+
+```bash
+git clone https://github.com/EPC-MSU/uRPC/
+cd uRPC
+git submodule update --init --recursive
+```
 
 ## Запуск c помощью Docker
 
