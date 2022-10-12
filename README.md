@@ -8,6 +8,7 @@
 
 	```
 	git clone https://github.com/EPC-MSU/uRPC/
+	cd uRPC
 	git switch <ветка>
 	git submodule update --init --recursive
 	git submodule update --recursive
