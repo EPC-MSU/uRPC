@@ -1350,6 +1350,18 @@ class _ClibBuilderImpl(ClangView):
                              PROPERTY VS_STARTUP_PROJECT {library_name_uppercase}_example)
             ENDIF()
         ENDIF()
+        IF (MSVC)
+            add_custom_command(TARGET {library_target} POST_BUILD
+                           COMMAND ${{CMAKE_COMMAND}} -E copy_if_different
+                           "${{XIBRIDGE_PATH}}/xibridge.dll" 
+                           $<TARGET_FILE_DIR:{library_target}>)
+        
+        ELSE()
+            add_custom_command(TARGET {library_target} POST_BUILD
+                           COMMAND ${{CMAKE_COMMAND}} -E copy_if_different
+                           "${{XIBRIDGE_PATH}}/libxibridge.so" 
+                           $<TARGET_FILE_DIR:{library_target}>)
+        ENDIF()
         """).format(
             BUILDER_VERSION=BUILDER_VERSION,
             library_target=library_target_name,

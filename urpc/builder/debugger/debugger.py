@@ -180,6 +180,10 @@ class DebuggerView(ClangView):
             COMMAND ${{CMAKE_COMMAND}} -E copy_if_different
                     "${{PROJECT_SOURCE_DIR}}/{self.name}.dll"
                     $<TARGET_FILE_DIR:uRPC_debugger>)
+        add_custom_command(TARGET uRPC_debugger POST_BUILD
+            COMMAND ${{CMAKE_COMMAND}} -E copy_if_different
+                    "${{PROJECT_SOURCE_DIR}}/xibridge.dll"
+                    $<TARGET_FILE_DIR:uRPC_debugger>)
         endif()
         """)
 
