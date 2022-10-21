@@ -37,7 +37,7 @@ extern void vPortSVCHandler(void);
 static void ClearInterrupts(void);
 static void FixVectorTable(void);
 
-void vApplicationIdleHook(void);								
+void vApplicationIdleHook(void);
 __noreturn int32_t main(void)
 {
   uint32_t Freq = SysCtlClockFreqSet(SYSCTL_OSC_MAIN | SYSCTL_XTAL_25MHZ | SYSCTL_USE_PLL | SYSCTL_CFG_VCO_480, _CPU_FREQUENCY);  // Set system clock to 80 MHz
@@ -76,7 +76,7 @@ __noreturn int32_t main(void)
 
   // Check the USB Connection
   USB_InitAndCheck();
-  
+
   // Start FreeRTOS sheduler
   // Blocking function. We will not go to while(1) below.
   vTaskStartScheduler();
@@ -114,17 +114,17 @@ static void FixVectorTable(void)
   {
     IntRegister(i, IntDefaultHandler);
   }
-  
+
   IntRegister(FAULT_SVCALL, vPortSVCHandler);
-  
+
   for (uint32_t i = 12; i < 14; i++)
   {
     IntRegister(i, IntDefaultHandler);
   }
-  
+
   IntRegister(FAULT_PENDSV, xPortPendSVHandler);
   IntRegister(FAULT_SYSTICK, xPortSysTickHandler);
-  
+
   for (uint32_t i = 16; i < 80; i++)
   {
     IntRegister(i, IntDefaultHandler);
@@ -144,5 +144,18 @@ void __error__(char *pcFilename, uint32_t ui32Line)
 
 void vApplicationIdleHook(void)
 {
-  while(1);
+  /* From FreeRTOS tasks.c:
+   *    NOTE: vApplicationIdleHook() MUST NOT,
+   *    UNDER ANY CIRCUMSTANCES,
+   *   CALL A FUNCTION THAT MIGHT BLOCK.
+   *
+   * Since that and according to information on https://www.freertos.org/RTOS-idle-task.html
+   * FreeRTOS oficcial doc web-site endless loop was removed to prevent blocking
+   * in non-preemptive multitasking.
+   * FreeRTOS has preemtive scheduling by default so while(1)
+   * in our older firmwares is OK. #67377
+   *
+   * This task can be used for the application purposes but take into
+   * account that it has the lowest priority that can't be changed.
+   */
 }
