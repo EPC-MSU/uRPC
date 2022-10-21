@@ -144,5 +144,18 @@ void __error__(char *pcFilename, uint32_t ui32Line)
 
 void vApplicationIdleHook(void)
 {
-  while (1);
+  /* From FreeRTOS tasks.c:
+   *    NOTE: vApplicationIdleHook() MUST NOT,
+   *    UNDER ANY CIRCUMSTANCES,
+   *   CALL A FUNCTION THAT MIGHT BLOCK.
+   *
+   * Since that and according to information on https://www.freertos.org/RTOS-idle-task.html
+   * FreeRTOS oficcial doc web-site endless loop was removed to prevent blocking
+   * in non-preemptive multitasking.
+   * FreeRTOS has preemtive scheduling by default so while(1)
+   * in our older firmwares is OK. #67377
+   *
+   * This task can be used for the application purposes but take into
+   * account that it has the lowest priority that can't be changed.
+   */
 }

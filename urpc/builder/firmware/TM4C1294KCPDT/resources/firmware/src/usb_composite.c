@@ -3,6 +3,7 @@
  * File containes global settings.
  */
 #include "settings.h"
+#include "config.h"
 
 /*
  * Main includes here.
@@ -156,8 +157,8 @@ static tCompositeEntry g_psCompDevices[I2C_DEVICES_LIMIT];
 //*****************************************************************************
 tUSBDCompositeDevice g_sCompDevice =
 {
-  USB_VID_TI_1CBE,  // Place VID here
-  USB_PID_COMP_SERIAL,  // Place PID here
+  USB_VID,
+  USB_PID,
   250,		        // This is in 2mA increments so 500mA.
   USB_CONF_ATTR_BUS_PWR,	// Bus powered device.
   0,			        // There is no need for a default composite event handler.
@@ -403,8 +404,8 @@ static void USBStart(unsigned char NumDevices)
 {
   for (int32_t i = 0; i < NumDevices; i++)
   {
-    UNCONST(uint16_t, g_psCDCDevice[i].ui16VID) = USB_VID_TI_1CBE;
-    UNCONST(uint16_t, g_psCDCDevice[i].ui16PID) = USB_PID_SERIAL;
+    UNCONST(uint16_t, g_psCDCDevice[i].ui16VID) = USB_VID;
+    UNCONST(uint16_t, g_psCDCDevice[i].ui16PID) = USB_PID;
     UNCONST(uint16_t, g_psCDCDevice[i].ui16MaxPowermA) = 0;
     UNCONST(uint8_t, g_psCDCDevice[i].ui8PwrAttributes) = USB_CONF_ATTR_SELF_PWR;
     UNCONST(tUSBCallback, g_psCDCDevice[i].pfnControlCallback) = ControlHandler;
