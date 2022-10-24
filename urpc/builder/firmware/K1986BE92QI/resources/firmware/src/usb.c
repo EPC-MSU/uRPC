@@ -3,6 +3,7 @@
  * File containes global settings.
  */
 #include "settings.h"
+#include "config.h"
 
 /*
  * Main includes here.
@@ -76,12 +77,12 @@ void USB_Init(void)
                                         pdFALSE,
                                         ( void * ) 0,
                                         USBCleanRxBufferCallback);
-  Usb_CDC_SetVID(0x1CBE);  // Place VID here
-  Usb_CDC_SetPID(0x0007);  // Place PID here
+  Usb_CDC_SetVID(USB_VID);  // Place VID here
+  Usb_CDC_SetPID(USB_PID);  // Place PID here
 
-  Usb_CDC_SetSerialNum(0x12345678);  // Place serial number here
-  Usb_CDC_SetManufacturer("MANUFACTURER");  // Place manufacturer here
-  Usb_CDC_SetProduct("PRODUCT");  // Place product name here
+  Usb_CDC_SetSerialNum(SERIAL_NUMBER);  // Place serial number here
+  Usb_CDC_SetManufacturer(MANUFACTURER);  // Place manufacturer here
+  Usb_CDC_SetProduct(PRODUCT_NAME);  // Place product name here
 
 
   if (CleanRxBufferTimerHandle == NULL) 

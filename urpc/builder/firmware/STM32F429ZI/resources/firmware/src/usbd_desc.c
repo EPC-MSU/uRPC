@@ -52,14 +52,17 @@
 #include "usbd_desc.h"
 #include "usbd_conf.h"
 
-#define USBD_VID     1155
-#define USBD_LANGID_STRING     1033
-#define USBD_MANUFACTURER_STRING     "STMicroelectronics"
-#define USBD_PID_HS     22336
-#define USBD_PRODUCT_STRING_HS     "STM32 Virtual ComPort"
-#define USBD_SERIALNUMBER_STRING_HS     "00000000001A"
+/* Include with device configurations ----------------------------------------*/
+#include "config.h" 
+
+#define USBD_VID                         USB_VID
+#define USBD_LANGID_STRING               1033
+#define USBD_MANUFACTURER_STRING         MANUFACTURER
+#define USBD_PID_HS                      USB_PID
+#define USBD_PRODUCT_STRING_HS           PRODUCT_NAME
+#define USBD_SERIALNUMBER_STRING_HS      SERIAL_NUMBER
 #define USBD_CONFIGURATION_STRING_HS     "CDC Config"
-#define USBD_INTERFACE_STRING_HS     "CDC Interface"
+#define USBD_INTERFACE_STRING_HS         "CDC Interface"
 
 #define USB_SIZ_BOS_DESC            0x0C
 

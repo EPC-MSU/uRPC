@@ -10,6 +10,7 @@
 #include "usb_composite.h"
 #include "config.h"
 
+#include <string.h>				   
 #include "inc/hw_types.h"
 #include "usblib/usblib.h"
 #include "usblib/usbcdc.h"
@@ -69,18 +70,21 @@ static const unsigned char g_pLangDescriptor[] =
 
 static const unsigned char g_pManufacturerString[] =
 {
-    2 + (4 * 2),
+    2 + (16 * 2),
     USB_DTYPE_STRING,
-    'X', 0, 'I', 0, 'M', 0,'C', 0  // Place manufacturer here
+    ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0,
+    ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0
 };
 
 static const unsigned char g_pProductString[] =
 {
-    2 + (21 * 2),
+    2 + (40 * 2),
     USB_DTYPE_STRING,
-    'X', 0,'I', 0,'M', 0,'C', 0,' ', 0,'M', 0,'o', 0,'t', 0,'o', 0,  // Place product name here
-    'r', 0,' ', 0,'C', 0,'o', 0,'n', 0,'t', 0,'r', 0,'o', 0,'l', 0,
-    'l', 0,'e', 0,'r', 0
+    ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0,
+    ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0,
+    ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0,
+    ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0,
+    ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0
 };
 
 static unsigned char g_pSerialNumberString[] =
@@ -108,6 +112,21 @@ void SetUsbSerial(uint32_t SN)
   for (uint32_t i = 2; i <= 16; i += 2)
     g_pSerialNumberString[i] =
       HexTable[(SN & (0xF << (32 - i * 2))) >> (32 - i * 2)];
+}
+void SetUsbManufacturer(char *MFC)
+{
+  for (uint32_t i = 0; i <= strlen(MFC); i += 1)
+  {
+    g_pManufacturerString[i * 2 + 2] = MFC[i];
+  }
+}
+
+void SetUsbProduct(char *PRT)
+{
+  for (uint32_t i = 0; i <= strlen(PRT); i += 1)
+  {
+    g_pProductString[i * 2 + 2] = PRT[i];
+  }
 }
 
 #define NUM_STRING_DESCRIPTORS (sizeof(g_pStringDescriptors) / sizeof(uint8_t *))
@@ -234,6 +253,9 @@ void USB_InitAndCheck(void)
                                         ( void * ) 0,
                                         USBCleanRxBufferCallback);
   
+  SetUsbManufacturer(MANUFACTURER);
+  SetUsbProduct(PRODUCT_NAME);
+  SetUsbSerial(SERIAL_NUMBER);
   if (CleanRxBufferTimerHandle == NULL) 
   {
   #ifdef DEBUG
