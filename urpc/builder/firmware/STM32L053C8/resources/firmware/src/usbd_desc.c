@@ -52,8 +52,8 @@
 #include "usbd_desc.h"
 #include "usbd_conf.h"
 
-
-
+/* Include with device configurations ----------------------------------------*/
+#include "config.h" 
 
 
 /* Private typedef -----------------------------------------------------------*/
