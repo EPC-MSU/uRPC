@@ -1016,7 +1016,7 @@
         </option>
         <option>
           <name>OGCoreOrChip</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>GRuntimeLibSelect</name>
@@ -1050,7 +1050,7 @@
         </option>
         <option>
           <name>OGChipSelectEditMenu</name>
-          <state></state>
+          <state>STM32L053x8	ST STM32L053x8</state>
         </option>
         <option>
           <name>GenLowLevelInterface</name>
@@ -1518,7 +1518,7 @@
         </option>
         <option>
           <name>AUserIncludes</name>
-          <state></state>
+          <state>$PROJ_DIR$\inc</state>
         </option>
         <option>
           <name>AExtraOptionsCheckV2</name>
