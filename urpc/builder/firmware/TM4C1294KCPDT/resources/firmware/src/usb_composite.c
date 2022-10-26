@@ -68,7 +68,7 @@ static const unsigned char g_pLangDescriptor[] =
     USBShort(USB_LANG_EN_US)
 };
 
-static const unsigned char g_pManufacturerString[] =
+static unsigned char g_pManufacturerString[] =
 {
     2 + (16 * 2),
     USB_DTYPE_STRING,
@@ -76,7 +76,7 @@ static const unsigned char g_pManufacturerString[] =
     ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0
 };
 
-static const unsigned char g_pProductString[] =
+static unsigned char g_pProductString[] =
 {
     2 + (40 * 2),
     USB_DTYPE_STRING,
@@ -113,6 +113,7 @@ void SetUsbSerial(uint32_t SN)
     g_pSerialNumberString[i] =
       HexTable[(SN & (0xF << (32 - i * 2))) >> (32 - i * 2)];
 }
+
 void SetUsbManufacturer(char *MFC)
 {
   for (uint32_t i = 0; i <= strlen(MFC); i += 1)
