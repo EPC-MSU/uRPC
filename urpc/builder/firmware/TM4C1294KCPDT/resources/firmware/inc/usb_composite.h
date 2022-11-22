@@ -12,6 +12,9 @@
 #define USB_MUX_SEL_DEVICE      USB_MUX_GPIO_PIN
 
 void SetUsbSerial(uint32_t SN);
+void SetUsbManufacturer(char *MFC);
+void SetUsbProduct(char *PRT);
+
 void USB_InitAndCheck(void);
 
 #endif  // _USB_COMPOSITE_H
