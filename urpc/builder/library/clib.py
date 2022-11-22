@@ -932,6 +932,15 @@ class _ClibBuilderImpl(ClangView):
     def __generate_commands_aspect(self, for_header_inclusion):
         library_name = self.__get_library_name()
 
+        bits = ['8', '16', '32', '64']
+        primitive_types = []
+        for b in bits:
+            primitive_types.append("uint{}_t".format(b))
+            primitive_types.append("int{}_t".format(b))
+        primitive_types.append("float")
+   
+        generated_push = set()
+        generated_pop = set()
         result = ""
         if for_header_inclusion:
             for index, flagset in enumerate(self.flagsets):
@@ -958,50 +967,40 @@ class _ClibBuilderImpl(ClangView):
                 memcpy(*where, data, size);
                 *where += size;
             }
-            static void push_float(uint8_t **where, float value)
-            {
-                push_data(where, &value, sizeof(value));
-            }
-            static float pop_float(uint8_t **where)
-            {
-                float result;
-                memcpy(&result, *where, sizeof(result));
-                *where += sizeof(result);
-                return result;
-            }
+            
             #define GENERATE_PUSH(Type) \\
             static void push_##Type(uint8_t **where, Type value) { \\
                 push_data(where, &value, sizeof(value)); \\
             }
-            //GERATE_PUSH(uint64_t)
-            GENERATE_PUSH(uint32_t)
-            GENERATE_PUSH(uint16_t)
-            GENERATE_PUSH(uint8_t)
-            GENERATE_PUSH(int64_t)
-            GENERATE_PUSH(int32_t)
-            GENERATE_PUSH(int16_t)
-            GENERATE_PUSH(int8_t)
             #define GENERATE_POP(Type) \\
             static Type pop_##Type(uint8_t **where) { \\
                 Type result; \\
                 memcpy(&result, *where, sizeof(result)); \\
                 *where += sizeof(result); \\
                 return (Type)result; \\
-            }
-            //GENERATE_POP(uint64_t)
-            GENERATE_POP(uint32_t)
-            GENERATE_POP(uint16_t)
-            GENERATE_POP(uint8_t)
-            GENERATE_POP(int64_t)
-            GENERATE_POP(int32_t)
-            GENERATE_POP(int16_t)
-            GENERATE_POP(int8_t)
-            """)
-        result += self.__generate_open_func(signature_only=for_header_inclusion) + "\n"
-        result += self.__generate_lib_version_func(signature_only=for_header_inclusion) + "\n"
+            }\n""")
+
+        functions = ""
+        functions += self.__generate_open_func(signature_only=for_header_inclusion) + "\n"
+        functions += self.__generate_lib_version_func(signature_only=for_header_inclusion) + "\n"
         for f in self.__functions:
-            result += self.__generate_command_func(f, signature_only=for_header_inclusion) + "\n"
-        result += self.__generate_close_func(signature_only=for_header_inclusion) + "\n"
+            functions += self.__generate_command_func(f, signature_only=for_header_inclusion) + "\n"
+        functions += self.__generate_close_func(signature_only=for_header_inclusion) + "\n"
+        for typename in primitive_types:
+            pushname =  "push_{}".format(typename)
+            popname = "pop_{}".format(typename)
+            if pushname in functions and typename not in generated_push:
+                generated_push.add(typename)
+                result += dedent("""
+                GENERATE_PUSH({t})
+                """).format(t=typename)
+            if popname in functions and typename not in generated_pop:
+                generated_pop.add(typename)
+                result += dedent("""
+                GENERATE_POP({t})
+                """).format(t=typename)
+ 
+        result += functions
         return result
 
     def __get_library_name(self):
@@ -1267,7 +1266,7 @@ class _ClibBuilderImpl(ClangView):
             CMAKE_POLICY(SET CMP0042 NEW)
         ENDIF()
         if(${{CMAKE_SYSTEM_NAME}} STREQUAL Windows)
-           add_definitions( -D_CRT_SECURE_NO_WARNINGS)
+            add_definitions( -D_CRT_SECURE_NO_WARNINGS)
         endif()
         ADD_LIBRARY({library_target} SHARED {library_target_files} version.rc)
         SET_TARGET_PROPERTIES({library_target} PROPERTIES C_VISIBILITY_PRESET hidden)
@@ -1284,11 +1283,9 @@ class _ClibBuilderImpl(ClangView):
         ENDIF()
 
         if(MSVC)
-           target_compile_options({library_target} PRIVATE /W3 /WX)
-        endif()
-
-        if(UNIX)
-           target_compile_options({library_target} PRIVATE -Wall -Wextra -Werror)
+            target_compile_options({library_target} PRIVATE /W3 /WX)
+        else()
+            target_compile_options({library_target} PRIVATE -Wall -Wextra -Werror)
         endif()
 
         FUNCTION(ADD_LIBRARY_URPC)
