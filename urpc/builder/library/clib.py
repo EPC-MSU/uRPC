@@ -1283,17 +1283,9 @@ class _ClibBuilderImpl(ClangView):
         ENDIF()
 
         if(MSVC)
-<<<<<<< HEAD
             target_compile_options({library_target} PRIVATE /W3 /WX)
         else()
             target_compile_options({library_target} PRIVATE -Wall -Wextra -Werror)
-=======
-           target_compile_options({library_target} PRIVATE /W3 /WX)
-        endif()
-
-        if(UNIX)
-           target_compile_options({library_target} PRIVATE -Wall -Wextra -Werror)
->>>>>>> 0e6cd8d69a85641b89d5ec22b5c278939a0d43d1
         endif()
 
         FUNCTION(ADD_LIBRARY_URPC)
