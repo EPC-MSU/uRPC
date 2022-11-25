@@ -1305,10 +1305,10 @@ class _ClibBuilderImpl(ClangView):
         SET_TARGET_PROPERTIES(zf_log PROPERTIES COMPILE_DEFINITIONS ZF_LOG_EXTERN_GLOBAL_OUTPUT)
         TARGET_INCLUDE_DIRECTORIES({library_target} PRIVATE vendor vendor/liburpc vendor/liburpc/vendor/zf_log/zf_log)
         IF(${{CMAKE_SYSTEM_NAME}} STREQUAL Windows)
-	       set({library_name_uppercase}_LINK_LIBRARIES urpc  Ws2_32)
-		ELSE ()
-		   set({library_name_uppercase}_LINK_LIBRARIES urpc)
-        ENDIF()		
+            set({library_name_uppercase}_LINK_LIBRARIES urpc  Ws2_32)
+        ELSE ()
+           set({library_name_uppercase}_LINK_LIBRARIES urpc)
+        ENDIF()
         IF(
             (${{{library_name_uppercase}_STATIC_STD_LIBS}})
             AND (
@@ -1323,8 +1323,9 @@ class _ClibBuilderImpl(ClangView):
             )
         ENDIF()
         TARGET_LINK_LIBRARIES({library_target} ${{{library_name_uppercase}_LINK_LIBRARIES}})
-        #some patch to avoid strange error when build with xibridge package - include in the default lib include install dir of cmake
-        SET (CMAKE_INSTALL_INCLUDEDIR_1 include) 
+        #some patch to avoid strange error when build with xibridge package -
+        # include in the default lib include install dir of cmake
+        SET (CMAKE_INSTALL_INCLUDEDIR_1 include)
         SET({library_name_uppercase}_INCLUDE_DIRS ${{CMAKE_INSTALL_INCLUDEDIR_1}})
         SET({library_name_uppercase}_LIBRARIES
             ${{CMAKE_INSTALL_LIBDIR}}/${{CMAKE_SHARED_LIBRARY_PREFIX}}{library_target}${{CMAKE_SHARED_LIBRARY_SUFFIX}})
@@ -1350,13 +1351,13 @@ class _ClibBuilderImpl(ClangView):
         IF (MSVC)
             add_custom_command(TARGET {library_target} POST_BUILD
                            COMMAND ${{CMAKE_COMMAND}} -E copy_if_different
-                           "${{XIBRIDGE_PATH}}/xibridge.dll" 
+                           "${{XIBRIDGE_PATH}}/xibridge.dll"
                            $<TARGET_FILE_DIR:{library_target}>)
-        
+
         ELSE()
             add_custom_command(TARGET {library_target} POST_BUILD
                            COMMAND ${{CMAKE_COMMAND}} -E copy_if_different
-                           "${{XIBRIDGE_PATH}}/libxibridge.so" 
+                           "${{XIBRIDGE_PATH}}/libxibridge.so"
                            $<TARGET_FILE_DIR:{library_target}>)
         ENDIF()
         """).format(
