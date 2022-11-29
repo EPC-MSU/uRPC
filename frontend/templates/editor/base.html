@@ -122,32 +122,19 @@
     </form>
 
     <p class="form-legend">Profiles assembler</p>
-    <form class="pure-form pure-form-stacked" enctype="multipart/form-data" action="{{ reverse_url("project", "assembly_profiles")[1:] }}" method="post">
+	<form class="pure-form pure-form-stacked" enctype="multipart/form-data" action="{{ reverse_url("project", "assembly_common")[1:] }}" method="post">
     <fieldset>
+        <select name="format">
+            <option value="c">C profiles assembler</option>
+            <option value="python">Python profiles assembler</option>
+            <option value="python for ximc">Python profiles for XIMC</option>
+        </select>
+
         <input type="file" name="profiles" multiple="True" accept=".json">
         <button type="submit" class="pure-button pure-button-primary">Assemble</button>
         <span class="error-message">{{ messages.get("assembly-profiles-message", "") }}</span>
     </fieldset>
     </form>
-
-    <summary><p class="form-legend">Python profiles assembler</p></summary>
-    <form class="pure-form pure-form-stacked" enctype="multipart/form-data" action="{{ reverse_url("project", "urmcstyle_assembly_profiles")[1:] }}" method="post">
-    <fieldset>
-        <input type="file" name="profiles" multiple="True" accept=".json">
-        <button type="submit" class="pure-button pure-button-primary">Assemble</button>
-    </fieldset>
-    </form>
-    <fieldset>
-        <p class="form-legend">uRPC extension for Ximc</p>
-        <details>
-        <form class="pure-form pure-form-stacked" enctype="multipart/form-data" action="{{ reverse_url("project", "ximcstyle_assembly_profiles")[1:] }}" method="post">
-        <fieldset>
-            <input type="file" name="profiles" multiple="True" accept=".json">
-            <button type="submit" class="pure-button pure-button-primary">Assemble</button>
-        </fieldset>
-        </form>
-        </details>
-    </fieldset>
 
 </div>
 {% end %}

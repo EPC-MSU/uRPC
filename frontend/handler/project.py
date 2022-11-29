@@ -197,36 +197,21 @@ class ProjectHandler(BaseRequestHandler):
 
             self.redirect(url_concat(self.reverse_url("editor"), {"action": "view", "handle": protocol.uid}))
 
-        elif action == "assembly_profiles":
+        elif action == "assembly_common":
             protocol = self._sessions[self.current_user]
             output_buffer, file_name, mime = BytesIO(), "", ""
             profiles_list = self._assembly_profiles_list(protocol)
 
-            profiles.build(protocol, profiles_list, output_buffer, is_namespaced=True)
+            lang_name = self.request.arguments['format'][0].decode('utf-8').lower()
 
-            file_name = "{}.zip".format(_normalize_target_name(protocol, "profiles"))
-            mime = "application/zip"
-
-            output_buffer.seek(0)
-
-            while True:
-                data = output_buffer.read(16384)
-                if not data:
-                    break
-                self.write(data)
-
-            self.set_header("Content-Type", mime)
-            self.set_header("Content-Disposition", 'attachment; filename="' + file_name + '"')
-
-        elif ((action == "ximcstyle_assembly_profiles") or (action == "urmcstyle_assembly_profiles")):
-            protocol = self._sessions[self.current_user]
-            output_buffer, file_name, mime = BytesIO(), "", ""
-            profiles_list = self._assembly_profiles_list(protocol)
-
-            if action == "ximcstyle_assembly_profiles":
+            if lang_name == "c":
+                profiles.build(protocol, profiles_list, output_buffer, is_namespaced=True)
+            elif lang_name == "python":
+                pythonprofiles.style_build(protocol, profiles_list, output_buffer, is_namespaced=True, style="urmc")
+            elif lang_name == "python for ximc":
                 pythonprofiles.style_build(protocol, profiles_list, output_buffer, is_namespaced=True, style="ximc")
-            elif action == "urmcstyle_assembly_profiles":
-                pythonprofiles.style_build(protocol, profiles_list, output_buffer, is_namespaced=True)
+            else:
+                raise ValueError("Unknown assembly profiles request: {}".format(lang_name))
 
             file_name = "{}.zip".format(_normalize_target_name(protocol, "profiles"))
             mime = "application/zip"
