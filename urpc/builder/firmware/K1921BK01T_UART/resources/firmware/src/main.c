@@ -16,15 +16,15 @@
 #include "niietcm4_rcc.h"
 #include "tty.h"
 
+// FreeRTOS files
+#include "FreeRTOS.h"
+#include "task.h"
+
 #ifdef DEBUG
   #include <stdio.h>  // For printf(...)
 
   #define LIFEBUOY_PORT   NT_GPIOF
   #define LIFEBUOY_PIN    GPIO_Pin_7
-
-  // FreeRTOS files
-  #include "FreeRTOS.h"
-  #include "task.h"
 
   static inline void Lifebuoy(void);
 #endif  // DEBUG
