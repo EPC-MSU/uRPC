@@ -1,4 +1,5 @@
-from os.path import abspath, join as join_path, dirname, commonprefix
+from os.path import abspath, join as join_path, dirname, commonprefix, exists, isfile
+from os import makedirs, remove
 from textwrap import indent, dedent
 from zipfile import ZipFile, ZIP_DEFLATED
 
@@ -7,6 +8,7 @@ from urpc.builder.util import ClangView
 from urpc.builder.util.clang import namespace_symbol
 from urpc.builder.util.resource import resources
 from urpc.util.cconv import type_to_cstr
+import urllib.request
 from version import BUILDER_VERSION_MAJOR, BUILDER_VERSION_MINOR, BUILDER_VERSION_BUGFIX, BUILDER_VERSION_SUFFIX, \
     BUILDER_VERSION
 
@@ -1299,6 +1301,19 @@ class _ClibBuilderImpl(ClangView):
             SET(ZF_LOG_USE_ANDROID_LOG OFF CACHE INTERNAL "")
             SET(ZF_LOG_USE_DEBUGSTRING OFF CACHE INTERNAL "")
             SET(ZF_LOG_USE_NSLOG OFF CACHE INTERNAL "")
+            if(${{CMAKE_SYSTEM_NAME}} STREQUAL Darwin)
+                set (XIBRIDGE_PATH "${{CMAKE_SOURCE_DIR}}/vendor/xibridge/macos" CACHE INTERNAL "")
+            elseif(${{CMAKE_SYSTEM_NAME}} STREQUAL Windows)
+                if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+                # 64 bits
+                    set (XIBRIDGE_PATH "${{CMAKE_SOURCE_DIR}}/vendor/xibridge/win64"  CACHE INTERNAL "")
+                else()
+                # 32 bits
+                    set (XIBRIDGE_PATH "${{CMAKE_SOURCE_DIR}}/vendor/xibridge/win32" CACHE INTERNAL "")
+            endif()      
+            else()       
+                set (XIBRIDGE_PATH "${{CMAKE_SOURCE_DIR}}/vendor/xibridge/deb64" CACHE INTERNAL "")
+            endif()
             ADD_SUBDIRECTORY(vendor/liburpc)
         ENDFUNCTION()
         ADD_LIBRARY_URPC()
@@ -1391,6 +1406,16 @@ def build(protocol, output):
     }
 
     resources_path = join_path(abspath(dirname(__file__)), "resources")
+    # add xibridge release to resources directory
+    xibridge_path = join_path(resources_path, "vendor/xibridge")
+    xibridge_zip_name = join_path(xibridge_path, "xibridge.zip")
+    if not exists(xibridge_path):
+        makedirs(xibridge_path)
+    urllib.request.urlretrieve("https://github.com/EPC-MSU/xibridge/releases/download/v1.1.0/xibridge-1.1.0.zip", xibridge_zip_name)
+    with ZipFile(xibridge_zip_name, "r") as xi_archive:
+        xi_archive.extractall(xibridge_path)
+    if isfile(xibridge_zip_name): 
+        remove(xibridge_zip_name)
     path_prefix_in_archive = view.name
     with ZipFile(output, "w", ZIP_DEFLATED) as archive:
         for file_name, gen in gen_by_file_name.items():
