@@ -104,9 +104,9 @@ class ProjectHandler(BaseRequestHandler):
         protocol = copy.deepcopy(self._sessions[self.current_user])
         for command in protocol.commands:
             # Bring option string to lowercase, split by separator
-            for opt in command.extra_options.lower().split(','):
+            for opt in command.extra_options.lower().split(","):
                 # remove whitespace from option
-                opt = ''.join(opt.split())
+                opt = "".join(opt.split())
                 if "is_service_command=true" in opt:
                     to_delete.add(command)
         for command in to_delete:
@@ -202,7 +202,7 @@ class ProjectHandler(BaseRequestHandler):
             output_buffer, file_name, mime = BytesIO(), "", ""
             profiles_list = self._assembly_profiles_list(protocol)
 
-            lang_name = self.request.arguments['format'][0].decode('utf-8').lower()
+            lang_name = self.request.arguments["format"][0].decode("utf-8").lower()
 
             if lang_name == "c":
                 profiles.build(protocol, profiles_list, output_buffer, is_namespaced=True)
