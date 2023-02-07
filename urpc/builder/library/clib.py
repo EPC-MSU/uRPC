@@ -932,7 +932,7 @@ class _ClibBuilderImpl(ClangView):
     def __generate_commands_aspect(self, for_header_inclusion):
         library_name = self.__get_library_name()
 
-        bits = ['8', '16', '32', '64']
+        bits = ["8", "16", "32", "64"]
         primitive_types = []
         for b in bits:
             primitive_types.append("uint{}_t".format(b))
