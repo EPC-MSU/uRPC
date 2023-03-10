@@ -10,7 +10,7 @@ from urpc.builder.util.resource import resources
 from urpc.util.cconv import type_to_cstr
 import urllib.request
 from version import BUILDER_VERSION_MAJOR, BUILDER_VERSION_MINOR, BUILDER_VERSION_BUGFIX, BUILDER_VERSION_SUFFIX, \
-    BUILDER_VERSION, XIBRIDGE_VERSION_MAJOR
+    BUILDER_VERSION, XIBRIDGE_VERSION
 
 
 def _get_msg_buffer_size(msg):
@@ -1417,7 +1417,8 @@ def build(protocol, output):
     xibridge_zip_name = join_path(xibridge_path, "xibridge.zip")
     if not exists(xibridge_path):
         makedirs(xibridge_path)
-    xibridge_url = "https://github.com/EPC-MSU/xibridge/releases/latest/download/xibridge.zip"
+    # xibridge_url = "https://github.com/EPC-MSU/xibridge/releases/download/v{XIBRIDGE_VERSION}/xibridge.zip"
+    xibridge_url = "https://github.com/EPC-MSU/xibridge/releases/download/v1.1.1/xibridge.zip"
     urllib.request.urlretrieve(xibridge_url, xibridge_zip_name)
     with ZipFile(xibridge_zip_name, "r") as xi_archive:
         xi_archive.extractall(xibridge_path)
