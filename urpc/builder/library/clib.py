@@ -1417,8 +1417,7 @@ def build(protocol, output):
     xibridge_zip_name = join_path(xibridge_path, "xibridge.zip")
     if not exists(xibridge_path):
         makedirs(xibridge_path)
-    # xibridge_url = "https://github.com/EPC-MSU/xibridge/releases/download/v{XIBRIDGE_VERSION}/xibridge.zip"
-    xibridge_url = "https://github.com/EPC-MSU/xibridge/releases/download/v1.1.1/xibridge.zip"
+    xibridge_url = "https://github.com/EPC-MSU/xibridge/releases/download/v"+XIBRIDGE_VERSION+"/xibridge.zip"
     urllib.request.urlretrieve(xibridge_url, xibridge_zip_name)
     with ZipFile(xibridge_zip_name, "r") as xi_archive:
         xi_archive.extractall(xibridge_path)
