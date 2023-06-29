@@ -1249,11 +1249,19 @@ class _ClibBuilderImpl(ClangView):
             OFF
         )
         IF(${{{library_name_uppercase}_HIDE_SYMBOLS}})
-            set(
-                CMAKE_SHARED_LINKER_FLAGS
-                ${{CMAKE_SHARED_LINKER_FLAGS}}
-                "-Wl,--version-script=${{CMAKE_CURRENT_SOURCE_DIR}}/gcc_export_symbols"
-            )
+            IF(${{CMAKE_SYSTEM_NAME}} STREQUAL Darwin)
+                set(
+                    CMAKE_SHARED_LINKER_FLAGS
+                    ${{CMAKE_SHARED_LINKER_FLAGS}}
+                    "-Wl"
+                )
+            ELSE()
+                set(
+                    CMAKE_SHARED_LINKER_FLAGS
+                    ${{CMAKE_SHARED_LINKER_FLAGS}}
+                    "-Wl,--version-script=${{CMAKE_CURRENT_SOURCE_DIR}}/gcc_export_symbols"
+                )
+            ENDIF()
         ELSE()
             MESSAGE(
                 NOTICE: " Won't hide non-API library symbols. Оn some platforms it may cause segmentation faults."
