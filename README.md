@@ -145,3 +145,11 @@ sudo docker container rm urpc
    ./venv/bin/python main.py
    ```
 
+6. Если при работе сервера возникнет ошибка "[SSL: CERTIFICATE_VERIFY_FAILED] certificate verifiry failed", нужно завершить работу сервера и в терминале выполнить команды:
+
+   ```bash
+   python3 -m pip install --upgrade pip
+   python3 -m pip install certifi
+   /Applications/Python\ 3.6/Install\ Certificates.command
+   ```
+
