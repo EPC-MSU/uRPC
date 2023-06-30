@@ -77,22 +77,29 @@ hr {
     float: right;
 }
 
-.help-menu
-{
+.help-menu {
     width: 15%;
     letter-spacing: normal;
     white-space: initial;
     margin-right: 1em;
 }
 
-.left-border
-{
-	margin-left: 15px;
+.left-border {
+    margin-left: 15px;
 }
 
-.help-menu-item
-{
+.help-menu-item {
     white-space: nowrap;
     height: auto;
     width: 100%;
+}
+
+.bash {
+    display: block;
+    background: #e2e3e9;
+    font-family: monospace;
+    white-space: pre;
+    max-width: 100%;
+    min-width: 100px;
+    padding: 10px;
 }
