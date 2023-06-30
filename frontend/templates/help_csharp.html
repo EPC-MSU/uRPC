@@ -3,47 +3,38 @@
 {% block help %}
 
 <h2>C# биндинги (генерируются uRPC)</h2>
-<i>Требует: сгенерированной <a href="/helplibrary">библиотеки</a></i>
+<i>Требуется сгенерированная <a href="/helplibrary">библиотека</a></i>
 <h3>Описание</h3>
 <p align="justify">
-C# биндинги - это файлы C# (.cs), которые позволяют общаться с устройством на языке C#. По сути это C#
-обёртка для библиотеки, написанной на C.
-Результатом работы этого генератора является .cs файл (имя_протокола).py.
-В файле (имя_проекта).cs описаны все константы библиотеки, структуры данных и методы для вызова команд и аксессоров
+C# биндинги - это файлы C# (.cs), которые позволяют общаться с устройством на языке C#. По сути это C# обёртка для библиотеки, написанной на C. Результатом работы этого генератора является файл (имя_проекта).cs. В файле (имя_проекта).cs описаны все константы библиотеки, структуры данных и методы для вызова команд и аксессоров.
+
 <h3> Инструкция по сборке и запуску</h3>
-
 <p align="justify">
-C# файл не требует отдельной сборки. Просто добавьте собранную библиотеку и файл .cs из сгенерированного uRPC архива
-    в ваш проект Microsoft Visual C#
+C# файл не требует отдельной сборки. Просто добавьте собранную библиотеку и файл .cs из сгенерированного uRPC архива в ваш проект Microsoft Visual C#.
 </p>
-<p align="justify"> Пример работы с биндингом</p>
-Пусть в протоколе устройства Foo есть команда supercommand, и устройство подключено к порту 42.
-    Тогда пример консольной программы C#, которая открывает устройство и вызывает эту команду, будет таким:
-
-    <pre><code class="с#">
-        using System;
-        using System.Collections.Generic;
-        using System.Linq;
-        using System.Text;
-        using System.Threading.Tasks;
-        using foo;
-
-        namespace ConsoleApplication1
+<h4>Пример работы с биндингом</h4>
+Пусть в протоколе устройства Foo есть команда supercommand, и устройство подключено к порту 42. Тогда пример консольной программы C#, которая открывает устройство и вызывает эту команду, будет таким:
+<pre><code class="с#">
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using foo;
+	
+    namespace ConsoleApplication1
+    {
+        class Program
         {
-            class Program
+            static void Main(string[] args)
             {
-                static void Main(string[] args)
-                {
-                    int device_id = foo.API.foo_open_device("com:///COM42");
-
-                    foo.API.foo_supercommand(device_id);
-
-                    foo.API.foo_close_device(ref device_id);
-                }
+                int device_id = foo.API.foo_open_device("com:///COM42");
+                foo.API.foo_supercommand(device_id);
+                foo.API.foo_close_device(ref device_id);
             }
         }
-
-    </code></pre>
+    }
+</code></pre>
 </p>
 
 {% end %}

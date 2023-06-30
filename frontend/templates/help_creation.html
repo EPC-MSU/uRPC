@@ -21,22 +21,22 @@
 <p>Обработка команд производится с учётом их размера в байтах. Поэтому для обеспечения обратной совместимости с последующими версиями протокола необходимо, чтобы размер команды оставался постоянным. Для этого рекомендуется обеспечить запас по размеру команды путём добавления массива reserved.<br />
 Пример:</p>
 <pre><code class="c">
-typedef struct
-{
-  uint8_t foo;
-  uint8_t reserved[41];
-}
-my_command_v1;
-// sizeof(my_command_v1) = 1 + 41 = 42
+    typedef struct
+    {
+      uint8_t foo;
+      uint8_t reserved[41];
+    }
+    my_command_v1;
+    // sizeof(my_command_v1) = 1 + 41 = 42
 
-typedef struct
-{
-  uint8_t foo;
-  uint8_t bar[3];
-  uint8_t reserved[38];
-}
-my_command_v1;
-// sizeof(my_command_v2) = 1 + 3 + 38 = 42 = sizeof(my_command_v1)
+    typedef struct
+    {
+      uint8_t foo;
+      uint8_t bar[3];
+      uint8_t reserved[38];
+    }
+    my_command_v1;
+    // sizeof(my_command_v2) = 1 + 3 + 38 = 42 = sizeof(my_command_v1)
 </code></pre>
 <h4>2.4. Добавить описания аргументов на русском и английском</h4>
 <p>Для этого нужно нажать на кнопку <strong>Edit</strong> рядом с соответствующим аргументом в списке.</p>
