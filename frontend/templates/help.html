@@ -3,17 +3,13 @@
 {% block body %}
 
 <div class="pure-menu pure-menu-horizontal help-menu">
-
     {% for link, title in pages.items() %}
     <li class="pure-menu-item help-menu-item"><a href="help{{ link }}" class="pure-menu-link ">{{ title }}</a></li>
     {% end %}
-
 </div>
 
 <div class="pure-u-md-1-2">
-
     {% block help %}
     {% end %}
-
 </div>
 {% end %}
