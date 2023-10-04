@@ -15,8 +15,8 @@
             <p class="form-legend">Extra options</p>
             <textarea name="extra_options" value=""  cols="50" placeholder="Extra options in format: Opt1=Value1, Opt2=Value, ...">{{ protocol.extra_options }}</textarea>
             <p class="form-legend">PID/VID</p>
-            <input type="text" name="pid" placeholder="PID format: 0x1234" pattern="0[xX][0-9a-fA-F]{4}" value="{{ protocol.pid }}">     
-            <input type="text" name="vid" placeholder="VID format: 0x5678" pattern="0[xX][0-9a-fA-F]{4}" value="{{ protocol.vid }}">
+            <input type="text" name="pid" placeholder="PID format: 0x1234" pattern="0[xX][0-9a-fA-F]{4}" value="{{ protocol.pid }}" title="PID must be in format 0xYYYY, where Y is a hex digit">     
+            <input type="text" name="vid" placeholder="VID format: 0x5678" pattern="0[xX][0-9a-fA-F]{4}" value="{{ protocol.vid }}" title="PID must be in format 0xYYYY, where Y is a hex digit">
             <p class="form-legend">Manufacturer</p>
             <input type="text" name="manufacturer" placeholder="Enter manufacturer name..." value="{{ protocol.manufacturer }}">
             <p></p>
