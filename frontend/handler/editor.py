@@ -67,6 +67,30 @@ class AccessorProtocol:
     @extra_options.setter
     def extra_options(self, value):
         self.wrapped.extra_options = value
+    
+    @property
+    def pid(self):
+        return self.wrapped.pid
+    
+    @pid.setter
+    def pid(self, value):
+        self.wrapped.pid = value
+    
+    @property
+    def vid(self):
+        return self.wrapped.vid
+    
+    @vid.setter
+    def vid(self, value):
+        self.wrapped.vid = value
+    
+    @property
+    def manufacturer(self):
+        return self.wrapped.manufacturer
+    
+    @manufacturer.setter
+    def manufacturer(self, value):
+        self.wrapped.manufacturer = value
 
     @property
     def uid(self):
@@ -243,7 +267,14 @@ class EditorSession:
         for c in node.children:
             self._purge_children_handles(c)
 
-    def update_protocol(self, handle, project_name=None, version=None, extra_options: Optional[str] = None):
+    def update_protocol(self,
+                        handle,
+                        project_name=None,
+                        version=None,
+                        extra_options: Optional[str] = None,
+                        pid: str = "",
+                        vid: str = "",
+                        manufacturer: str = ""):
         assert self._draft
 
         protocol = self._handles[handle]
@@ -256,6 +287,9 @@ class EditorSession:
             protocol.version = version
         if extra_options is not None:
             protocol.extra_options = extra_options
+        protocol.pid = pid
+        protocol.vid = vid
+        protocol.manufacturer = manufacturer
 
         return protocol.uid
 
@@ -705,6 +739,9 @@ class EditorHandler(BaseRequestHandler):
         project_name = self.get_body_argument("project_name", None)
         version = self.get_body_argument("version")
         extra_options = self.get_body_argument("extra_options", "")
+        pid = self.get_body_argument("pid")
+        vid = self.get_body_argument("vid")
+        manufacturer = self.get_body_argument("manufacturer")
 
         error_message = ""
         try:
@@ -725,7 +762,10 @@ class EditorHandler(BaseRequestHandler):
                 handle=handle,
                 project_name=project_name,
                 version=version,
-                extra_options=extra_options
+                extra_options=extra_options,
+                pid=pid,
+                vid=vid,
+                manufacturer=manufacturer
             )
         except ValueError as e:
             EditorHandler.messages["project-message"] = str(e)

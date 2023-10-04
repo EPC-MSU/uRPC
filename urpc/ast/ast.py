@@ -331,9 +331,21 @@ class Command(AstNode):
 
 
 class Protocol(AstNode):
-    def __init__(self, name, version, commands=None, extra_options=None, uid=None):
+    def __init__(self,
+                 name,
+                 version,
+                 pid="",
+                 vid="",
+                 manufacturer="",
+                 commands=None,
+                 extra_options=None,
+                 uid=None):
         super().__init__(
-            props={"name": name, "version": version},
+            props={"name": name,
+                   "version": version,
+                   "pid": pid,
+                   "vid": vid,
+                   "manufacturer": manufacturer},
             children=commands,
             description=None,
             extra_options=extra_options,
@@ -345,17 +357,41 @@ class Protocol(AstNode):
     def name(self):
         return self._props["name"]
 
-    @property
-    def version(self):
-        return self._props["version"]
-
     @name.setter
     def name(self, value):
         self._props["name"] = value
 
+    @property
+    def version(self):
+        return self._props["version"]
+
     @version.setter
     def version(self, value):
         self._props["version"] = value
+    
+    @property
+    def pid(self):
+        return self._props["pid"]
+    
+    @pid.setter
+    def pid(self, value):
+        self._props["pid"] = value
+    
+    @property
+    def vid(self):
+        return self._props["vid"]
+    
+    @vid.setter
+    def vid(self, value):
+        self._props["vid"] = value
+    
+    @property
+    def manufacturer(self):
+        return self._props["manufacturer"]
+    
+    @manufacturer.setter
+    def manufacturer(self, value):
+        self._props["manufacturer"] = value
 
     @property
     def commands(self):

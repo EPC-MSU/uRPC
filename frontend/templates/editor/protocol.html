@@ -13,7 +13,12 @@
             <input type="text" name="version" value="{{ protocol.version }}">
             <input type="hidden" name="action" value="update">
             <p class="form-legend">Extra options</p>
-            <textarea name="extra_options" value="" placeholder="Extra options in format: Opt1=Value1, Opt2=Value, ...">{{ protocol.extra_options }}</textarea>
+            <textarea name="extra_options" value=""  cols="50" placeholder="Extra options in format: Opt1=Value1, Opt2=Value, ...">{{ protocol.extra_options }}</textarea>
+            <p class="form-legend">PID/VID</p>
+            <input type="text" name="pid" placeholder="PID format: 0x1234" pattern="0[xX][0-9a-fA-F]{4}" value="{{ protocol.pid }}">     
+            <input type="text" name="vid" placeholder="VID format: 0x5678" pattern="0[xX][0-9a-fA-F]{4}" value="{{ protocol.vid }}">
+            <p class="form-legend">Manufacturer</p>
+            <input type="text" name="manufacturer" placeholder="Enter manufacturer name..." value="{{ protocol.manufacturer }}">
             <p></p>
             <button type="submit" class="pure-button pure-button-primary">Update</button>
             <span class="error-message">{{ messages.get("project-message", "") }}</span>
