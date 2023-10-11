@@ -19,6 +19,7 @@
             <p class="form-legend">Product ID (PID) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Vendor ID (VID)</p>
             <input type="text" name="pid" placeholder="0x1234" pattern="0[xX][0-9a-fA-F]{4}" value="{{ protocol.pid }}" title="PID must be in format 0xYYYY, where Y is a hex digit">     
             <input type="text" name="vid" placeholder="0x5678" pattern="0[xX][0-9a-fA-F]{4}" value="{{ protocol.vid }}" title="PID must be in format 0xYYYY, where Y is a hex digit">
+            <p class="text"><b>NOTE:</b> PID and VID aren't used in case of NIIET controller.</p>
             <p class="form-legend">Manufacturer</p>
             <input type="text" name="manufacturer" placeholder="Acme Corporation" value="{{ protocol.manufacturer }}">
             <p class="form-legend">Extra options</p>

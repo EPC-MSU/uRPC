@@ -77,12 +77,12 @@ void USB_Init(void)
                                           pdFALSE,
                                           ( void * ) 0,
                                           USBCleanRxBufferCallback);
-  Usb_CDC_SetVID(USB_VID);  // Place VID here
-  Usb_CDC_SetPID(USB_PID);  // Place PID here
+  Usb_CDC_SetVID(USB_VID);
+  Usb_CDC_SetPID(USB_PID);
 
-  Usb_CDC_SetSerialNum(SERIAL_NUMBER);  // Place serial number here
-  Usb_CDC_SetManufacturer(MANUFACTURER);  // Place manufacturer here
-  Usb_CDC_SetProduct(PRODUCT_NAME);  // Place product name here
+  Usb_CDC_SetSerialNum(SERIAL_NUMBER);
+  Usb_CDC_SetManufacturer(MANUFACTURER);
+  Usb_CDC_SetProduct(PRODUCT_NAME);
 
 
   if (CleanRxBufferTimerHandle == NULL)
