@@ -13,17 +13,17 @@
             <input type="text" name="version" value="{{ protocol.version }}">
             <input type="hidden" name="action" value="update">
             <p class="form-legend">Product name</p>
-            <input type="text" name="product_name">
+            <input type="text" name="product_name" required="required" pattern="^.{1,40}$" placeholder="Red Apple" title="Product name must be no longer than 40 symbols">
             <p class="form-legend">Device name</p>
-            <input type="text" name="device_name">
+            <input type="text" name="device_name" placeholder="ZAX">
             <p class="form-legend">Product ID (PID) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Vendor ID (VID)</p>
-            <input type="text" name="pid" placeholder="0x1234" pattern="0[xX][0-9a-fA-F]{4}" value="{{ protocol.pid }}" title="PID must be in format 0xYYYY, where Y is a hex digit">     
-            <input type="text" name="vid" placeholder="0x5678" pattern="0[xX][0-9a-fA-F]{4}" value="{{ protocol.vid }}" title="PID must be in format 0xYYYY, where Y is a hex digit">
+            <input type="text" name="pid" placeholder="0x1234" pattern="^0[xX][0-9a-fA-F]{4}$" value="{{ protocol.pid }}" title="PID must be in format 0xYYYY, where Y is a hex digit">     
+            <input type="text" name="vid" placeholder="0x5678" pattern="^0[xX][0-9a-fA-F]{4}$" value="{{ protocol.vid }}" title="PID must be in format 0xYYYY, where Y is a hex digit">
             <div class="pid_vid_tooltip">&#x1F6C8;
                 <span class="tooltip_text">PID and VID aren't used in case of NIIET controller.</span>
             </div>
             <p class="form-legend">Manufacturer</p>
-            <input type="text" name="manufacturer" placeholder="Acme Corporation" pattern="" value="{{ protocol.manufacturer }}">
+            <input type="text" name="manufacturer" required="required" placeholder="Acme Corporation" pattern="^.{1,16}$" value="{{ protocol.manufacturer }}" title="Manufacturer name must be no longer than 16 symbols">
             <p class="form-legend">Extra options</p>
             <textarea name="extra_options" value=""  cols="50" placeholder="Extra options in format: Opt1=Value1, Opt2=Value, ...">{{ protocol.extra_options }}</textarea>
             <p></p>
