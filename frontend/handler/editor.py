@@ -9,7 +9,15 @@ from tornado.httputil import url_concat
 from tornado.web import HTTPError
 
 from frontend.handler.base import BaseRequestHandler
-from frontend.util.validator import check_if_empty, check_if_number, check_if_version, check_project_name
+from frontend.util.validator import (check_if_empty,
+                                     check_if_number,
+                                     check_if_version,
+                                     check_project_name,
+                                     check_product_name,
+                                     check_device_name,
+                                     check_manufacturer,
+                                     check_pid,
+                                     check_vid)
 from frontend.util.validator import check_command_name, check_argument_name, check_constant_name
 from urpc import ast
 from urpc.util.accessor import split_by_type
@@ -737,6 +745,8 @@ class EditorHandler(BaseRequestHandler):
 
     def _process_protocol_post_properties_update(self, handle):
         project_name = self.get_body_argument("project_name", None)
+        product_name = self.get_body_argument("product_name")
+        device_name = self.get_body_argument("device_name")
         version = self.get_body_argument("version")
         extra_options = self.get_body_argument("extra_options", "")
         pid = self.get_body_argument("pid")
@@ -744,15 +754,13 @@ class EditorHandler(BaseRequestHandler):
         manufacturer = self.get_body_argument("manufacturer")
 
         error_message = ""
-        try:
-            check_project_name(project_name)
-        except ValueError as e:
-            error_message += str(e) + " "
-
-        try:
-            check_if_version(version)
-        except ValueError as e:
-            error_message += str(e) + " "
+        error_message += check_if_version(version)
+        error_message += check_project_name(project_name)
+        error_message += check_product_name(product_name)
+        error_message += check_device_name(device_name)
+        error_message += check_manufacturer(manufacturer)
+        error_message += check_pid(pid)
+        error_message += check_vid(vid)
 
         try:
             if error_message != "":
