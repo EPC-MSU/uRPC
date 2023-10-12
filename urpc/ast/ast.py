@@ -334,8 +334,10 @@ class Protocol(AstNode):
     def __init__(self,
                  name,
                  version,
-                 pid="",
-                 vid="",
+                 product_name,
+                 device_name,
+                 pid,
+                 vid,
                  manufacturer="",
                  commands=None,
                  extra_options=None,
@@ -343,6 +345,8 @@ class Protocol(AstNode):
         super().__init__(
             props={"name": name,
                    "version": version,
+                   "product_name": product_name,
+                   "device_name": device_name,
                    "pid": pid,
                    "vid": vid,
                    "manufacturer": manufacturer},
@@ -369,6 +373,22 @@ class Protocol(AstNode):
     def version(self, value):
         self._props["version"] = value
     
+    @property
+    def product_name(self):
+        return self._props["product_name"]
+    
+    @product_name.setter
+    def product_name(self, value):
+        self._props["product_name"] = value
+    
+    @property
+    def device_name(self):
+        return self._props["device_name"]
+    
+    @device_name.setter
+    def device_name(self, value):
+        self._props["device_name"] = value
+
     @property
     def pid(self):
         return self._props["pid"]

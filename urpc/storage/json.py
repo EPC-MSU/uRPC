@@ -135,6 +135,8 @@ class ProtocolSchema(Schema):
     name = fields.String()
     version = fields.String()
     project_name = fields.String()
+    product_name = fields.String()
+    device_name = fields.String()
     pid = fields.String()
     vid = fields.String()
     manufacturer = fields.String()

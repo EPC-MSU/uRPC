@@ -93,6 +93,22 @@ class AccessorProtocol:
         self.wrapped.vid = value
     
     @property
+    def product_name(self):
+        return self.wrapped.product_name
+
+    @product_name.setter
+    def product_name(self, value):
+        self.wrapped.product_name = value
+    
+    @property
+    def device_name(self):
+        return self.wrapped.device_name
+    
+    @device_name.setter
+    def device_name(self, value):
+        self.wrapped.device_name = value
+
+    @property
     def manufacturer(self):
         return self.wrapped.manufacturer
     
@@ -277,27 +293,29 @@ class EditorSession:
 
     def update_protocol(self,
                         handle,
-                        project_name=None,
-                        version=None,
-                        extra_options: Optional[str] = None,
-                        pid: str = "",
-                        vid: str = "",
-                        manufacturer: str = ""):
+                        project_name: str,
+                        version: str,
+                        product_name: str,
+                        device_name: str,
+                        pid: str,
+                        vid: str,
+                        manufacturer: str,
+                        extra_options: Optional[str] = None):
         assert self._draft
 
         protocol = self._handles[handle]
 
         assert isinstance(protocol, AccessorProtocol)
 
-        if project_name is not None:
-            protocol.name = project_name
-        if version is not None:
-            protocol.version = version
-        if extra_options is not None:
-            protocol.extra_options = extra_options
+        protocol.name = project_name
+        protocol.version = version
+        protocol.product_name = product_name
+        protocol.device_name = device_name
         protocol.pid = pid
         protocol.vid = vid
         protocol.manufacturer = manufacturer
+        if extra_options is not None:
+            protocol.extra_options = extra_options
 
         return protocol.uid
 
@@ -770,10 +788,12 @@ class EditorHandler(BaseRequestHandler):
                 handle=handle,
                 project_name=project_name,
                 version=version,
-                extra_options=extra_options,
+                product_name=product_name,
+                device_name=device_name,
                 pid=pid,
                 vid=vid,
-                manufacturer=manufacturer
+                manufacturer=manufacturer,
+                extra_options=extra_options
             )
         except ValueError as e:
             EditorHandler.messages["project-message"] = str(e)
