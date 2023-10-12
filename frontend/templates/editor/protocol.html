@@ -13,9 +13,9 @@
             <input type="text" name="version" value="{{ protocol.version }}">
             <input type="hidden" name="action" value="update">
             <p class="form-legend">Product name</p>
-            <input type="text" name="product_name" required="required" pattern="^.{1,40}$" placeholder="Red Apple" title="Product name must be no longer than 40 symbols">
+            <input type="text" name="product_name" required="required" pattern="^.{1,40}$" placeholder="Red Apple" value="{{ protocol.product_name }}" title="Product name must be no longer than 40 symbols">
             <p class="form-legend">Device name</p>
-            <input type="text" name="device_name" required="required" pattern="^.{1,40}$" placeholder="ZAX">
+            <input type="text" name="device_name" required="required" pattern="^.{1,40}$" placeholder="ZAX" value="{{ protocol.device_name }}">
             <p class="form-legend">Product ID (PID) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Vendor ID (VID)</p>
             <input type="text" name="pid" placeholder="0x1234" required="required" pattern="^0[xX][0-9a-fA-F]{4}$" value="{{ protocol.pid }}" title="PID must be in format 0xYYYY, where Y is a hex digit">     
             <input type="text" name="vid" placeholder="0x5678" required="required" pattern="^0[xX][0-9a-fA-F]{4}$" value="{{ protocol.vid }}" title="PID must be in format 0xYYYY, where Y is a hex digit">
