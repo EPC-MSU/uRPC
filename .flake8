@@ -1,8 +1,29 @@
 [flake8]
-exclude = .git, .hg, __pycache__, urpc/builder/library/resources/vendor/liburpc, venv
 max-complexity = 14
 inline-quotes = double
-multiline-quotes = """
+multiline-quotes = """ 
 builtins = _
 verbose = 2
 max-line-length = 120
+
+# Files and folders ignore list
+# -----------------------------
+# Add comments for all ignored files and folders to justify the common standard violation
+exclude = 
+          # Git internal folder
+          .git,
+          # Python temporary files
+          __pycache__,
+          # External dependencies
+          venv
+          # C library. There is no need to check it with flake8
+          urpc/builder/library/resources/vendor/liburpc
+
+# Violations ignore list
+# ======================
+# Add comments for all ignored rules to justify the common standard violation
+# extend-ignore =
+    # doxygen comments are used in python files
+    # E266,
+    # @overload is used
+    # F811,
