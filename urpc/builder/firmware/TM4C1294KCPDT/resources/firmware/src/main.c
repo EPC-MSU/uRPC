@@ -50,14 +50,15 @@ __noreturn int32_t main(void)
   FixVectorTable();     // Some IRQ vectors could be overwritten by bootloader. Restore them
   ClearInterrupts();    // Before enabling interrupts we must clear any pending interrupts
 
-  //Interrupt priority Set(Engines block using priority 1 and 2 only)
+  //Interrupt priority Set
   //You can using here only priorities from 3 to 7
+  //Make sure to set the correct priority for all the blocks used
+  //Also note that communication protocols such as USB and UART should usually have lower
+  //priorities than main firmware function blocks
   IntPrioritySet(FAULT_SYSTICK, 4 << 5);  // Handles all periodical maintenance
-  IntPrioritySet(INT_ADC0SS2, 3 << 5);    // Handles various analog readings
-  IntPrioritySet(INT_ADC1SS2, 3 << 5);    // Handles various analog readings
-  IntPrioritySet(INT_TIMER1A, 3 << 5);    // Handles sync out timer
-  IntPrioritySet(INT_TIMER1B, 3 << 5);    // Handles sync in timer
-  IntPrioritySet(INT_GPIOA, 3 << 5);      // Handles limit switches and synch in pin
+  IntPrioritySet(INT_TIMER1A, 3 << 5);    // Timer
+  IntPrioritySet(INT_TIMER1B, 3 << 5);    // 
+  IntPrioritySet(INT_GPIOA, 5 << 5);      // GPIO interrupts' priorities
   IntPrioritySet(INT_GPIOB, 5 << 5);      //
   IntPrioritySet(INT_GPIOC, 5 << 5);      //
   IntPrioritySet(INT_GPIOD, 5 << 5);      //
@@ -65,12 +66,9 @@ __noreturn int32_t main(void)
   IntPrioritySet(INT_GPIOF, 5 << 5);      //
   IntPrioritySet(INT_GPIOG, 5 << 5);      //
   IntPrioritySet(INT_GPIOH, 5 << 5);      //
-  IntPrioritySet(INT_GPIOJ, 3 << 5);      // Handles limit switches
-  IntPrioritySet(INT_I2C1, 5 << 5);       // FRAM memory interface must supercede USB and UART blocks but can be used carefully from higher priority interfaces
-  IntPrioritySet(INT_QEI0, 6 << 5);       // Handles errors in encoder signal
+  IntPrioritySet(INT_GPIOJ, 5 << 5);      // Handles limit switches
   IntPrioritySet(INT_USB0, 6 << 5);       // USB control
   IntPrioritySet(INT_UART1, 6 << 5);      // UART control
-  IntPrioritySet(INT_WATCHDOG, 7 << 5);   // WATCHDOG control
 
   __ENABLE_IRQ;
 
