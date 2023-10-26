@@ -4,7 +4,7 @@
 
 .pure-menu-horizontal {
     display:inline-block;
-    *display:inline;
+    *display:inline; /*IE7 hack. See https://stackoverflow.com/questions/1690642/purpose-of-asterisk-before-a-css-property for more detailed information*/
     zoom:1;
     vertical-align:middle;
     background-color: #DCEEF5;

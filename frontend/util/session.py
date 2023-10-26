@@ -47,7 +47,7 @@ class SessionManager(Container):
                 with open(path, "rb") as f:
                     item.project = self._storage.load(f)
             else:
-                item.project = Protocol(name="default_project", version="0.0.1")
+                item.project = Protocol(name="default_project", version="0.0.1", product_name="Default product name", device_name="Default device name")
 
         item.timeout = self._loop.call_later(self._dump_timeout, self._dump_cached, uid)
         return item.project

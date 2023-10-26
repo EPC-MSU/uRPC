@@ -4,7 +4,10 @@ import re
 version_pattern = re.compile(r"^((?:[1-9][0-9]*?)|0)(?:\.((?:[1-9][0-9]*?)|0))?(?:\.((?:[1-9][0-9]*?)|0))?$")
 project_name_pattern = re.compile(r"^[a-z_][a-z0-9_]*?$")
 product_name_pattern = re.compile(r"^.{1,40}$")
-device_name_pattern = re.compile(r"^.{1,40}$")
+device_name_pattern = re.compile(
+    r"^[a-zA-Z]"
+    r"[a-zA-Z\ \!\"\#\$\%\&\'\(\)\*\+\,\-\.\/0-9\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~]*"
+    r"[a-zA-Z\!\"\#\$\%\&\'\(\)\*\+\,\-\.\/0-9\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~]$")
 manufacturer_name_pattern = re.compile(r"^.{1,16}$")
 pid_vid_pattern = re.compile(r"^0[xX][0-9a-fA-F]{4}$")
 command_name_pattern = re.compile(r"^[a-z_]*[a-z0-9_]*[a-z0-9]*?$")
@@ -53,9 +56,9 @@ def check_if_version(val, par_name="Version"):
 def check_project_name(val, par_name="Project name"):
     match = project_name_pattern.match(val)
     if not match:
-        raise ValueError('The "{}" field can only contain: lowercase letters [a-z], numbers [0-9] and underscores. \
-                          The "{}" field cannot start with numbers and cannot contain spaces.'.format(par_name, par_name
-                                                                                                      ))
+        raise ValueError('The "{}" field can only contain: lowercase letters [a-z], numbers [0-9] \
+                          and underscores. The "{}" field cannot start with numbers and cannot \
+                          contain spaces.'.format(par_name, par_name))
     return val
 
 
