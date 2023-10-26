@@ -91,13 +91,13 @@
   * @brief Private defines.
   * @{
   */
-
+#define STRINGIZE(x)  (#x)
 #define USBD_VID                         USB_VID
 #define USBD_LANGID_STRING               1033
 #define USBD_MANUFACTURER_STRING         MANUFACTURER
 #define USBD_PID_FS                      USB_PID
 #define USBD_PRODUCT_STRING_FS           PRODUCT_NAME
-#define USBD_SERIALNUMBER_STRING_FS      SERIAL_NUMBER
+#define USBD_SERIALNUMBER_STRING_FS      STRINGIZE(SERIAL_NUMBER)
 #define USBD_CONFIGURATION_STRING_FS     "CDC Config"
 #define USBD_INTERFACE_STRING_FS         "CDC Interface"
 

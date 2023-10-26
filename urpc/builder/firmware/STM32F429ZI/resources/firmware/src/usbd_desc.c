@@ -55,12 +55,13 @@
 /* Include with device configurations ----------------------------------------*/
 #include "config.h" 
 
+#define STRINGIZE(x)  (#x)
 #define USBD_VID                         USB_VID
 #define USBD_LANGID_STRING               1033
 #define USBD_MANUFACTURER_STRING         MANUFACTURER
 #define USBD_PID_HS                      USB_PID
 #define USBD_PRODUCT_STRING_HS           PRODUCT_NAME
-#define USBD_SERIALNUMBER_STRING_HS      SERIAL_NUMBER
+#define USBD_SERIALNUMBER_STRING_HS      STRINGIZE(SERIAL_NUMBER)
 #define USBD_CONFIGURATION_STRING_HS     "CDC Config"
 #define USBD_INTERFACE_STRING_HS         "CDC Interface"
 
