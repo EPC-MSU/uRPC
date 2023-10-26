@@ -1,6 +1,6 @@
 #ifndef _USB_SERIAL_H_
 #define _USB_SERIAL_H_
-
+#include "config.h"
 #include "iobuffer.h"
 
 #define I2C_DEVICES_LIMIT   4   // Can not exceed 16 because of addresses limit
