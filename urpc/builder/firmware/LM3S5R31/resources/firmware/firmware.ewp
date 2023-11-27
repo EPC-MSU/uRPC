@@ -2006,10 +2006,10 @@
   <group>
     <name>Libraries</name>
     <file>
-      <name>$PROJ_DIR$\..\..\..\ti\StellarisWare\driverlib\ewarm-cm3\Exe\driverlib-cm3.a</name>
+      <name>C:\ti\StellarisWare\driverlib\ewarm-cm3\Exe\driverlib-cm3.a</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\ti\StellarisWare\usblib\ewarm-cm3\Exe\usblib-cm3.a</name>
+      <name>C:\ti\StellarisWare\usblib\ewarm-cm3\Exe\usblib-cm3.a</name>
     </file>
   </group>
 </project>
