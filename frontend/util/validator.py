@@ -6,7 +6,7 @@ project_name_pattern = re.compile(r"^[a-z_][a-z0-9_]*?$")
 product_name_pattern = re.compile(r"^.{1,40}$")
 device_name_pattern = re.compile(
     r"^[a-zA-Z]"
-    r"[a-zA-Z\ \!\"\#\$\%\&\'\(\)\*\+\,\-\.\/0-9\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~]*"
+    r"[a-zA-Z\ \!\"\#\$\%\&\'\(\)\*\+\,\-\.\/0-9\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~]{1,38}"
     r"[a-zA-Z\!\"\#\$\%\&\'\(\)\*\+\,\-\.\/0-9\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~]$")
 manufacturer_name_pattern = re.compile(r"^.{1,16}$")
 pid_vid_pattern = re.compile(r"^0[xX][0-9a-fA-F]{4}$")

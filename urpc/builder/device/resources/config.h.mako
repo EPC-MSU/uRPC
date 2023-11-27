@@ -5,7 +5,7 @@
 #include <stdint.h>     // For uint32_t, int16_t and etc.
 
 #define MANUFACTURER      "${protocol.manufacturer}"
-#define PRODUCT_NAME      "${protocol.name}"
+#define PRODUCT_NAME      "${protocol.product_name}"
 
 #define USB_VID           ${protocol.vid}
 #define USB_PID           ${protocol.pid}
