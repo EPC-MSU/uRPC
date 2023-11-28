@@ -30,8 +30,8 @@
         </div>
 
         <ul class="pure-menu-list">
-            <li class="pure-menu-item pure-menu-selected"><a class="pure-menu-link" href="{{ reverse_url("main")[1:]}}">Editor</a></li>
-            <li class="pure-menu-item"><a class="pure-menu-link" href="help">Help</a></li>
+            <li class="pure-menu-item {% block editor_style %}{% end %}"><a class="pure-menu-link" href="{{ reverse_url("main")[1:]}}">Editor</a></li>
+            <li class="pure-menu-item {% block help_style %}{% end %}"><a class="pure-menu-link" href="help">Help</a></li>
         </ul>
     </div>
 </div>
