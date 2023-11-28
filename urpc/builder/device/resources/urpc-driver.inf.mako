@@ -34,4 +34,4 @@ AddReg=LowerFilterAddReg
 
 [Strings]
 MFGNAME="${protocol.manufacturer}"
-DESCR="${protocol.product_name} Universal Driver"
+DESCR="${protocol.product_name} ${protocol.device_name}"
