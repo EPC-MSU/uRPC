@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>uRPC {{ version }}</title>
+    {# Try load page name. In case of any fail, just ommit it. #}
+    {% try %}
+        <title>uRPC {{ version }} : {{page}}</title>
+    {% except %}
+        <title>uRPC {{ version }}</title>
+    {% end %}
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{{static_url("vendor/pure-release-0.6.0/pure-min.css")[1:]}}">
     <!--[if lte IE 8]>

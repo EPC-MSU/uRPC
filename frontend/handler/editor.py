@@ -679,24 +679,24 @@ class EditorHandler(BaseRequestHandler):
             if kind is ResourceKind.protocol:
                 self.render("editor/protocol.html", protocol=self._editor.read_protocol(handle),
                             messages=EditorHandler.messages,
-                            breadcrumbs=[], version=BUILDER_VERSION,
+                            breadcrumbs=[], version=BUILDER_VERSION, page="Главная",
                             get_tags=self.get_tags)
             elif kind is ResourceKind.command:
                 self.render("editor/command.html", command=self._editor.read_command(handle),
                             messages=EditorHandler.messages,
-                            breadcrumbs=self._editor.breadcrumbs_by_handle(handle, self), version=BUILDER_VERSION)
+                            breadcrumbs=self._editor.breadcrumbs_by_handle(handle, self), version=BUILDER_VERSION, page="Главная")
             elif kind is ResourceKind.accessor:
                 self.render("editor/accessor.html", accessor=self._editor.read_accessor(handle),
                             messages=EditorHandler.messages,
-                            breadcrumbs=self._editor.breadcrumbs_by_handle(handle, self), version=BUILDER_VERSION)
+                            breadcrumbs=self._editor.breadcrumbs_by_handle(handle, self), version=BUILDER_VERSION, page="Главная")
             elif kind is ResourceKind.argument:
                 self.render("editor/argument.html", argument=self._editor.read_argument(handle),
                             messages=EditorHandler.messages,
-                            breadcrumbs=self._editor.breadcrumbs_by_handle(handle, self), version=BUILDER_VERSION)
+                            breadcrumbs=self._editor.breadcrumbs_by_handle(handle, self), version=BUILDER_VERSION, page="Главная")
             elif kind is ResourceKind.constant:
                 self.render("editor/constant.html", constant=self._editor.read_constant(handle),
                             messages=EditorHandler.messages,
-                            breadcrumbs=self._editor.breadcrumbs_by_handle(handle, self), version=BUILDER_VERSION)
+                            breadcrumbs=self._editor.breadcrumbs_by_handle(handle, self), version=BUILDER_VERSION, page="Главная")
         else:
             raise HTTPError(404)
         EditorHandler.messages = {}
