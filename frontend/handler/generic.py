@@ -33,4 +33,4 @@ class HelpHandler(BaseRequestHandler):
     def get(self, page=None):
         if page not in self.pages:
             page = "general"
-        self.render(f"help_{page}.html", pages=self.pages, version=BUILDER_VERSION, page=page)
+        self.render(f"help_{page}.html", pages=self.pages, version=BUILDER_VERSION, page=self.pages[page])
