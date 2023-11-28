@@ -44,7 +44,8 @@ common_path_mapping = {
     join("tasks.c"): join("firmware", "src", "tasks.c"),
     join("timers.c"): join("firmware", "src", "timers.c"),
     join("timers.h"): join("firmware", "inc", "timers.h"),
-    join("config.h.mako"): join("firmware", "inc", "config.h.mako")
+    join("config.h.mako"): join("firmware", "inc", "config.h.mako"),
+    join("urpc-driver.inf.mako"): join("urpc-driver.inf.mako")
 }
 
 

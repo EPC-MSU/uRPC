@@ -9,13 +9,13 @@ DriverVer=06/21/2006
 CopyINF=urpc-driver.inf
 
 [Manufacturer]
-%MFGNAME%=CommunicationDevice,NT,NTamd64
+%%MFGNAME%=CommunicationDevice,NT,NTamd64
 
 [CommunicationDevice.NT]
-%DESCR_0%=DriverInstall,USB\VID_1CBE&PID_0007&MI_00
+%%DESCR_0%=DriverInstall,USB\VID_${protocol.vid.replace("0x","")}&PID_${protocol.pid.replace("0x","")}
 
 [CommunicationDevice.NTamd64]
-%DESCR_0%=DriverInstall,USB\VID_1CBE&PID_0007&MI_00
+%%DESCR_0%=DriverInstall,USB\VID_${protocol.vid.replace("0x","")}&PID_${protocol.pid.replace("0x","")}
 
 [DriverInstall]
 Include=mdmcpq.inf
@@ -26,13 +26,9 @@ Include=mdmcpq.inf
 AddService=usbser,0x00000002,LowerFilter_Service_Inst
 
 [DriverInstall.HW]
-AddReg=DriverInstall.AddReg
-
-[DriverInstall.AddReg]
-HKR,,DevLoader,,*ntkern
-HKR,,NTMPDriver,,usbser.sys
-HKR,,EnumPropPages32,,"MsPorts.dll,SerialPortPropPageProvider"
+Include=mdmcpq.inf
+AddReg=LowerFilterAddReg
 
 [Strings]
-MFGNAME="uRPC"
-DESCR_0="uRPC Universal Driver"
+MFGNAME="${protocol.manufacturer}"
+DESCR_0="${protocol.product_name} Universal Driver"
