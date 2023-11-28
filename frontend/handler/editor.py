@@ -75,23 +75,23 @@ class AccessorProtocol:
     @extra_options.setter
     def extra_options(self, value):
         self.wrapped.extra_options = value
-    
+
     @property
     def pid(self):
         return self.wrapped.pid
-    
+
     @pid.setter
     def pid(self, value):
         self.wrapped.pid = value
-    
+
     @property
     def vid(self):
         return self.wrapped.vid
-    
+
     @vid.setter
     def vid(self, value):
         self.wrapped.vid = value
-    
+
     @property
     def product_name(self):
         return self.wrapped.product_name
@@ -99,11 +99,11 @@ class AccessorProtocol:
     @product_name.setter
     def product_name(self, value):
         self.wrapped.product_name = value
-    
+
     @property
     def device_name(self):
         return self.wrapped.device_name
-    
+
     @device_name.setter
     def device_name(self, value):
         self.wrapped.device_name = value
@@ -111,7 +111,7 @@ class AccessorProtocol:
     @property
     def manufacturer(self):
         return self.wrapped.manufacturer
-    
+
     @manufacturer.setter
     def manufacturer(self, value):
         self.wrapped.manufacturer = value
@@ -744,19 +744,23 @@ class EditorHandler(BaseRequestHandler):
             elif kind is ResourceKind.command:
                 self.render("editor/command.html", command=self._editor.read_command(handle),
                             messages=EditorHandler.messages,
-                            breadcrumbs=self._editor.breadcrumbs_by_handle(handle, self), version=BUILDER_VERSION, page="Главная")
+                            breadcrumbs=self._editor.breadcrumbs_by_handle(handle, self), version=BUILDER_VERSION,
+                            page="Главная")
             elif kind is ResourceKind.accessor:
                 self.render("editor/accessor.html", accessor=self._editor.read_accessor(handle),
                             messages=EditorHandler.messages,
-                            breadcrumbs=self._editor.breadcrumbs_by_handle(handle, self), version=BUILDER_VERSION, page="Главная")
+                            breadcrumbs=self._editor.breadcrumbs_by_handle(handle, self), version=BUILDER_VERSION,
+                            page="Главная")
             elif kind is ResourceKind.argument:
                 self.render("editor/argument.html", argument=self._editor.read_argument(handle),
                             messages=EditorHandler.messages,
-                            breadcrumbs=self._editor.breadcrumbs_by_handle(handle, self), version=BUILDER_VERSION, page="Главная")
+                            breadcrumbs=self._editor.breadcrumbs_by_handle(handle, self), version=BUILDER_VERSION,
+                            page="Главная")
             elif kind is ResourceKind.constant:
                 self.render("editor/constant.html", constant=self._editor.read_constant(handle),
                             messages=EditorHandler.messages,
-                            breadcrumbs=self._editor.breadcrumbs_by_handle(handle, self), version=BUILDER_VERSION, page="Главная")
+                            breadcrumbs=self._editor.breadcrumbs_by_handle(handle, self), version=BUILDER_VERSION,
+                            page="Главная")
         else:
             raise HTTPError(404)
         EditorHandler.messages = {}

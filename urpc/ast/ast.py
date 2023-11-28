@@ -372,19 +372,19 @@ class Protocol(AstNode):
     @version.setter
     def version(self, value):
         self._props["version"] = value
-    
+
     @property
     def product_name(self):
         return self._props["product_name"]
-    
+
     @product_name.setter
     def product_name(self, value):
         self._props["product_name"] = value
-    
+
     @property
     def device_name(self):
         return self._props["device_name"]
-    
+
     @device_name.setter
     def device_name(self, value):
         self._props["device_name"] = value
@@ -392,23 +392,23 @@ class Protocol(AstNode):
     @property
     def pid(self):
         return self._props["pid"]
-    
+
     @pid.setter
     def pid(self, value):
         self._props["pid"] = value
-    
+
     @property
     def vid(self):
         return self._props["vid"]
-    
+
     @vid.setter
     def vid(self, value):
         self._props["vid"] = value
-    
+
     @property
     def manufacturer(self):
         return self._props["manufacturer"]
-    
+
     @manufacturer.setter
     def manufacturer(self, value):
         self._props["manufacturer"] = value
