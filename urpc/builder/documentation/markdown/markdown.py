@@ -48,40 +48,40 @@ class _MarkdownBuilderImpl(ClangView):
         return c_str
 
     def _message_fields(self, msg):
-        textile = ""
-        textile += f'| {"".join(type_to_cstr(ast.Integer32u)) } | CMD | Команда |\n'
-        textile += '|---|---|---|\n'
+        markdown = ""
+        markdown += f'| {"".join(type_to_cstr(ast.Integer32u)) } | CMD | Команда |\n'
+        markdown += '|---|---|---|\n'
         for arg in msg.args:
-            textile += self._message_field(arg) + "\n"
+            markdown += self._message_field(arg) + "\n"
             for c in arg.consts:
-                textile += f'||| {"0x%0.2X" % c.value} - {c.name} ({c.description.get("russian", "")})|\n'
+                markdown += f'||| {"0x%0.2X" % c.value} - {c.name} ({c.description.get("russian", "")})|\n'
 
-        return textile
+        return markdown
 
     def _generate_command(self, cmd):
-        textile = ""
-        textile += f"### Команда {self._nsp(cmd.name)} ({cmd.cid.upper()})\n\n"
-        textile += f"\n```c\n{self._func_head(cmd)}\n```\n"
-        textile += f'Код команды (CMD): `{cmd.cid}` или `{ascii_to_hex(cmd.cid)}`\n\n'
-        textile += f"**Запрос:** ({get_msg_len(cmd.request)} байт)\n\n"
-        textile += self._message_fields(cmd.request) + "\n"
-        textile += f"**Ответ:** ({get_msg_len(cmd.response)} байт)\n\n"
-        textile += self._message_fields(cmd.response) + "\n"
-        textile += "**Описание:**\n"
-        textile += cmd.description.get("russian", "") + "\n"
-        return textile
+        markdown = ""
+        markdown += f"### Команда {self._nsp(cmd.name)} ({cmd.cid.upper()})\n\n"
+        markdown += f"\n```c\n{self._func_head(cmd)}\n```\n"
+        markdown += f'Код команды (CMD): `{cmd.cid}` или `{ascii_to_hex(cmd.cid)}`\n\n'
+        markdown += f"**Запрос:** ({get_msg_len(cmd.request)} байт)\n\n"
+        markdown += self._message_fields(cmd.request) + "\n"
+        markdown += f"**Ответ:** ({get_msg_len(cmd.response)} байт)\n\n"
+        markdown += self._message_fields(cmd.response) + "\n"
+        markdown += "**Описание:**\n"
+        markdown += cmd.description.get("russian", "") + "\n"
+        return markdown
 
-    def generate_textile(self):
-        textile = get_static_part() + "\n"
+    def generate_markdown(self):
+        markdown = get_static_part() + "\n"
         for cmd in self._commands:
-            textile += self._generate_command(cmd) + "\n"
+            markdown += self._generate_command(cmd) + "\n"
         if self.__getters != [] and self.__setters != []:
             for cmd in self.__getters:
-                textile += self._generate_command(cmd) + "\n"
+                markdown += self._generate_command(cmd) + "\n"
             for cmd in self.__setters:
-                textile += self._generate_command(cmd) + "\n"
-        textile += "\nВерсия генератора " + BUILDER_VERSION
-        return textile
+                markdown += self._generate_command(cmd) + "\n"
+        markdown += "\n---\nВерсия генератора " + BUILDER_VERSION
+        return markdown
 
 
 def build(project, output, lang):
@@ -90,7 +90,7 @@ def build(project, output, lang):
     with ZipFile(output, "w", ZIP_DEFLATED) as archive:
         archive.writestr(
             "{}.md".format(project.name.lower()),
-            view.generate_textile()
+            view.generate_markdown()
         )
         archive.write(join(common_path, "Synch.png"), "Synch.png")
         archive.write(join(common_path, "crc.png"), "crc.png")
