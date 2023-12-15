@@ -41,15 +41,16 @@ class _MarkdownBuilderImpl(ClangView):
 
     def _message_field(self, arg):
         base_type, length = type_to_cstr(arg.type_)
-        c_str = "|" + base_type
-        c_str += "|{} ".format(arg.name)
+        c_str = "| " + base_type
+        c_str += " | {} ".format(arg.name)
         c_str += length
-        c_str += "|" + ("Зарезервировано" if "reserved" in arg.name else arg.description.get("russian", "")) + "|"
+        c_str += " | " + ("Зарезервировано" if "reserved" in arg.name else arg.description.get("russian", "")) + " |"
         return c_str
 
     def _message_fields(self, msg):
         textile = ""
-        textile += f'|_. {"".join(type_to_cstr(ast.Integer32u)) }|_. CMD|_. Команда|\n'
+        textile += f'| {"".join(type_to_cstr(ast.Integer32u)) } | CMD | Команда |\n'
+        textile += '|---|---|---|\n'
         for arg in msg.args:
             textile += self._message_field(arg) + "\n"
             for c in arg.consts:
@@ -59,14 +60,14 @@ class _MarkdownBuilderImpl(ClangView):
 
     def _generate_command(self, cmd):
         textile = ""
-        textile += f"h3. Команда {self._nsp(cmd.name)} ({cmd.cid.upper()})\n\n"
-        textile += f"<pre>{self._func_head(cmd)}</pre> "
-        textile += f'Код команды (CMD): "{cmd.cid}" или {ascii_to_hex(cmd.cid)}\n\n'
-        textile += f"*Запрос:* ({get_msg_len(cmd.request)} байт)\n\n"
+        textile += f"### Команда {self._nsp(cmd.name)} ({cmd.cid.upper()})\n\n"
+        textile += f"\n```c\n{self._func_head(cmd)}\n```\n"
+        textile += f'Код команды (CMD): `{cmd.cid}` или `{ascii_to_hex(cmd.cid)}`\n\n'
+        textile += f"**Запрос:** ({get_msg_len(cmd.request)} байт)\n\n"
         textile += self._message_fields(cmd.request) + "\n"
-        textile += f"*Ответ:* ({get_msg_len(cmd.response)} байт)\n\n"
+        textile += f"**Ответ:** ({get_msg_len(cmd.response)} байт)\n\n"
         textile += self._message_fields(cmd.response) + "\n"
-        textile += "*Описание:*\n"
+        textile += "**Описание:**\n"
         textile += cmd.description.get("russian", "") + "\n"
         return textile
 
