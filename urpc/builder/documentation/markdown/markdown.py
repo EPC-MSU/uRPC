@@ -33,7 +33,7 @@ class _MarkdownBuilderImpl(ClangView):
 
     def _func_head(self, command):
         head = ""
-        head += f"result_t {self._nsp(command.name)}(device_t id"
+        head += "result_t {}(device_t id".format(self._nsp(command.name))
         head += self._func_arg_str("input", command.request)
         head += self._func_arg_str("input", command.response)
         head += ")"
@@ -41,33 +41,36 @@ class _MarkdownBuilderImpl(ClangView):
 
     def _message_field(self, arg):
         base_type, length = type_to_cstr(arg.type_)
-        c_str = "| " + base_type
-        c_str += " | {} ".format(arg.name)
+        c_str = "| `" + base_type + "` "
+        c_str += "| {} ".format(arg.name)
         c_str += length
         c_str += " | " + ("Зарезервировано" if "reserved" in arg.name else arg.description.get("russian", "")) + " |"
         return c_str
 
     def _message_fields(self, msg):
         markdown = ""
-        markdown += f'| {"".join(type_to_cstr(ast.Integer32u)) } | CMD | Команда |\n'
-        markdown += '|---|---|---|\n'
+        markdown += "| Тип  | Поле | Описание |\n"
+        markdown += "| ---- | ---- | -------- |\n"
+        markdown += "| `{}` | CMD  | Идентификатор команды |\n".format("".join(type_to_cstr(ast.Integer32u)))
         for arg in msg.args:
             markdown += self._message_field(arg) + "\n"
             for c in arg.consts:
-                markdown += f'||| {"0x%0.2X" % c.value} - {c.name} ({c.description.get("russian", "")})|\n'
+                markdown += "||| `{}` (`0x{:02X}`) - {}|\n".format(c.name, c.value, c.description.get("russian", ""))
+        if len(msg.args) > 0:
+            markdown += "| `uint16_t` | CRC | Контрольная сумма |\n"
 
         return markdown
 
     def _generate_command(self, cmd):
         markdown = ""
-        markdown += f"### Команда {self._nsp(cmd.name)} ({cmd.cid.upper()})\n\n"
-        markdown += f"\n```c\n{self._func_head(cmd)}\n```\n"
-        markdown += f'Код команды (CMD): `{cmd.cid}` или `{ascii_to_hex(cmd.cid)}`\n\n'
-        markdown += f"**Запрос:** ({get_msg_len(cmd.request)} байт)\n\n"
+        markdown += "### Команда {} ({})\n\n".format(self._nsp(cmd.name), cmd.cid.upper())
+        markdown += "\n```c\n{}\n```\n".format(self._func_head(cmd))
+        markdown += "Код команды (CMD): `{}` или `{}`\n\n".format(cmd.cid, ascii_to_hex(cmd.cid))
+        markdown += "**Запрос** ({} байт)\n\n".format(get_msg_len(cmd.request))
         markdown += self._message_fields(cmd.request) + "\n"
-        markdown += f"**Ответ:** ({get_msg_len(cmd.response)} байт)\n\n"
+        markdown += "**Ответ** ({} байт)\n\n".format(get_msg_len(cmd.response))
         markdown += self._message_fields(cmd.response) + "\n"
-        markdown += "**Описание:**\n"
+        markdown += "**Описание**\n"
         markdown += cmd.description.get("russian", "") + "\n"
         return markdown
 
@@ -92,5 +95,3 @@ def build(project, output, lang):
             "{}.md".format(project.name.lower()),
             view.generate_markdown()
         )
-        archive.write(join(common_path, "Synch.png"), "Synch.png")
-        archive.write(join(common_path, "crc.png"), "crc.png")
