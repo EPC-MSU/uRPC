@@ -206,5 +206,6 @@ windows.
 ##  Описание команд
 """
 
+
 def get_static_part():
     return s

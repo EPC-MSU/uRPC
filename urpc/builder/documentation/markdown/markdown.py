@@ -1,10 +1,9 @@
-from os.path import abspath, dirname, join
+from os.path import abspath, dirname
 from zipfile import ZipFile, ZIP_DEFLATED
 
 from urpc.builder.util import ClangView
 from urpc.builder.util.clang import namespace_symbol
 from urpc.util.cconv import ascii_to_hex, get_msg_len, type_to_cstr
-from urpc.builder.documentation.common import common_path
 from urpc import ast
 from .static import get_static_part
 from version import BUILDER_VERSION
