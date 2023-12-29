@@ -157,8 +157,25 @@ __attribute__((section(".stackarea"))) static unsigned long Stack[STACK_SIZE];
 #endif  // __ICCARM__
 void ResetISR(void)
 {
-  __asm("mov r1,#0x00");
-  __asm("ldr sp,[r1]");
+#pragma section=".intvec"
+
+  //
+  // Do not use just #0x0 for getting address of the vector table here because
+  // if the firmware is loaded to the memory with some offset the stack address will be placed not at the 0x0 address.
+  // Here we use IAR specific comand __section_begin(section) to get start
+  // address of this section since we told Linker to place vector table at this
+  // section (".intvec") at the start of the flash.
+  //
+  __asm("mov r1, %0"::"r"(__section_begin(".intvec")));  // copy address of the real vector table to R1 register
+  __asm("ldr sp,[r1]");  // write value of R1 to SP (stack pointer) register
+
+  //
+  // For correct vector table copying from the flash to RAM we need to save its
+  // real address to this address (NVIC_VTABLE) of the vector table.
+  //  Here we use IAR specific comand __section_begin(section) to get the start
+  // address of this section since we told Linker (in firmware/debug.icf file) to place vector table at this
+  // section (".intvec") at the start of the flash
+  HWREG(NVIC_VTABLE) = (uint32_t)__section_begin(".intvec");
 
   //
   // Run data and bss initialization (global variables initial values)
