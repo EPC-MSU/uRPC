@@ -2,23 +2,10 @@
 
 {% block help %}
 
-<style>
-.toc {
-  counter-reset: item
-}
-.toc > li {
-  display: block
-}
-.toc > li:before {
-  content: counters(item, ".") ". ";
-  counter-increment: item
-}
-</style>
-
-<h2>Создание проекта</h2>
+<h1>Создание проекта</h1>
 
 <!-- Table of Content -->
-<ol class="toc">
+<ol class="nested-list">
   <li>
     <a href="#proj-conf">
       Общая конфигурация проекта
@@ -28,7 +15,7 @@
     <a href="#commands-creation">
       Создание команд
     </a>
-    <ol class="toc">
+    <ol class="nested-list">
       <li>
         <a href="#commands-defs">
           Определение команд
@@ -65,7 +52,7 @@
     <a href="#add-accessors">
       Добавление аксессоров
     </a>
-    <ol class="toc">
+    <ol class="nested-list">
       <li>
         <a href="#accessors-def">
           Определение аксессоров
@@ -92,7 +79,7 @@
     <a href="#extra-opts-add">
       Добавление дополнительных опций
     </a>
-    <ol class="toc">
+    <ol class="nested-list">
       <li>
         <a href="#is_service_command-tag">
           Ключ is_service_command
@@ -109,7 +96,7 @@
     <a href="#sources-gen">
       Генерация исходного кода проекта
     </a>
-    <ol class="toc">
+    <ol class="nested-list">
       <li>
         <a href="#fw-src-gen">
           Генерация исходного кода прошивки для микроконтроллера

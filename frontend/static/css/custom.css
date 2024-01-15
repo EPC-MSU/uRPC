@@ -113,4 +113,15 @@ hr {
     margin-left: 1em;
 }
 
+.nested-list {
+    counter-reset: item
+}
+.nested-list > li {
+    display: block
+}
+.nested-list > li:before {
+    content: counters(item, ".") ". ";
+    counter-increment: item
+}
+
 
