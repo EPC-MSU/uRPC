@@ -3,65 +3,71 @@
 {% block help %}
 
 <h1>TANGO Device Server (TDS)</h1>
-<p>TDS генерируется с помощью кнопки <b>TANGO Device Server</b>.</p>
-<p>Для сборки требуется: сгенерированная и собранная <a href="/helplibrary">библиотека</a>.</p>
-<p align="justify">Для работы TDS требуется наличие команды GINF 
-    со стандартным набором параметров с информацией об устройстве.
-    Без этой команды TDS даже не соберётся.
-    Если Вы не знаете, что такое команда GINF, обратитесь к разработчикам uRPC:
-    <a href="mailto:info@physlab.ru">info@physlab.ru</a>.
+<p>
+    Требуется:
+    <ul>
+        <li>Сгенерированная и собранная <a href="/helplibrary">библиотека</a>.</li>
+        <li>
+            Наличие команды GINF со стандартным набором параметров с информацией об устройстве. Без этой команды TDS не
+            соберётся. Если Вы не знаете, что такое команда GINF, обратитесь к разработчикам uRPC:
+            <a href="mailto:info@physlab.ru">info@physlab.ru</a>.
+        </li>
+    </ul>
 </p>
 
 <h2>Описание</h2>
-<p align="justify">
-    Результатом работы этого генератора является исходный код <a href="https://www.tango-controls.org">
-    TANGO</a> Device server на языке C\C++ и файл CMakeLists для сборки адаптера в разных IDE\C компиляторах
-    <br>
-    Больше информации о том, что такое TANGO Device server, как его написать и как работать с ним, на
+<p>
+    TDS генерируется с помощью кнопки <b>TANGO Device Server</b>.<br/>
+    <br/>
+    Результатом работы этого генератора является исходный код
+    <a href="https://www.tango-controls.org/">TANGO Device server</a> на языке C\C++ и файл CMakeLists.txt для сборки
+    адаптера в разных IDE\C компиляторах.<br/>
+    Больше информации о том, что такое TANGO Device server, как его написать и как с ним работать, можно прочитать на
     <a href="https://tango-controls.readthedocs.io/en/latest/development/device-api/device-server-writing.html">
         официальном сайте
-    </a>
-
+    </a>.
 </p>
 
 <h2>Инструкция по сборке на Windows</h2>
 <p>В настоящее время TDS могут быть собраны только на Linux.</p>
 
 <h2>Инструкция по сборке на Linux</h2>
-<p align="justify">
+<p>
     <ul>
-        <li>Для сборки понадобится CMake, компилятор C\C++ (build-essential), пакет TANGO
-        (установить по <a href="https://tango-controls.readthedocs.io/en/latest/installation/index.html">инструкции</a>)
-        и собранная и установленная <a href="/helplibrary">библиотека</a>.
+        <li>
+            Для сборки понадобится CMake, компилятор C\C++ (build-essential), пакет TANGO (установить по
+            <a href="https://tango-controls.readthedocs.io/en/latest/installation/index.html">инструкции</a>) и
+            собранная и установленная <a href="/helplibrary">библиотека</a>.
         </li>
         <li>
             В директорию с исходными кодами TANGO Device Server поместить заголовочный файл и библиотеку из собранной
             <a href="/helplibrary">библиотеки</a>.
         </li>
         <li>
-            Запустить CMake, а затем сборку по аналогии с запуском CMake и сборкой <a href="/helplibrary">библиотеки</a>.
+            Запустить CMake, а затем сборку по аналогии с запуском CMake и сборкой
+            <a href="/helplibrary">библиотеки</a>.
         </li>
     </ul>
 </p>
 
-<h3>Инструкция по запуску</h3>
-<p align="justify">
+<h2>Инструкция по запуску</h2>
+<p>
     <ul>
         <li>
             Для работы программы потребуется собранная библиотека .so. Путь к библиотеке должен быть прописан в
-            переменной окружения LD_LIBRARY_PATH (см. выше "Сборка под linux"). В некоторых версиях linux после
-            копирования библиотеки нужно вызвать команду
-            <p><font face = "Terminal">sudo ldconfig</font></p>
+            переменной окружения LD_LIBRARY_PATH (см. выше "Сборка под Linux"). В некоторых версиях Linux после
+            копирования библиотеки нужно вызвать команду:<br/>
+            <p><font face = "Terminal">sudo ldconfig</font></p><br/>
             для обновления кэша библиотек.
         </li>
         <li>
             Можно запускать собранный Tango Device Server. Чтобы посмотреть аргументы командной строки для запуска,
-            запустите программу с флагом
-            <p><font face = "Terminal">--help</font></p> инструкцию по работе с TANGO серверами смотрите на
+            запустите программу с флагом:<br/>
+            <p><font face = "Terminal">--help</font></p><br/>
+            Инструкцию по работе с TANGO серверами смотрите на
             <a href="https://tango-controls.readthedocs.io">сайте</a> TANGO.
         </li>
     </ul>
 </p>
-<h3>
 
 {% end %}
