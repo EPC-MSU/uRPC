@@ -96,3 +96,21 @@ hr {
     height: auto;
     width: 100%;
 }
+
+.section {
+    /* border: 1px double black; */
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+.section > p {
+    padding-left: 1em;
+}
+
+.section > img {
+    border: 1px solid;
+    border-color: darkgray;
+    margin-left: 1em;
+}
+
+
