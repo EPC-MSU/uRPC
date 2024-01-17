@@ -21,7 +21,7 @@
 
 <h3>Инструкция по сборке CMake-проекта библиотеки</h3>
 
-<h4>Сборка под Windows</h4>
+<h3>Сборка под Windows</h3>
 <img src="{{static_url('img/cmake_gui_instruction.png')}}"/>
 <ol>
     <li>Сгенерировать библиотеку нажатием кнопки "Generate" под надписью "Library" на главной странице, скачать её и распаковать архив.</li>
@@ -41,27 +41,27 @@ Studio скачиваются с официального сайта, для VS2
 Заметьте, установщик зависит от битности системы.
 </p>
 
-<h4>Сборка под Linux</h4>
+<h3>Сборка под Linux</h3>
 <ol>
     <li>Установить пакеты разработчика (g++, gcc, make...) через командную строку:
-        <p><font face = "Terminal">sudo apt-get install build-essential cmake</font></p>
+        <p><font face="Terminal">sudo apt-get install build-essential cmake</font></p>
     </li>
     <li>Загрузить архив с библиотекой, распаковать его.</li>
     <li>В директории src в распакованном архиве библиотеки запустить командную строку и выполнить cmake:
-        <p><font face = "Terminal">cmake CMakeLists.txt</font></p>
+        <p><font face="Terminal">cmake CMakeLists.txt</font></p>
     </li>
     <li>В этой же директории выполнить make:
-        <p><font face = "Terminal">make</font></p>
+        <p><font face="Terminal">make</font></p>
     </li>
     <li>В результате сборки получилась библиотека .so. Чтобы ваши программы (и Qt-отладчик) находили библиотеку, добавьте путь к библиотеке в переменную LD_LIBRARY_PATH.
     Например, если хотите из оболочки запустить программу, которая использует библиотеку, наберите в командной строке:
-        <p><font face = "Terminal">export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:путь_к_директории_с_библиотекой</font></p>
+        <p><font face="Terminal">export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:путь_к_директории_с_библиотекой</font></p>
     </li>
-    <li>Готово. Для использования библиотеки в ваших программах достаточно добавить заголовочный файл <имя_протокола>.h
+    <li>Готово. Для использования библиотеки в ваших программах достаточно добавить заголовочный файл <code>&lt;имя_протокола&gt;.h</code>
     (лежит в директории с распакованным архивом библиотеки).</li>
 </ol>
 
-<h4>Сборка под macOS</h4>
+<h3>Сборка под macOS</h3>
 <ol>
     <li>Установить средства разработки командной строки "Command Line Tools". Вы можете попробовать установить "Command Line Tools" через терминал с помощью команды:
         <p><font face="Terminal">xcode-select --install</font></p>
@@ -83,7 +83,7 @@ Studio скачиваются с официального сайта, для VS2
     C функций, с описанием стуктур данных, констант и пр. (обо всех возможностях Doxygen смотрите на официальном сайте).
 </p>
 
-<h4>Сборка документации в Linux</h4>
+<h3>Сборка Doxygen документации в Linux</h3>
 <ol>
     <li>Установить все необходимые пакеты для работы:
         <p><font face="Terminal">sudo apt-get install doxygen texlive-latex-base texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra</font></p>
@@ -97,7 +97,7 @@ Studio скачиваются с официального сайта, для VS2
     <li>Готово, файл refman.pdf появился в директории latex.</li>
 </ol>
 
-<h4>Сборка документации в Windows</h4>
+<h3>Сборка Doxygen документации в Windows</h3>
 <p align="justify">
     Инструкция сборки для Windows аналогична, но пакеты Doxygen и texlive нужно установить вручную. Texlive для Windows
     можно взять, например, с <a href="https://miktex.org">miktex</a>, а Doxygen с официального сайта проекта
