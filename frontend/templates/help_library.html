@@ -4,7 +4,8 @@
 
 <h1>Библиотека</h1>
 Требуется: релиз библиотеки xibridge (берется автоматически).
-<h3> Описание </h3>
+
+<h3>Описание</h3>
 <p align="justify">
     Библиотека - это то, что нужно компьютеру для общения с устройством по вашему протоколу. В ней реализован
     API для отправки запросов контроллеру, ожидания и распознавания ответов от него. Таким образом, в этой библиотеке
@@ -25,7 +26,7 @@
 <ol class="nested-list">
     <li>В разделе «Library» главной страницы сгенерируйте библиотеку, нажав кнопку «Generate».</li>
     <img src="{{static_url('img/URPC_library_generation.png')}}" alt=""/>
-    <li>Распакуйте полученный архив. </li>
+    <li>Распакуйте полученный архив.</li>
     <li>Запустите CMake GUI. Скачайте его с официального сайта <a href="https://cmake.org/">CMake</a> и установите,
         если этого не было сделано ранее.
         <img src="{{static_url('img/URPC_CMake_window.png')}}" alt=""/>
@@ -64,64 +65,75 @@
     </li>
 </ol>
 
-<h3>Сборка под linux</h3>
+<h3>Сборка под Linux</h3>
 <p>Для сборки библиотеки выполните шаги:</p>
 <ol class="nested-list">
     <li>Установите пакеты разработчика (g++, gcc, make...) через терминал:
         <p><font face="Terminal">sudo apt-get install build-essential cmake</font></p>
     </li>
-    <li>Загрузите архив с библиотекой, распакуйте его</li>
+    <li>Загрузите архив с библиотекой, распакуйте его.</li>
     <li>В директории src в распакованном архиве библиотеки запустите терминал и выполните:
-        <p><font face = "Terminal">cmake .</font></p>
+        <p><font face="Terminal">cmake .</font></p>
     </li>
     <li>В этой же директории выполните:</li>
-        <p><font face = "Terminal">make</font></p>
+        <p><font face="Terminal">make</font></p>
     <li>В результате сборки получится библиотека .so. Чтобы ваши программы (и Qt-отладчик) находили библиотеку,
         добавьте путь к библиотеке в переменную LD_LIBRARY_PATH. Например, если хотите из оболочки запустить программу,
-        которая использует библиотеку, наберите в командной строке:</li>
-        <p><font face = "Terminal">export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:путь_к_директории_с_библиотекой</font></p>
+        которая использует библиотеку, наберите в командной строке:
+        <p><font face="Terminal">export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:путь_к_директории_с_библиотекой</font></p>
+    </li>
     <li>Готово. Для использования библиотеки в ваших программах достаточно добавить заголовочный файл
         <code>&lt;имя_протокола&gt;.h</code> (лежит в директории с распакованным архивом библиотеки).</li>
+</ol>
+
+<h3>Сборка под macOS</h3>
+<ol>
+    <li>Установить средства разработки командной строки "Command Line Tools". Вы можете попробовать установить "Command Line Tools" через терминал с помощью команды:
+        <p><font face="Terminal">xcode-select --install</font></p>
+    Если установить таким образом не получается, то нужно скачать установщик с <a href="https://developer.apple.com/download/all/" target=”_blank”>сайта Apple</a>.
+    </li>
+    <li>Загрузить архив с библиотекой, распаковать его.</li>
+    <li>В папке с исходными кодами библиотеки (в этой папке находится файл CMakeLists.txt) запустить терминал и выполнить команду:
+        <p><font face="Terminal">cmake CMakeLists.txt</font></p>
+    </li>
+    <li>В этой же директории выполнить make:
+        <p><font face="Terminal">make</font></p>
+    </li>
 </ol>
 
 <h3>Документация к API</h3>
 <p align="justify">
     Интерфейс C библиотеки документирован в формате <a href="http://www.doxygen.nl">Doxygen</a>. С помощью Doxygen
     можно получить документ с описанием интерфейса всех C функций, стуктур данных, констант и пр. Для этого
-    комментарии в C библиотеке должны быть правильно оформлены (Все возможности Doxygen можно посмотреть на
+    комментарии в C библиотеке должны быть правильно оформлены (все возможности Doxygen можно посмотреть на
     официальном  сайте).
 </p>
-<h4>Сборка Doxygen документации</h4>
-В Linux:
+
+<h3>Сборка Doxygen документации в Linux</h3>
 <ol>
-    <li>
-        Установите все необходимые пакеты для работы:
-        <p><font face = "Terminal">sudo apt-get install doxygen texlive-latex-base texlive-fonts-recommended
-        texlive-fonts-extra texlive-latex-extra</font></p>
+    <li>Установите все необходимые пакеты для работы:
+        <p><font face="Terminal">sudo apt-get install doxygen texlive-latex-base texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra</font></p>
     </li>
-    <li>
-        В директории с архивом сгенерированной библиотеки запустите Doxygen:
-        <p><font face = "Terminal">Doxygen .</font></p>
+    <li>В директории с архивом сгенерированной библиотеки запустите Doxygen:
+        <p><font face="Terminal">Doxygen .</font></p>
     </li>
-    <li>
-        В появившейся папке latex выполните:
+    <li>В появившейся папке latex выполните:
         <p><font face = "Terminal">make</font></p>
     </li>
 </ol>
 <p>Готово, файл refman.pdf появился в директории latex.</p>
-<p>В Windows:</p>
-<p>
-    Инструкция сборки для Windows аналогична инструкции сборки для Linux, но пакеты Doxygen и texlive нужно установить
-    вручную.<br/>
+
+<h3>Сборка Doxygen документации в Windows</h3>
+<p align="justify">Инструкция сборки для Windows аналогична инструкции сборки для Linux, но пакеты Doxygen и texlive нужно установить вручную.<br/>
     <br/>
-    Texlive для Windows можно взять, например, с <a href="https://miktex.org">miktex</a>; Doxygen &#8211; с
+    Texlive для Windows можно взять, например, с <a href="https://miktex.org">miktex</a>, а Doxygen &#8211; с
     официального сайта проекта <a href="http://www.doxygen.nl/download.html">Doxygen</a>.
 </p>
 
-
-<h3> Пример работы с библиотекой </h3>
+<h3>Пример работы с библиотекой</h3>
 <p>Пусть в протоколе устройства Foo есть команда supercommand, и устройство подключено к порту 42. Тогда код на C для
     вызова этой команды выглядел бы примерно так:</p>
+
 <pre><code class="C">
     #include "foo.h"
 
@@ -129,8 +141,9 @@
     foo_supercommand(my_device);
     foo_close_device(&my_device);
 </code></pre>
+
 <p>Файл foo.h из сгенерированного uRPC архива библиотеки должен лежать рядом. Также при компиляции этого примера нужно
-будет прилинковать собранную библиотеку .lib или .so .</p>
+будет прилинковать собранную библиотеку .lib или .so.</p>
 <br>
 <br>
 
