@@ -1378,7 +1378,11 @@ class _ClibBuilderImpl(ClangView):
                            COMMAND ${{CMAKE_COMMAND}} -E copy_if_different
                            "${{XIBRIDGE_PATH}}/xibridge.dll"
                            $<TARGET_FILE_DIR:{library_target}>)
-
+        ELSEIF(${{CMAKE_SYSTEM_NAME}} STREQUAL Darwin)
+            add_custom_command(TARGET {library_target} POST_BUILD
+                           COMMAND ${{CMAKE_COMMAND}} -E copy_if_different
+                           "${{XIBRIDGE_PATH}}/libxibridge.dylib"
+                           $<TARGET_FILE_DIR:{library_target}>)
         ELSE()
             add_custom_command(TARGET {library_target} POST_BUILD
                            COMMAND ${{CMAKE_COMMAND}} -E copy_if_different
