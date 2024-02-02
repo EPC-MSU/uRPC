@@ -76,7 +76,7 @@ def check_device_name(val, par_name="Device name"):
     match = device_name_pattern.match(val)
     if not match:
         raise ValueError('The "{}" field cannot be longer than 40 symbols'
-                         " and must contain at least 1 symbol.".format(par_name))
+                         " and must contain at least 3 symbols.".format(par_name))
     return val
 
 
