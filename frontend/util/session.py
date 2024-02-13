@@ -49,8 +49,8 @@ class SessionManager(Container):
             else:
                 item.project = Protocol(name="default_project",
                                         version="0.0.1",
-                                        product_name="Default product name",
-                                        device_name="Default device name",
+                                        product_name="Red Apple",
+                                        device_name="ZAX",
                                         pid="0x1234",
                                         vid="0x5678",
                                         manufacturer="Acme Corporation")
