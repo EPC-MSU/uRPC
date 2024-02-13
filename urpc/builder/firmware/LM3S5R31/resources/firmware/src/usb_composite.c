@@ -14,6 +14,7 @@ I2C rudiments;
  */
 #include "usb_composite.h"
 
+#include "string.h"
 #include "inc/hw_types.h"
 #include "usblib/usblib.h"
 #include "usblib/usbcdc.h"
