@@ -147,7 +147,7 @@ class ProjectHandler(BaseRequestHandler):
             file_name, mime = self._generate_doc(protocol, output_buffer)
         elif action == "generate_library":
             clib.build(protocol, output_buffer)
-            file_name = "{}.zip".format(_normalize_target_name(protocol, "client"))
+            file_name = "{}.zip".format(_normalize_target_name(protocol, "library"))
             mime = "application/zip"
 
         elif action == "generate_abstract_device":
