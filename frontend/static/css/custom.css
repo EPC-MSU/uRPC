@@ -121,3 +121,8 @@ hr {
 {
     display: inline;
 }
+
+.pure-g
+{
+    letter-spacing: normal;
+}
