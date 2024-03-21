@@ -93,6 +93,7 @@ hr {
 .help-menu-item
 {
     white-space: nowrap;
+    min-width: min-content;
     height: auto;
     width: 100%;
 }
