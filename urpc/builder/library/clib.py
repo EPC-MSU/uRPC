@@ -1160,7 +1160,7 @@ class _ClibBuilderImpl(ClangView):
         """).format(
             library_name=library_name
         )
-    
+
     def generate_macos_export_symbols_file(self):
         library_name = self.__get_library_name()
 
