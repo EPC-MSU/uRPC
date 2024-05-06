@@ -1165,7 +1165,7 @@ class _ClibBuilderImpl(ClangView):
         library_name = self.__get_library_name()
 
         return dedent("""\
-        {library_name}_*
+        _{library_name}_*
         """).format(
             library_name=library_name
         )
