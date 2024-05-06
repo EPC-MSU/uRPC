@@ -1160,6 +1160,17 @@ class _ClibBuilderImpl(ClangView):
         """).format(
             library_name=library_name
         )
+    
+    def generate_macos_export_symbols_file(self):
+        library_name = self.__get_library_name()
+
+        return dedent("""\
+        {{
+            {library_name}_*
+        }}
+        """).format(
+            library_name=library_name
+        )
 
     def generate_rc_file(self):
 
@@ -1251,7 +1262,7 @@ class _ClibBuilderImpl(ClangView):
                 set(
                     CMAKE_SHARED_LINKER_FLAGS
                     ${{CMAKE_SHARED_LINKER_FLAGS}}
-                    "-Wl"
+                    "-exported_symbols_list ${{CMAKE_CURRENT_SOURCE_DIR}}/macos_export_symbols"
                 )
             ELSE()
                 set(
@@ -1388,6 +1399,10 @@ def build(protocol, output):
         archive.writestr(
             join_path(path_prefix_in_archive, "gcc_export_symbols"),
             view.generate_gcc_export_symbols_file()
+        )
+        archive.writestr(
+            join_path(path_prefix_in_archive, "macos_export_symbols"),
+            view.generate_macos_export_symbols_file()
         )
         archive.writestr(
             join_path(path_prefix_in_archive, "CMakeLists.txt"),
