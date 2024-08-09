@@ -50,11 +50,11 @@ __noreturn int32_t main(void)
   FixVectorTable();     // Some IRQ vectors could be overwritten by bootloader. Restore them
   ClearInterrupts();    // Before enabling interrupts we must clear any pending interrupts
 
-  //Interrupt priority Set
-  //You can using here only priorities from 3 to 7
-  //Make sure to set the correct priority for all the blocks used
-  //Also note that communication protocols such as USB and UART should usually have lower
-  //priorities than main firmware function blocks
+  // Interrupt priority Set
+  // You can using here only priorities from 3 to 7
+  // Make sure to set the correct priority for all the blocks used
+  // Also note that communication protocols such as USB and UART should usually have lower
+  // priorities than main firmware function blocks
   IntPrioritySet(FAULT_SYSTICK, 4 << 5);  // Handles all periodical maintenance
   IntPrioritySet(INT_TIMER1A, 3 << 5);    // Timer
   IntPrioritySet(INT_TIMER1B, 3 << 5);    // 
