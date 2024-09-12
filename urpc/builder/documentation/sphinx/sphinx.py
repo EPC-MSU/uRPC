@@ -7,7 +7,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 
 from urpc import ast
 from urpc.builder.device.utils.namespaced import namespaced as namespaced_global
-from urpc.builder.documentation.sphinx.static import get_ru_static_part, get_static_part
+from urpc.builder.documentation.sphinx.static import get_po_static_part, get_static_part, get_ru_static_part
 from urpc.builder.util.clang import split_by_type, get_argstructs
 from urpc.util.cconv import ascii_to_hex, get_msg_len, type_to_cstr
 from urpc.builder.documentation.common import common_path
@@ -31,8 +31,8 @@ def _get_description_ru(arg):
     return _prepare_text_sphinx(arg.description.get("russian", ""))
 
 
-def _build_ru_file(protocol, out):
-    out.write(get_ru_static_part(protocol))
+def _build_po_file(protocol, out):
+    out.write(get_po_static_part(protocol))
 
     cache = set()
 
@@ -192,6 +192,90 @@ def _build_en_file(protocol, out, namespaced):
     )
 
 
+def _build_ru_file(protocol, out, namespaced):
+    simple_commands, accessors = split_by_type(protocol.commands)
+    simple_commands, accessors = list(simple_commands), list(accessors)
+    argstructs = get_argstructs(simple_commands, accessors)
+
+    def inout(msg, argname):
+        # take from base.textile.mako
+        return ", " + namespaced(argstructs[msg].name) + "* " + argname if len(argstructs[msg].fields) else ""
+
+    def message_fields(msg):
+
+        def message_field(arg):
+            base_type, length = type_to_cstr(arg.type_)
+            return '"{0}", "{1}", "{2}"\n'.format(base_type, arg.name, _get_description_ru(arg))
+
+        out_l = StringIO()
+        out_l.write('"{0}", "CMD", "Команда"\n'.format(type_to_cstr(ast.Integer32u)[0]))
+        for arg in msg.args:
+            if arg.name == "reserved":
+                out_l.write('"{0}", "Reserved [{1}]", "Зарезервировано ({1} байт)"\n'.format(type_to_cstr(ast.Integer8u)[0],
+                                                                                       len(arg.type_)))
+            else:
+                out_l.write(message_field(arg))
+            for c in arg.consts:
+                out_l.write('"", "{0} - {1}", "{2}"\n'.format(hex(c.value), c.name, _get_description_ru(c)))
+        if len(msg.args) > 0:
+            out_l.write('"{0}", "CRC", "Контрольная сумма"\n'.format(type_to_cstr(ast.Integer16u)[0]))
+
+        return out_l.getvalue()
+
+    def table_head():
+        return dedent("""
+        .. csv-table::
+           :class: longtable
+           :escape: \\
+           :widths: 2, 8, 6
+        """)
+
+    out.write(get_ru_static_part(protocol))  # write static part
+
+    def _sort(commands):
+        return sorted(commands, key=lambda command: command.cid)
+
+    for cmd in chain(_sort([command for pair in accessors for command in pair]), _sort(simple_commands)):
+        out.write("Команда {0}\n".format(cmd.cid.upper()))
+        out.write("~~~~~~~~~~~~\n")
+        out.write("\n")
+        out.write(".. code-block:: c\n")
+        out.write("\n")
+        func = "result_t " + namespaced(cmd.name) + "(device_t id" + inout(cmd.request, "input") + \
+               inout(cmd.response, "output") + ")"
+        out.write(indent(func, "   ") + "\n")
+
+        out.write("\n")
+        out.write('**Код команды (CMD)**: "{0}" or {1}.\n'.format(cmd.cid, ascii_to_hex(cmd.cid)))
+        out.write("\n")
+        out.write("**Запрос:** ({0} байт)\n".format(get_msg_len(cmd.request)))
+        out.write("\n")
+        out.write(table_head())
+        out.write("\n")
+        out.write(indent(message_fields(cmd.request), "   "))
+        out.write("\n")
+        out.write("**Ответ:** ({0} байт)\n".format(get_msg_len(cmd.response)))
+        out.write("\n")
+        out.write(table_head())
+        out.write("\n")
+        out.write(indent(message_fields(cmd.response), "   "))
+        out.write("\n")
+        out.write("**Описание:**\n")
+        out.write("{0}\n".format(_get_description_ru(cmd)))
+        out.write("\n")
+
+    out.write(
+        dedent(
+            """\
+            Об этом документе
+            -----------------
+            Версия генератора документации: {BUILDER_VERSION}.
+            """
+        ).format(
+            BUILDER_VERSION=BUILDER_VERSION
+        )
+    )
+
 def build(protocol, out):
     def namespaced(string):
         return namespaced_global(string=string, context={
@@ -207,7 +291,14 @@ def build(protocol, out):
             buffer.getvalue()
         )
         buffer = StringIO()
-        _build_ru_file(protocol, buffer)
+        _build_po_file(protocol, buffer)
         archive.writestr("{}.po".format(protocol.name.lower()), buffer.getvalue())
         archive.write(join(common_path, "Synch.png"), "Synch.png")
         archive.write(join(common_path, "crc.png"), "crc.png")
+
+        buffer = StringIO()
+        _build_ru_file(protocol, buffer, namespaced)
+        archive.writestr(
+            "{}_ru.rst".format(protocol.name.lower()),
+            buffer.getvalue()
+        )
