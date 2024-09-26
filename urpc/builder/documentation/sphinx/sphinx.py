@@ -211,8 +211,9 @@ def _build_ru_file(protocol, out, namespaced):
         out_l.write('"{0}", "CMD", "Команда"\n'.format(type_to_cstr(ast.Integer32u)[0]))
         for arg in msg.args:
             if arg.name == "reserved":
-                out_l.write('"{0}", "Reserved [{1}]", "Зарезервировано ({1} байт)"\n'.format(type_to_cstr(ast.Integer8u)[0],
-                                                                                       len(arg.type_)))
+                out_l.write('"{0}", "Reserved [{1}]", "Зарезервировано ({1} байт)"\n'.format(
+                            type_to_cstr(ast.Integer8u)[0],
+                            len(arg.type_)))
             else:
                 out_l.write(message_field(arg))
             for c in arg.consts:
@@ -275,6 +276,7 @@ def _build_ru_file(protocol, out, namespaced):
             BUILDER_VERSION=BUILDER_VERSION
         )
     )
+
 
 def build(protocol, out):
     def namespaced(string):
