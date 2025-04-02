@@ -247,7 +247,7 @@ def _build_ru_file(protocol, out, namespaced):
         out.write(indent(func, "   ") + "\n")
 
         out.write("\n")
-        out.write('**Код команды (CMD)**: "{0}" or {1}.\n'.format(cmd.cid, ascii_to_hex(cmd.cid)))
+        out.write('**Код команды (CMD)**: "{0}" или {1}.\n'.format(cmd.cid, ascii_to_hex(cmd.cid)))
         out.write("\n")
         out.write("**Запрос:** ({0} байт)\n".format(get_msg_len(cmd.request)))
         out.write("\n")

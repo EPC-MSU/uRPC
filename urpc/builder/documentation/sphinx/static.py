@@ -953,21 +953,21 @@ def get_ru_static_part(protocol):
 
                 **Пример расчёта CRC:**
 
-                **Код команды (CMD):** \"home\" or 0x656D6F68
+                **Код команды (CMD):** \"home\" или 0x656D6F68
 
                 .. code-block:: c
 
                   0x68 0x6F 0x6D 0x65
                   CMD
 
-                **Код команды (CMD):** \"gpos\" or 0x736F7067
+                **Код команды (CMD):** \"gpos\" или 0x736F7067
 
                 .. code-block:: c
 
                    0x67 0x70 0x6F 0x73
                    CMD
 
-                **Код команды (CMD):** \"movr\" or 0x72766F6D
+                **Код команды (CMD):** \"movr\" или 0x72766F6D
 
                 .. code-block:: c
 
