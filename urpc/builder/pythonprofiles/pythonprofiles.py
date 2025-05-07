@@ -76,6 +76,7 @@ def _fix_profile_name(name):
         "!": "",
         "#": "",
         "$": "",
+        " ": "_"
     }
 
     out = name.replace(".json", "")
