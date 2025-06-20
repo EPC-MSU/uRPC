@@ -14,6 +14,7 @@ from urpc.builder.debugger import debugger
 from urpc.builder.device import device
 from urpc.builder.documentation.textile import textile
 from urpc.builder.documentation.sphinx import sphinx
+from urpc.builder.documentation.markdown import markdown
 from urpc.builder.library import clib
 from urpc.builder.profiles import profiles
 from urpc.builder.pythonprofiles import pythonprofiles
@@ -77,6 +78,10 @@ class ProjectHandler(BaseRequestHandler):
         if doc_format == "Textile":
             textile.build(protocol, output_buffer, "ru")
             file_name = "{}.zip".format(_normalize_target_name(protocol, "wiki"))
+            mime = "application/zip"
+        elif doc_format == "Markdown":
+            markdown.build(protocol, output_buffer, "ru")
+            file_name = "{}.zip".format(_normalize_target_name(protocol, "markdown"))
             mime = "application/zip"
         elif doc_format == "Sphinx":
             sphinx.build(protocol, output_buffer)

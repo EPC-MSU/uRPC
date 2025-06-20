@@ -66,11 +66,11 @@
     </li>
     <li>Не забудьте поместить заголовочный файл <code>&lt;имя_библиотеки&gt;.h</code> и файл библиотеки
         <code>&lt;имя библиотеки&gt;.so</code> от предварительно собранной библиотеки, а также 
-        code>libxibridge.so</code> в каталог с распакованным архивом Qt-отладчика.
+        <code>libxibridge.so</code> в каталог с распакованным архивом Qt-отладчика.
     </li>
     <li>Запустите make:
-        <p><font face = "Terminal">make</font>
-    </p>
+        <p><font face = "Terminal">make</font></p>
+    </li>
 
     <li>Дождитесь окончания сборки.</li>
     <li>Запустите программу, предварительно добавив в переменную окружения путь к библиотеке:
@@ -80,7 +80,8 @@
             ./uRPC_debugger
         </font>
     </p>
-    Заметьте, для работы с реальным устройством могут потребоваться права root.</li>
+    Заметьте, для работы с реальным устройством могут потребоваться права root.
+    </li>
 </ol>
 <i>Уточнение для Ubuntu 20.04</i>
     <p>
@@ -88,6 +89,33 @@
         <font face = "Terminal">sudo add-apt-repository ppa:rock-core/qt4</font>
         <i>, а уже затем </i><font face = "Terminal">sudo apt-get install libqt4-dev</font>.</p>
     </p>
+<h3>Сборка под MacOS</h3>
+<ol>
+    <li>Установите всё необходимое: Qt4, CMake, Make:
+        <p><font face = "Terminal">brew install qt@4 cmake make</font></p>
+    </li>
+    <li>
+        В каталоге (имя каталога не должно содержать круглых скобок) с распакованным архивом Qt-отладчика запустите cmake:
+        <p><font face = "Terminal">cmake .</font></p>
+    </li>
+    <li>Не забудьте поместить заголовочный файл <code>&lt;имя_библиотеки&gt;.h</code> и файл библиотеки
+        <code>&lt;имя библиотеки&gt;.so</code> от предварительно собранной библиотеки, а также 
+        <code>libxibridge.so</code> в каталог с распакованным архивом Qt-отладчика.
+    </li>
+    <li>Запустите make:
+        <p><font face = "Terminal">make</font></p>
+    </li>
+    <li>Дождитесь окончания сборки.</li>
+    <li>Запустите программу, предварительно добавив в переменную окружения путь к библиотеке:
+        <p><font face = "Terminal">
+            export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`<br/>
+            ./uRPC_debugger
+        </font></p>
+    </li>
+    <li>Запустить дебаггер <code>./protocol_debugger</code>, где <code>protocol</code> заменить на название протокола <code>./uRPC_debugger</code>.
+        <p>Заметьте, для работы с реальным устройством могут потребоваться права root.</p>
+    </li>
+</ol>
 <h3>Запуск и работа с программой</h3>
 <ul>
     <li>
