@@ -174,7 +174,7 @@ void MainWindow::connectButton()
     }
     else
     {
-        logAdd(comedit->text()+ " connect");
+        logAdd(comedit->text()+ " successfully connected");
     }
 
 }
