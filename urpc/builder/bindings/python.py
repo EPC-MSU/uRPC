@@ -477,7 +477,7 @@ def _build_file(protocol, out):
                          _near_script_path("lib{library_name}.so"),
                          "lib{library_name}.so")
             else:
-                raise RuntimeError("unexpected OS")
+                raise RuntimeError("Unexpected OS")
 
             errors = []
             for path in paths:
@@ -491,6 +491,10 @@ def _build_file(protocol, out):
             error_msg = "Unable to load library. Paths tried:\\n"
             for i, path in enumerate(paths):
                 error_msg = error_msg + str(path) + " - got error: " + errors[i] + "\\n"
+            
+            if os_kind == "windows":
+                error_msg += ("Check that Visual C++ Redistributable Packages for Visual Studio 2013 are installed." + "\\n" + 
+                              "You can download the installers from https://www.microsoft.com/en-us/download/details.aspx?id=40784" + "\\n")
 
             raise RuntimeError(error_msg)
 
