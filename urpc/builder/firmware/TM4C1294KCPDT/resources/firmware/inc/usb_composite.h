@@ -1,5 +1,6 @@
 #ifndef _USB_COMPOSITE_H
 #define _USB_COMPOSITE_H
+#include "config.h"
 
 #define I2C_DEVICES_LIMIT   4   // Can not exceed 16 because of addresses limit
 

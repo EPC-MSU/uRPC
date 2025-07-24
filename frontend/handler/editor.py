@@ -9,7 +9,15 @@ from tornado.httputil import url_concat
 from tornado.web import HTTPError
 
 from frontend.handler.base import BaseRequestHandler
-from frontend.util.validator import check_if_empty, check_if_number, check_if_version, check_project_name
+from frontend.util.validator import (check_if_empty,
+                                     check_if_number,
+                                     check_if_version,
+                                     check_project_name,
+                                     check_product_name,
+                                     check_device_name,
+                                     check_manufacturer,
+                                     check_pid,
+                                     check_vid)
 from frontend.util.validator import check_command_name, check_argument_name, check_constant_name
 from urpc import ast
 from urpc.util.accessor import split_by_type
@@ -67,6 +75,46 @@ class AccessorProtocol:
     @extra_options.setter
     def extra_options(self, value):
         self.wrapped.extra_options = value
+
+    @property
+    def pid(self):
+        return self.wrapped.pid
+
+    @pid.setter
+    def pid(self, value):
+        self.wrapped.pid = value
+
+    @property
+    def vid(self):
+        return self.wrapped.vid
+
+    @vid.setter
+    def vid(self, value):
+        self.wrapped.vid = value
+
+    @property
+    def product_name(self):
+        return self.wrapped.product_name
+
+    @product_name.setter
+    def product_name(self, value):
+        self.wrapped.product_name = value
+
+    @property
+    def device_name(self):
+        return self.wrapped.device_name
+
+    @device_name.setter
+    def device_name(self, value):
+        self.wrapped.device_name = value
+
+    @property
+    def manufacturer(self):
+        return self.wrapped.manufacturer
+
+    @manufacturer.setter
+    def manufacturer(self, value):
+        self.wrapped.manufacturer = value
 
     @property
     def uid(self):
@@ -243,17 +291,29 @@ class EditorSession:
         for c in node.children:
             self._purge_children_handles(c)
 
-    def update_protocol(self, handle, project_name=None, version=None, extra_options: Optional[str] = None):
+    def update_protocol(self,
+                        handle,
+                        project_name: str,
+                        version: str,
+                        product_name: str,
+                        device_name: str,
+                        pid: str,
+                        vid: str,
+                        manufacturer: str,
+                        extra_options: Optional[str] = None):
         assert self._draft
 
         protocol = self._handles[handle]
 
         assert isinstance(protocol, AccessorProtocol)
 
-        if project_name is not None:
-            protocol.name = project_name
-        if version is not None:
-            protocol.version = version
+        protocol.name = project_name
+        protocol.version = version
+        protocol.product_name = product_name
+        protocol.device_name = device_name
+        protocol.pid = pid
+        protocol.vid = vid
+        protocol.manufacturer = manufacturer
         if extra_options is not None:
             protocol.extra_options = extra_options
 
@@ -714,19 +774,22 @@ class EditorHandler(BaseRequestHandler):
 
     def _process_protocol_post_properties_update(self, handle):
         project_name = self.get_body_argument("project_name", None)
+        product_name = self.get_body_argument("product_name")
+        device_name = self.get_body_argument("device_name")
         version = self.get_body_argument("version")
         extra_options = self.get_body_argument("extra_options", "")
+        pid = self.get_body_argument("pid")
+        vid = self.get_body_argument("vid")
+        manufacturer = self.get_body_argument("manufacturer")
 
         error_message = ""
-        try:
-            check_project_name(project_name)
-        except ValueError as e:
-            error_message += str(e) + " "
-
-        try:
-            check_if_version(version)
-        except ValueError as e:
-            error_message += str(e) + " "
+        error_message += check_if_version(version)
+        error_message += check_project_name(project_name)
+        error_message += check_product_name(product_name)
+        error_message += check_device_name(device_name)
+        error_message += check_manufacturer(manufacturer)
+        error_message += check_pid(pid)
+        error_message += check_vid(vid)
 
         try:
             if error_message != "":
@@ -736,6 +799,11 @@ class EditorHandler(BaseRequestHandler):
                 handle=handle,
                 project_name=project_name,
                 version=version,
+                product_name=product_name,
+                device_name=device_name,
+                pid=pid,
+                vid=vid,
+                manufacturer=manufacturer,
                 extra_options=extra_options
             )
         except ValueError as e:
