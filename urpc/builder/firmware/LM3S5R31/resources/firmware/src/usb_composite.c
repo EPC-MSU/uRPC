@@ -69,20 +69,23 @@ static const unsigned char g_pLangDescriptor[] =
   USBShort(USB_LANG_EN_US)
 };
 
-static const unsigned char g_pManufacturerString[] =
+static unsigned char g_pManufacturerString[] =
 {
-  2 + (4 * 2),
+  2 + (16 * 2),
   USB_DTYPE_STRING,
-  'X', 0, 'I', 0, 'M', 0, 'C', 0 // Place manufacturer here
+  ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0,
+  ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0
 };
 
-static const unsigned char g_pProductString[] =
+static unsigned char g_pProductString[] =
 {
-  2 + (21 * 2),
+  2 + (40 * 2),
   USB_DTYPE_STRING,
-  'X', 0, 'I', 0, 'M', 0, 'C', 0, ' ', 0, 'M', 0, 'o', 0, 't', 0, 'o', 0, // Place product name here
-  'r', 0, ' ', 0, 'C', 0, 'o', 0, 'n', 0, 't', 0, 'r', 0, 'o', 0, 'l', 0,
-  'l', 0, 'e', 0, 'r', 0
+  ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0,
+  ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0,
+  ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0,
+  ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0,
+  ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0, ' ', 0
 };
 
 static unsigned char g_pSerialNumberString[] =
@@ -107,9 +110,24 @@ static unsigned char HexTable[16] =
 
 void SetUsbSerial(uint32_t SN)
 {
-  for (long i = 2; i <= 16; i += 2)
+  for (uint32_t i = 2; i <= 16; i += 2)
+    g_pSerialNumberString[i] =
+      HexTable[(SN & (0xF << (32 - i * 2))) >> (32 - i * 2)];
+}
+
+void SetUsbManufacturer(char *MFC)
+{
+  for (uint32_t i = 0; i <= strlen(MFC); i += 1)
   {
-    g_pSerialNumberString[i] = HexTable[(SN & (0xF << (32 - i * 2))) >> (32 - i * 2)];
+    g_pManufacturerString[i * 2 + 2] = MFC[i];
+  }
+}
+
+void SetUsbProduct(char *PRT)
+{
+  for (uint32_t i = 0; i <= strlen(PRT); i += 1)
+  {
+    g_pProductString[i * 2 + 2] = PRT[i];
   }
 }
 
@@ -165,8 +183,8 @@ static unsigned long g_pulCompWorkspace[I2C_DEVICES_LIMIT];
 
 tUSBDCompositeDevice g_sCompDevice =
 {
-  USB_VID_STELLARIS,  // Place VID here
-  USB_PID_COMP_SERIAL,  // Place PID here
+  USB_VID,
+  USB_PID,
   250,		        // This is in 2mA increments so 500mA.
   USB_CONF_ATTR_BUS_PWR,	// Bus powered device.
   0,			        // There is no need for a default composite event handler.
@@ -245,6 +263,10 @@ void USB_InitAndCheck(void)
                                           pdFALSE,
                                           ( void * ) 0,
                                           USBCleanRxBufferCallback);
+
+  SetUsbManufacturer(MANUFACTURER);
+  SetUsbProduct(PRODUCT_NAME);
+  SetUsbSerial(SERIAL_NUMBER);
 
   if (CleanRxBufferTimerHandle == NULL)
   {
@@ -396,8 +418,8 @@ static void USBStart(unsigned char NumDevices)
 
   for (long i = 0; i < NumDevices; i++)
   {
-    g_psCDCDevice[i].usVID = USB_VID_STELLARIS;
-    g_psCDCDevice[i].usPID = USB_PID_SERIAL;
+    g_psCDCDevice[i].usVID = USB_VID;
+    g_psCDCDevice[i].usPID = USB_PID;
     g_psCDCDevice[i].usMaxPowermA = i;
     g_psCDCDevice[i].ucPwrAttributes = USB_CONF_ATTR_BUS_PWR;
     g_psCDCDevice[i].pfnControlCallback = ControlHandler;

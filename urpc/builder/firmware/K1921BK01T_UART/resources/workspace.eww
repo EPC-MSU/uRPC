@@ -5,7 +5,7 @@
     <path>$WS_DIR$\firmware\firmware.ewp</path>
   </project>
   <project>
-    <path>$WS_DIR$\..\Niiet\k1921bk01t\niietcm4_pd\Libs\Periph_Driver\driverlib.ewp</path>
+    <path>$WS_DIR$\..\NIIET\k1921bk01t\niietcm4_pd\Libs\Periph_Driver\driverlib.ewp</path>
   </project>
   <batchBuild/>
 </workspace>

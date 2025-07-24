@@ -3,19 +3,22 @@ Signature="$Windows NT$"
 Class=Ports
 ClassGuid={4d36e978-e325-11ce-bfc1-08002be10318}
 Provider=%MFGNAME%
+LayoutFile=layout.inf
 DriverVer=06/21/2006
+CatalogFile.NTx86=device_name.cat
+CatalogFile.NTamd64=device_name.cat
 
 [DefaultInstall]
-CopyINF=urpc-driver.inf
+CopyINF=device_name.inf
 
 [Manufacturer]
-%MFGNAME%=CommunicationDevice,NT,NTamd64
+%%MFGNAME%=CommunicationDevice,NT,NTamd64
 
 [CommunicationDevice.NT]
-%DESCR_0%=DriverInstall,USB\VID_0482&PID_F125
+%%DESCR%=DriverInstall,USB\VID_${protocol.vid.replace("0x","")}&PID_${protocol.pid.replace("0x","")}
 
 [CommunicationDevice.NTamd64]
-%DESCR_0%=DriverInstall,USB\VID_0482&PID_F125
+%%DESCR%=DriverInstall,USB\VID_${protocol.vid.replace("0x","")}&PID_${protocol.pid.replace("0x","")}
 
 [DriverInstall]
 Include=mdmcpq.inf
@@ -30,5 +33,5 @@ Include=mdmcpq.inf
 AddReg=LowerFilterAddReg
 
 [Strings]
-MFGNAME="uRPC"
-DESCR_0="uRPC Universal Driver"
+MFGNAME="${protocol.manufacturer}"
+DESCR="${protocol.product_name} ${protocol.device_name}"
