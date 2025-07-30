@@ -1990,6 +1990,9 @@
       <name>$PROJ_DIR$\inc\systick.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\inc\config.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\inc\usb_composite.h</name>
     </file>
   </group>
