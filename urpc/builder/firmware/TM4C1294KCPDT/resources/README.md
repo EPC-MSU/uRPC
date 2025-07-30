@@ -17,12 +17,12 @@
 1.	Разместить пример так, чтобы данный файл имел следующую вложенность
     **C:\projects\example\README.md**
     
-2.  Создать директорию **C:\ti\TivaWare_C_Series-2.1.2.111** и распаковать архив с проектом библиотеки.
-    Архив можно скачать по ссылке:https://download.urpc.kea.su/firmware/ti/tm4c1294kcpdt/SW-TM4C-2.1.2.111.exe
+2.  Создать директорию **C:\ti\TivaWare_C_Series-2.1.2.111** и указать его в качестве пути для установки библиотеки TivaWare.
+    Программу установки библиотеки можно скачать по ссылке:https://download.urpc.kea.su/firmware/ti/tm4c1294kcpdt/SW-TM4C-2.1.2.111.exe
     
 3.	Открыть в среде IAR рабочее окружение **C:\projects\example\workspace.eww**
 
-4.	Сомпилировать код программы F7.
+4.	СВыполнить компиляцию кода программы, F7.
 
 5.  Прошить микропрограмму в чип Project->Download and Debug (Ctrl + D)
 
