@@ -17,8 +17,8 @@
             <p class="form-legend">Device name</p>
             <input type="text" name="device_name" required="required" pattern="^.{1,40}$" placeholder="ZAX" value="{{ protocol.device_name }}">
             <p class="form-legend">Vendor ID (VID) &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Product ID (PID)</p>
-            <input type="text" name="vid" placeholder="0x5678" required="required" pattern="^0[xX][0-9a-fA-F]{4}$" value="{{ protocol.vid }}" title="PID must be in format 0xYYYY, where Y is a hex digit">
-            <input type="text" name="pid" placeholder="0x1234" required="required" pattern="^0[xX][0-9a-fA-F]{4}$" value="{{ protocol.pid }}" title="PID must be in format 0xYYYY, where Y is a hex digit">     
+            <input type="text" name="vid" placeholder="0x1234" required="required" pattern="^0[xX][0-9a-fA-F]{4}$" value="{{ protocol.vid }}" title="PID must be in format 0xYYYY, where Y is a hex digit">
+            <input type="text" name="pid" placeholder="0x5678" required="required" pattern="^0[xX][0-9a-fA-F]{4}$" value="{{ protocol.pid }}" title="PID must be in format 0xYYYY, where Y is a hex digit">     
             <div class="pid_vid_tooltip">&#x1F6C8;
                 <span class="tooltip_text">PID and VID aren't used in case of NIIET controller.</span>
             </div>
