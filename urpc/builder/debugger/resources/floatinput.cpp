@@ -14,7 +14,7 @@ FloatInput::FloatInput(QWidget *parent, QString ArgName, QString ArgType, float 
 
     this->SetLabel(ui->Label);
     this->SetEditor(ui->FloatEdit1);
-
+    this->SetText(QString::number(this->GetText().toFloat()));
 }
 //---------------------------------------------------
 FloatInput::~FloatInput()
