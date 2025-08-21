@@ -13,6 +13,13 @@ FloatArrInput::FloatArrInput(QWidget *parent, QString ArgName, QString ArgType, 
     layout()->addWidget(this->GetEditor());
     setLayout(layout());
 
+    // Initialize with zeros
+    QStringList slist;
+    for (int i = 0; i < size; i++)
+    {
+        slist << QString::number(0);
+    }
+    this->SetText(slist.join(" "));
 }
 //-------------------------------------------------------------
 FloatArrInput::~FloatArrInput()
