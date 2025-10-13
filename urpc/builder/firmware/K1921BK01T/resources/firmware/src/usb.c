@@ -69,9 +69,9 @@ void USB_Init(void)
 
   IOBuffer_Init(&RxBuffer);
   IOBuffer_Init(&TxBuffer);
-  USBDev_SetManufacturer("MANUFACTURER");  // Place manufacturer here
-  USBDev_SetProduct("PRODUCT");  // Place product name here
-  USBDev_SetSerial(0x12345678);  // Place serial number here
+  USBDev_SetManufacturer(MANUFACTURER);
+  USBDev_SetProduct(PRODUCT_NAME);
+  USBDev_SetSerial(SERIAL_NUMBER);
 
   /*
    * Disable the reset state and enable clock.

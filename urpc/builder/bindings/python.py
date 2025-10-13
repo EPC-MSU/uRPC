@@ -440,60 +440,93 @@ def _build_file(protocol, out):
         _logger = logging.getLogger(__name__)
 
 
+        def _check_library_existence(paths):
+            import os
+            import sysconfig
+
+            for path in paths:
+                if os.path.exists(path):
+                    return
+
+            error_msg = ("This version of the package does not contain binaries for the " + sysconfig.get_platform() +
+                         " platform. For correct operation on this system, you need to rebuild the package with "
+                         "binaries for your system. If necessary, you can consult with the developer of the package: "
+                         "info@physlab.ru.")
+            raise RuntimeError(error_msg)
+
+
+        def _get_possible_library_paths_for_platform():
+            import platform
+            import sysconfig
+
+            os_kind = platform.system().lower()
+            if sysconfig.get_platform() == "win32":
+                return (_near_script_path("{library_name}-win32\\\\{library_name}.dll"),
+                        _near_script_path("{library_name}.dll"),
+                        "{library_name}.dll")
+
+            if sysconfig.get_platform() == "win-amd64":
+                return (_near_script_path("{library_name}-win64\\\\{library_name}.dll"),
+                        _near_script_path("{library_name}.dll"),
+                        "{library_name}.dll")
+
+            if os_kind == "darwin":
+                return (_near_script_path("{library_name}-darwin/lib{library_name}.dylib"),
+                        _near_script_path("lib{library_name}.dylib"),
+                        "lib{library_name}.dylib")
+
+            if os_kind == "freebsd" or "linux" in os_kind:
+                if sysconfig.get_platform() == "linux-aarch64":
+                    return (_near_script_path("{library_name}-debian_arm64/lib{library_name}.so"),
+                            _near_script_path("lib{library_name}.so"),
+                            "lib{library_name}.so")
+
+                return (_near_script_path("{library_name}-debian/lib{library_name}.so"),
+                        _near_script_path("lib{library_name}.so"),
+                        "lib{library_name}.so")
+
+            raise RuntimeError("Unexpected OS: " + sysconfig.get_platform())
+
+
         def _load_specific_lib(path):
             try:
                 lib = CDLL(path)
                 _logger.debug("Load library " + path + ": success")
                 return lib
-            except OSError as err:
-                _logger.debug("Load library " + path + ": failed, " + str(err))
-                raise err
+            except OSError as exc:
+                _logger.debug("Load library " + path + ": failed, " + str(exc))
+                raise exc
 
 
         def _near_script_path(libname):
-            from os.path import dirname, abspath, join
+            from os.path import abspath, dirname, join
             return join(abspath(dirname(__file__)), libname)
 
 
         def _load_lib():
-            from platform import system
-            os_kind = system().lower()
-            if os_kind == "windows":
-                if 8 * struct.calcsize("P") == 32:
-                    paths = (_near_script_path("{library_name}-win32\\\\{library_name}.dll"),
-                             _near_script_path("{library_name}.dll"),
-                             "{library_name}.dll")
-                else:
-                    paths = (_near_script_path("{library_name}-win64\\\\{library_name}.dll"),
-                             _near_script_path("{library_name}.dll"),
-                             "{library_name}.dll")
-            elif os_kind == "darwin":
-                paths = (_near_script_path("{library_name}-darwin/lib{library_name}.dylib"),
-                         _near_script_path("lib{library_name}.dylib"),
-                         "lib{library_name}.dylib")
-            elif os_kind == "freebsd" or "linux" in os_kind:
-                paths = (_near_script_path("{library_name}-debian/lib{library_name}.so"),
-                         _near_script_path("lib{library_name}.so"),
-                         "lib{library_name}.so")
-            else:
-                raise RuntimeError("Unexpected OS")
+            import platform
+            import sysconfig
+
+            paths = _get_possible_library_paths_for_platform()
+            _check_library_existence(paths)
 
             errors = []
             for path in paths:
                 try:
                     lib = _load_specific_lib(path)
-                except Exception as e:
-                    errors.append(str(e))
+                except Exception as exc:
+                    errors.append(str(exc))
                 else:
                     return lib
 
-            error_msg = "Unable to load library. Paths tried:\\n"
+            error_msg = "Failed to load library. Tried paths:\\n"
             for i, path in enumerate(paths):
                 error_msg = error_msg + str(path) + " - got error: " + errors[i] + "\\n"
 
-            if os_kind == "windows":
-                error_msg += ("Check that Visual C++ Redistributable Packages for Visual Studio 2013 are installed.\n
-                You can download the installers from https://www.microsoft.com/en-us/download/details.aspx?id=40784\n")
+            if platform.system().lower() == "windows":
+                error_msg += ("\\nCheck that Visual C++ Redistributable Packages for Visual Studio 2013 are "
+                              "installed.\\nYou can download the installers from "
+                              "https://www.microsoft.com/en-us/download/details.aspx?id=40784.\\n")
 
             raise RuntimeError(error_msg)
 

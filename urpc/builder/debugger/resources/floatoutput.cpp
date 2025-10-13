@@ -10,6 +10,7 @@ FloatOutput::FloatOutput(QWidget *parent, QString ArgName, QString ArgType) :
 
     this->SetLabel(ui->Label);
     this->SetEditor(ui->FloatEdit);
+    //this->SetText(QString::number(this->GetText().toFloat()));
 }
 //---------------------------------------------------------------
 FloatOutput::~FloatOutput()
