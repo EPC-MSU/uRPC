@@ -407,7 +407,7 @@
           <item row="1" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
-             <widget class="QLineEdit" name="comEdit">
+             <widget class="QComboBox" name="comEdit">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -415,6 +415,16 @@
                </sizepolicy>
               </property>
              </widget>
+            </item>
+            <item>
+              <widget class="QPushButton" name="refreshComboBox">
+                <property name="maximumSize">
+                  <size>
+                    <width>30</width>
+                    <height>23</height>
+                  </size>
+                </property>
+              </widget>
             </item>
             <item>
              <widget class="QPushButton" name="cntButton">
@@ -429,6 +439,13 @@
                <string>Disconnect</string>
               </property>
              </widget>
+            </item>
+            <item>
+              <widget class="QPushButton" name="devInfoButton">
+                <property name="text">
+                  <string>Get info</string>
+                </property>
+              </widget>
             </item>
             <item>
              <spacer name="horizontalSpacer">
