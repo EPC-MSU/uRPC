@@ -970,17 +970,17 @@ class _ClibBuilderImpl(ClangView):
              */
             """ + self.__generate_set_profile_func(signature_only=True)) + "\n" + dedent("""\
             /**
-            * \~english
+            * \\~english
             * Read devices info and get number of devices in system
-            * \~russian
+            * \\~russian
             * Читает информацию об устройствах и выдаёт количество подключенных устройств в системе
             */
             """ + self.__generate_enumerate_func(signature_only=True)) + "\n" + dedent("""\
             /**
-            * \~english
+            * \\~english
             * Get VID, PID, manufacturer and other device information
             * @param[in] dev_number - number of device (from 0 to answer enumerate() function).
-            * \~russian
+            * \\~russian
             * Выдаёт VID, PID, производителя и другую информацию об устройстве
             * @param[in] dev_number - номер устройства (от 0 до ответа функции enumerate()).
             */
@@ -1422,7 +1422,8 @@ class _ClibBuilderImpl(ClangView):
             SET(LIBSERIALPORT_NAME "/libserialport/libserialport_mac.a")
             SET(MAC_FRAME "-framework CoreFoundation" "-framework IOKit")
         ENDIF()
-        SET({library_name_uppercase}_LINK_LIBRARIES "${{{library_name_uppercase}_LINK_LIBRARIES}}" "${{CMAKE_SOURCE_DIR}}${{LIBSERIALPORT_NAME}}" ${{MAC_FRAME}})
+        SET({library_name_uppercase}_LINK_LIBRARIES "${{{library_name_uppercase}_LINK_LIBRARIES}}"
+            "${{CMAKE_SOURCE_DIR}}${{LIBSERIALPORT_NAME}}" ${{MAC_FRAME}})
         TARGET_LINK_LIBRARIES({library_target} ${{{library_name_uppercase}_LINK_LIBRARIES}})
 
         SET({library_name_uppercase}_INCLUDE_DIRS ${{CMAKE_INSTALL_INCLUDEDIR}})

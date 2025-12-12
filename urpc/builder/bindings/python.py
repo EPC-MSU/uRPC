@@ -102,7 +102,7 @@ def build_implicit_struct_overload(response_has_payload, out_struct_class_name, 
         if response_has_payload:
             yield "*"
             yield "{}: Optional[{}]=None".format(
-                _reserved_vars['response_buffer'],
+                _reserved_vars["response_buffer"],
                 out_struct_class_name
             )
 
@@ -122,10 +122,10 @@ def build_explicit_struct_overload(request_has_payload, response_has_payload,
     def method_arg_strings():
         yield "self"
         if request_has_payload:
-            yield "{}: {}".format(_reserved_vars['request_buffer'], in_struct_class_name)
+            yield "{}: {}".format(_reserved_vars["request_buffer"], in_struct_class_name)
         if response_has_payload:
             yield "*"
-            yield "{}: Optional[{}]=None".format(_reserved_vars['response_buffer'], out_struct_class_name)
+            yield "{}: Optional[{}]=None".format(_reserved_vars["response_buffer"], out_struct_class_name)
 
     out.write(indent(dedent("""\
         @overload  # noqa: F811
@@ -169,20 +169,20 @@ def build_implementation(request_has_payload, response_has_payload,
             else:
                 {buffer_name} = args[0]
         """).format(
-            buffer_name=_reserved_vars['request_buffer'],
+            buffer_name=_reserved_vars["request_buffer"],
             buffer_class="self.{}".format(in_struct_class_name),
             init_args="\n" + ",\n".join((" " * 8) + a for a in request_constructor_arg_strings()) + "\n" + (" " * 4)
         ), " " * 8))
-        call_args.append("byref({})".format(_reserved_vars['request_buffer']))
+        call_args.append("byref({})".format(_reserved_vars["request_buffer"]))
 
     if response_has_payload:
         out.write(indent(dedent("""\
             {buffer_name} = kwargs.get("{buffer_name}", {buffer_class}())
         """.format(
-            buffer_name=_reserved_vars['response_buffer'],
+            buffer_name=_reserved_vars["response_buffer"],
             buffer_class="self.{}".format(out_struct_class_name)
         )), " " * 8))
-        call_args.append("byref({})".format(_reserved_vars['response_buffer']))
+        call_args.append("byref({})".format(_reserved_vars["response_buffer"]))
 
     out.write(indent(dedent("""\
         _validate_call(_lib.{}({}))
@@ -192,7 +192,7 @@ def build_implementation(request_has_payload, response_has_payload,
         out.write(indent(dedent("""\
             return {}
         """.format(
-            _reserved_vars['response_buffer']
+            _reserved_vars["response_buffer"]
         )), " " * 8))
 
 

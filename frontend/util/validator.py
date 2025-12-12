@@ -67,7 +67,7 @@ def check_product_name(val, par_name="Product name"):
     match = product_name_pattern.match(val)
     if not match:
         raise ValueError('The "{}" field cannot be longer than 40 symbols'
-                         ' and must contain at least 1 symbol.'.format(par_name))
+                         " and must contain at least 1 symbol.".format(par_name))
     return val
 
 
@@ -76,7 +76,7 @@ def check_device_name(val, par_name="Device name"):
     match = device_name_pattern.match(val)
     if not match:
         raise ValueError('The "{}" field cannot be longer than 40 symbols'
-                         ' and must contain at least 1 symbol.'.format(par_name))
+                         " and must contain at least 1 symbol.".format(par_name))
     return val
 
 
@@ -85,7 +85,7 @@ def check_manufacturer(val, par_name="Manufacturer"):
     match = manufacturer_name_pattern.match(val)
     if not match:
         raise ValueError('The "{}" field cannot be longer than 16 symbols'
-                         ' and must contain at least 1 symbol.'.format(par_name))
+                         " and must contain at least 1 symbol.".format(par_name))
     return val
 
 
