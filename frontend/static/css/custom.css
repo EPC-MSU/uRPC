@@ -98,6 +98,31 @@ hr {
     width: 100%;
 }
 
+.pid_vid_tooltip
+{
+    position: relative;
+    display: inline-block;
+
+}
+.pid_vid_tooltip .tooltip_text
+{
+    display: none;
+    background-color: #dbeef5;
+    color: #628db7;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+
+    /* Position the tooltip */
+    position:inherit;
+    z-index: 1;
+}
+
+.pid_vid_tooltip:hover .tooltip_text
+{
+    display: inline;
+}
+
 .section {
     /* border: 1px double black; */
     padding-left: 1em;

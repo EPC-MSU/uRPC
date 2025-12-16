@@ -64,6 +64,8 @@ void IntInput::AddConst(QString ConstName, int ConstValue)
     std::reverse(sorted_consts->begin(), sorted_consts->end());
 
     this->cbox->addItem(ConstName);
+
+    this->EditChanged();
 }
 
 void IntInput::EditChanged(void)

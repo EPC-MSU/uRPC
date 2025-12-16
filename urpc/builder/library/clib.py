@@ -98,6 +98,22 @@ class _ClibBuilderImpl(ClangView):
         result += "\n} " + namespace_symbol(self.__protocol, argstruct.name) + ";\n"
         return result
 
+    def __generate_enumerate_struct(self):
+        return dedent("""
+            // max number of devices
+            #define numb_of_devices 20
+            // max length of string
+            #define len_of_string 20
+
+            typedef struct
+            {
+                char port_name[len_of_string];
+                int vid, pid;
+                char manufacturer[len_of_string], product[len_of_string], serial_number[len_of_string];
+                int usb_bus, usb_address;
+            } device_info;\n
+            """)
+
     def __generate_function(self, return_type_name, func_name, args_list_str, body=None):
         signature = ""
         if not body:
@@ -886,6 +902,45 @@ class _ClibBuilderImpl(ClangView):
             "result_t", func_name, "device_t handle, char *buffer", body
         )
 
+    def __generate_get_device_info_func(self, signature_only):
+        func_name = namespace_symbol(self.__protocol, "get_device_info")
+
+        body = None
+        if not signature_only:
+            body = """return device_array[dev_number];"""
+
+        return self.__generate_function("device_info", func_name, "int dev_number", body)
+
+    def __generate_enumerate_func(self, signature_only):
+        func_name = namespace_symbol(self.__protocol, "enumerate")
+
+        body = None
+        if not signature_only:
+            body = dedent("""\
+            struct sp_port **port_list;
+            enum sp_return result = sp_list_ports(&port_list);
+            if (result < 0)
+                return -1;
+            int i;
+            for (i = 0; port_list[i] != NULL; i++)
+            {
+                struct sp_port *port = port_list[i];
+                strncpy(device_array[i].port_name, sp_get_port_name(port), len_of_string);
+                sp_get_port_usb_vid_pid(port, &(device_array[i].vid), &(device_array[i].pid));
+                if (sp_get_port_usb_manufacturer(port_list[i]) != 0)
+                {
+                    strncpy(device_array[i].manufacturer, sp_get_port_usb_manufacturer(port_list[i]), len_of_string);
+                    strncpy(device_array[i].product, sp_get_port_usb_product(port), len_of_string);
+                    strncpy(device_array[i].serial_number, sp_get_port_usb_serial(port), len_of_string);
+                }
+                sp_get_port_usb_bus_address(port, &(device_array[i].usb_bus), &(device_array[i].usb_address));
+            }
+            sp_free_port_list(port_list);
+            return i;
+            """)
+
+        return self.__generate_function("int", func_name, "", body)
+
     def __generate_profiles_ascpect(self, for_header_inclusion):
         library_name = self.__get_library_name()
 
@@ -915,7 +970,24 @@ class _ClibBuilderImpl(ClangView):
              * @param[in] handle - Идентификатор устройства.
              * @param[in] buffer - Входной буфер, откуда будет считан профиль.
              */
-            """ + self.__generate_set_profile_func(signature_only=True))
+            """ + self.__generate_set_profile_func(signature_only=True)) + "\n" + dedent("""\
+            /**
+            * \\~english
+            * Read devices info and get number of devices in system
+            * \\~russian
+            * Читает информацию об устройствах и выдаёт количество подключенных устройств в системе
+            */
+            """ + self.__generate_enumerate_func(signature_only=True)) + "\n" + dedent("""\
+            /**
+            * \\~english
+            * Get VID, PID, manufacturer and other device information
+            * @param[in] dev_number - number of device (from 0 to answer enumerate() function).
+            * \\~russian
+            * Выдаёт VID, PID, производителя и другую информацию об устройстве
+            * @param[in] dev_number - номер устройства (от 0 до ответа функции enumerate()).
+            */
+            """ + self.__generate_get_device_info_func(signature_only=True)) + "\n"
+
         else:
             result = '#include "{}.h"'.format(library_name) + dedent("""
             #include <algorithm>
@@ -949,6 +1021,8 @@ class _ClibBuilderImpl(ClangView):
                 if index > 0:
                     result += "\n"
                 result += self.__generate_flagset(flagset)
+
+            result += self.__generate_enumerate_struct()
 
             for index, argstruct in enumerate(self.argstructs):
                 if index > 0:
@@ -988,6 +1062,10 @@ class _ClibBuilderImpl(ClangView):
         for f in self.__functions:
             functions += self.__generate_command_func(f, signature_only=for_header_inclusion) + "\n"
         functions += self.__generate_close_func(signature_only=for_header_inclusion) + "\n"
+        if not for_header_inclusion:
+            functions += """device_info device_array[numb_of_devices];\n\n"""
+        functions += self.__generate_enumerate_func(signature_only=for_header_inclusion) + "\n"
+        functions += self.__generate_get_device_info_func(signature_only=for_header_inclusion) + "\n"
         for typename in primitive_types:
             pushname = "push_{}".format(typename)
             popname = "pop_{}".format(typename)
@@ -1093,6 +1171,7 @@ class _ClibBuilderImpl(ClangView):
         #endif
         #include <stdint.h>
         #include <wchar.h>
+        #include "libserialport/libserialport.h"
 
         """) + dedent("""
         #undef {export_macro}
@@ -1347,6 +1426,16 @@ class _ClibBuilderImpl(ClangView):
                 "${{{library_name_uppercase}_LINK_LIBRARIES}}" -static-libgcc -static-libstdc++
             )
         ENDIF()
+        IF(${{CMAKE_SYSTEM_NAME}} STREQUAL Windows)
+            SET(LIBSERIALPORT_NAME "/libserialport/libserialport.lib")
+        ELSEIF(${{CMAKE_SYSTEM_NAME}} STREQUAL Linux)
+            SET(LIBSERIALPORT_NAME "/libserialport/libserialport_lin.a")
+        ELSEIF(${{CMAKE_SYSTEM_NAME}} STREQUAL Darwin)
+            SET(LIBSERIALPORT_NAME "/libserialport/libserialport_mac.a")
+            SET(MAC_FRAME "-framework CoreFoundation" "-framework IOKit")
+        ENDIF()
+        SET({library_name_uppercase}_LINK_LIBRARIES "${{{library_name_uppercase}_LINK_LIBRARIES}}"
+            "${{CMAKE_SOURCE_DIR}}${{LIBSERIALPORT_NAME}}" ${{MAC_FRAME}})
         TARGET_LINK_LIBRARIES({library_target} ${{{library_name_uppercase}_LINK_LIBRARIES}})
         #some patch to avoid strange error when build with xibridge package -
         # include in the default lib include install dir of cmake

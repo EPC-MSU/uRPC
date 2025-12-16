@@ -1996,6 +1996,9 @@
       <name>$PROJ_DIR$\inc\usb.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\inc\config.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\src\usbd_desc.c</name>
     </file>
   </group>

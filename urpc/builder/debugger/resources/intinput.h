@@ -51,6 +51,7 @@ public:
 
         this->SetEditor(new ValidIntLineEdit(this,minvalue,maxvalue));
         this->GetEditor()->sizePolicy().setVerticalPolicy(QSizePolicy::Minimum);
+        this->SetText(QString::number(this->GetText().toInt()));
 
         this->cbox = 0;
         this->cboxconsts = 0;

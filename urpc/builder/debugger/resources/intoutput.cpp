@@ -13,6 +13,7 @@ IntOutput::IntOutput(QWidget *parent, QString ArgName, QString ArgType) :
 
     this->SetEditor(ui->IntEdit);
     this->GetEditor()->sizePolicy().setVerticalPolicy(QSizePolicy::Minimum);
+    //this->SetText(QString::number(this->GetText().toLongLong()));
 
     this->cbox = 0;
     this->cboxconsts = 0;

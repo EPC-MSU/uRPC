@@ -7,7 +7,7 @@ from io import StringIO
 from json import loads
 from textwrap import dedent, indent
 from zipfile import ZipFile, ZIP_DEFLATED
-from inflection import camelize, underscore
+from urpc.builder.util.inflection_local import camelize, underscore
 
 from urpc import ast
 from urpc.builder.device.utils.namespaced import namespaced as namespaced_global
