@@ -1033,6 +1033,7 @@ class _ClibBuilderImpl(ClangView):
             #include <cstring>
             #include <zf_log.h>
             #include "urpc.h"
+            #include "libserialport/libserialport.h"
             ZF_LOG_DEFINE_GLOBAL_OUTPUT_LEVEL;
             static std::map<device_t, urpc_device_handle_t> impl_by_handle;
             static std::mutex impl_by_handle_mutex;
@@ -1169,7 +1170,6 @@ class _ClibBuilderImpl(ClangView):
         #endif
         #include <stdint.h>
         #include <wchar.h>
-        #include "libserialport/libserialport.h"
 
         """) + dedent("""
         #undef {export_macro}
