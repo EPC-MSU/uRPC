@@ -22,6 +22,7 @@
 
 #include <QTime>
 #include <QFileDialog>
+#include <QCommonStyle>
 
 // libs for type identification
 #include <limits>
@@ -231,7 +232,7 @@ void MainWindow::get_device_info_qt()
     #ifdef _WIN32
 	int init_pos = 8;
     #else
-    int init_pos = 6
+    int init_pos = 6;
     #endif
 	int len_port_name = 20;
 	int dev_number = ${namespaced("enumerate")}();
