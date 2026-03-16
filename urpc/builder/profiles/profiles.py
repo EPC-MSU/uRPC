@@ -159,6 +159,8 @@ def write_argument_scalar(arg, profile_command, namespaced, cmd, output):
         value = _c_flags(arg, profile_command[arg.name], namespaced)
     else:
         value = profile_command[arg.name]
+        if isinstance(value, float):
+            value = "(float){}".format(value)
 
     output.write("  {name}.{field} = {value};\n".format(name=_accessor_name(cmd),
                                                         field=arg.name,
