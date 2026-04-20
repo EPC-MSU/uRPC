@@ -179,18 +179,6 @@ def _build_en_file(protocol, out, namespaced):
         out.write("{0}\n".format(_get_description(cmd)))
         out.write("\n")
 
-    out.write(
-        dedent(
-            """\
-            About this document
-            -------------------
-            Documentation generator version: {BUILDER_VERSION}.
-            """
-        ).format(
-            BUILDER_VERSION=BUILDER_VERSION
-        )
-    )
-
 
 def _build_ru_file(protocol, out, namespaced):
     simple_commands, accessors = split_by_type(protocol.commands)
@@ -264,18 +252,6 @@ def _build_ru_file(protocol, out, namespaced):
         out.write("**Описание:**\n")
         out.write("{0}\n".format(_get_description_ru(cmd)))
         out.write("\n")
-
-    out.write(
-        dedent(
-            """\
-            Об этом документе
-            -----------------
-            Версия генератора документации: {BUILDER_VERSION}.
-            """
-        ).format(
-            BUILDER_VERSION=BUILDER_VERSION
-        )
-    )
 
 
 def build(protocol, out):
