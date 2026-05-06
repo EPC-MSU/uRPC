@@ -126,7 +126,7 @@ class _ClibBuilderImpl(ClangView):
         base_type, length = type_to_cstr(arg.type_)
         field_access = "{}->{}".format(buffer_name, arg.name)
         if length:
-            result = "for(i=0; i<{}; i++) {}".format(
+            result = "for (i = 0; i < {}; i++) {}".format(
                 len(arg.type_), generate_move_impl(base_type, field_access + "[i]")
             )
         else:
@@ -188,7 +188,7 @@ class _ClibBuilderImpl(ClangView):
 
         body += dedent("""\
         urpc_device_handle_t device;
-        if(handle < 0)
+        if (handle < 0)
         {
             return result_error;
         }
@@ -349,7 +349,7 @@ class _ClibBuilderImpl(ClangView):
                 {
                     handle = rand();
                 }
-                while(impl_by_handle.count(handle) != 0);
+                while (impl_by_handle.count(handle) != 0);
                 impl_by_handle[handle] = device;
             }
             return handle;
@@ -476,13 +476,16 @@ class _ClibBuilderImpl(ClangView):
                 }
                 return result;
             }
+
             static void zf_log_out_dummy_callback(const zf_log_message *, void *) {}
             ZF_LOG_DEFINE_GLOBAL_OUTPUT = {0, 0, zf_log_out_dummy_callback};
+
             struct userimpl_data_t
             {
                 void *payload;
                 """ + callback_type_name + """ cb;
             };
+
             static std::mutex callback_setter_mutex;
             static void zf_log_out_userimpl_callback(const zf_log_message *msg, void *data)
             {
@@ -631,8 +634,8 @@ class _ClibBuilderImpl(ClangView):
             #include <cstring>
             #include <cstdlib>
             #include <mutex>
-
             #include <zf_log.h>
+
             """) + "\n".join((
                 self.__generate_logging_callback_setter(callback_type_name, signature_only=False),
                 self.__generate_wide_logging_callback(signature_only=False),
@@ -917,10 +920,10 @@ class _ClibBuilderImpl(ClangView):
             body = dedent("""\
             struct sp_port **port_list;
             enum sp_return result = sp_list_ports(&port_list);
-            if (result < 0)
+            if (result != SP_OK)
                 return -1;
             int i;
-            for (i = 0; port_list[i] != NULL; i++)
+            for (i = 0; port_list[i] != NULL && i < numb_of_devices; i++)
             {
                 struct sp_port *port = port_list[i];
                 strncpy(device_array[i].port_name, sp_get_port_name(port), len_of_string);
@@ -993,9 +996,9 @@ class _ClibBuilderImpl(ClangView):
             #define PICOJSON_USE_INT64
             #define PICOJSON_USE_UINT64
             #include <picojson.h>
-            """)
-            result += self.__generate_get_profile_func(signature_only=False)
-            result += self.__generate_set_profile_func(signature_only=False)
+            """) + "\n"
+            result += self.__generate_get_profile_func(signature_only=False) + "\n"
+            result += self.__generate_set_profile_func(signature_only=False) + "\n"
             return result
 
     def generate_profiles_impl_file(self):
@@ -1035,8 +1038,11 @@ class _ClibBuilderImpl(ClangView):
             #include "urpc.h"
             #include "libserialport/libserialport.h"
             ZF_LOG_DEFINE_GLOBAL_OUTPUT_LEVEL;
+
             static std::map<device_t, urpc_device_handle_t> impl_by_handle;
+
             static std::mutex impl_by_handle_mutex;
+
             static void push_data(uint8_t **where, const void *data, size_t size)
             {
                 memcpy(*where, data, size);
@@ -1047,6 +1053,7 @@ class _ClibBuilderImpl(ClangView):
             static void push_##Type(uint8_t **where, Type value) { \\
                 push_data(where, &value, sizeof(value)); \\
             }
+
             #define GENERATE_POP(Type) \\
             static Type pop_##Type(uint8_t **where) { \\
                 Type result; \\
@@ -1112,7 +1119,7 @@ class _ClibBuilderImpl(ClangView):
 
         int main()
         {{
-            // Enter path here, for example: com:///dev/ttyACM0, com:\\\\.\\COM1
+            // Enter path here, for example: com:///dev/ttyACM0, com:\\\\\\\\.\\\\COM1
             device_t device = {open_func}("<PATH_HERE>");
             if (device == device_undefined)
             {{
@@ -1153,6 +1160,8 @@ class _ClibBuilderImpl(ClangView):
         #define {PROJECT_NAME}_BUILDER_VERSION_BUGFIX {BUILDER_VERSION_BUGFIX}
         #define {PROJECT_NAME}_BUILDER_VERSION_SUFFIX "{BUILDER_VERSION_SUFFIX}"
         #define {PROJECT_NAME}_BUILDER_VERSION "{BUILDER_VERSION}"
+        #define {PROJECT_NAME}_VID {VID}
+        #define {PROJECT_NAME}_PID {PID}
 
         """.format(
             project_name=self.name,
@@ -1162,7 +1171,9 @@ class _ClibBuilderImpl(ClangView):
             BUILDER_VERSION_BUGFIX=BUILDER_VERSION_BUGFIX,
             BUILDER_VERSION_SUFFIX=BUILDER_VERSION_SUFFIX,
             BUILDER_VERSION=BUILDER_VERSION,
-            guard_name=include_guard_name
+            guard_name=include_guard_name,
+            VID=self.vid,
+            PID=self.pid
         )) + dedent("""
         #ifdef __cplusplus
         extern "C"
@@ -1197,6 +1208,7 @@ class _ClibBuilderImpl(ClangView):
         ) + dedent("""
         typedef int device_t;
         #define device_undefined (-1)
+        #define device_unsupported (-2)
         typedef int result_t;
         #define result_ok 0
         #define result_error (-1)
@@ -1207,6 +1219,7 @@ class _ClibBuilderImpl(ClangView):
 
         #define STR_result_ok_0 "result_ok 0"
         #define STR_device_undefined_1 "device_undefined (-1)"
+        #define STR_device_unsupported_2 "device_unsupported (-2)"
         #define STR_result_error_1 "result_error (-1)"
         #define STR_result_not_implemented_2 "result_not_implemented (-2)"
         #define STR_result_value_error_3 "result_value_error (-3)"
