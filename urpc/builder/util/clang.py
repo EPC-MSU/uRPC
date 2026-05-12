@@ -145,6 +145,14 @@ class ClangView:
     @property
     def name(self):
         return self._project.name.lower()
+    
+    @property
+    def vid(self):
+        return self._project.vid
+    
+    @property
+    def pid(self):
+        return self._project.pid
 
     @property
     def flagsets(self):
