@@ -10,11 +10,13 @@ FloatInput::FloatInput(QWidget *parent, QString ArgName, QString ArgType, float 
     ui(new Ui::FloatInput)
 {
     ui->setupUi(this);
-    ui->FloatEdit1->setValidator(new QDoubleValidator(minvalue, maxvalue, DECIMALS));
+    QDoubleValidator *validator = new QDoubleValidator(minvalue, maxvalue, DECIMALS, this);
+    validator->setLocale(QLocale::c());
+    ui->FloatEdit1->setValidator(validator);
 
     this->SetLabel(ui->Label);
     this->SetEditor(ui->FloatEdit1);
-    this->SetText(QString::number(this->GetText().toFloat()));
+    this->SetText(QString::number(QLocale::c().toFloat(this->GetText())));
 }
 //---------------------------------------------------
 FloatInput::~FloatInput()
@@ -24,5 +26,10 @@ FloatInput::~FloatInput()
 //------------------------------------------------------
 float FloatInput::getValue()
 {
-    return this->GetText().toFloat();
+    bool ok;
+    float val = QLocale::c().toFloat(this->GetText(), &ok);
+    if (!ok) {
+        return 0.0f; 
+    }
+    return val;
 }
