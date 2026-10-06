@@ -459,29 +459,48 @@ def _build_file(protocol, out):
             import platform
             import sysconfig
 
+            # Library directories are named <os>_<arch> (#142679). Old names (win32, win64, darwin,
+            # debian, debian_arm64) are kept as a fallback for packages built before the rename.
             os_kind = platform.system().lower()
             if sysconfig.get_platform() == "win32":
-                return (_near_script_path("{library_name}-win32\\\\{library_name}.dll"),
+                return (_near_script_path("{library_name}-win_i386\\\\{library_name}.dll"),
+                        _near_script_path("{library_name}-win32\\\\{library_name}.dll"),
                         _near_script_path("{library_name}.dll"),
                         "{library_name}.dll")
 
             if sysconfig.get_platform() == "win-amd64":
-                return (_near_script_path("{library_name}-win64\\\\{library_name}.dll"),
+                return (_near_script_path("{library_name}-win_x86_64\\\\{library_name}.dll"),
+                        _near_script_path("{library_name}-win64\\\\{library_name}.dll"),
+                        _near_script_path("{library_name}.dll"),
+                        "{library_name}.dll")
+
+            if sysconfig.get_platform() == "win-arm64":
+                return (_near_script_path("{library_name}-win_arm64\\\\{library_name}.dll"),
                         _near_script_path("{library_name}.dll"),
                         "{library_name}.dll")
 
             if os_kind == "darwin":
-                return (_near_script_path("{library_name}-darwin/lib{library_name}.dylib"),
+                arch = "arm64" if platform.machine().lower() == "arm64" else "x86_64"
+                return (_near_script_path("{library_name}-macosx_" + arch + "/lib{library_name}.dylib"),
+                        _near_script_path("{library_name}-macosx_universal/lib{library_name}.dylib"),
+                        _near_script_path("{library_name}-darwin/lib{library_name}.dylib"),
                         _near_script_path("lib{library_name}.dylib"),
                         "lib{library_name}.dylib")
 
             if os_kind == "freebsd" or "linux" in os_kind:
                 if sysconfig.get_platform() == "linux-aarch64":
-                    return (_near_script_path("{library_name}-debian_arm64/lib{library_name}.so"),
+                    return (_near_script_path("{library_name}-linux_arm64/lib{library_name}.so"),
+                            _near_script_path("{library_name}-debian_arm64/lib{library_name}.so"),
                             _near_script_path("lib{library_name}.so"),
                             "lib{library_name}.so")
 
-                return (_near_script_path("{library_name}-debian/lib{library_name}.so"),
+                if sysconfig.get_platform() == "linux-i686":
+                    return (_near_script_path("{library_name}-linux_i386/lib{library_name}.so"),
+                            _near_script_path("lib{library_name}.so"),
+                            "lib{library_name}.so")
+
+                return (_near_script_path("{library_name}-linux_x86_64/lib{library_name}.so"),
+                        _near_script_path("{library_name}-debian/lib{library_name}.so"),
                         _near_script_path("lib{library_name}.so"),
                         "lib{library_name}.so")
 
