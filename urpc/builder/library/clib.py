@@ -1407,6 +1407,17 @@ class _ClibBuilderImpl(ClangView):
             ADD_SUBDIRECTORY(vendor/liburpc)
         ENDFUNCTION()
         ADD_LIBRARY_URPC()
+        # liburpc and its vendor code treat warnings as errors. Compilers newer than the tested ones
+        # warn there (cryptopp, deprecated winsock calls), which must not break the library build.
+        FOREACH(VENDOR_TARGET urpc urpc-serial urpc-udp urpc-xinet bindy)
+            IF(TARGET ${{VENDOR_TARGET}})
+                GET_TARGET_PROPERTY(VENDOR_OPTIONS ${{VENDOR_TARGET}} COMPILE_OPTIONS)
+                IF(VENDOR_OPTIONS)
+                    LIST(REMOVE_ITEM VENDOR_OPTIONS /WX -Werror)
+                    SET_TARGET_PROPERTIES(${{VENDOR_TARGET}} PROPERTIES COMPILE_OPTIONS "${{VENDOR_OPTIONS}}")
+                ENDIF()
+            ENDIF()
+        ENDFOREACH()
         SET_TARGET_PROPERTIES(zf_log PROPERTIES COMPILE_DEFINITIONS ZF_LOG_EXTERN_GLOBAL_OUTPUT)
         TARGET_INCLUDE_DIRECTORIES({library_target} PRIVATE vendor vendor/liburpc vendor/liburpc/vendor/zf_log/zf_log)
         IF(${{CMAKE_SYSTEM_NAME}} STREQUAL Windows)
@@ -1427,20 +1438,43 @@ class _ClibBuilderImpl(ClangView):
                 "${{{library_name_uppercase}_LINK_LIBRARIES}}" -static-libgcc -static-libstdc++
             )
         ENDIF()
+        # Bundled static libserialport is named by <os>_<arch> of the target. Platforms without
+        # a bundled build link the static library of the system package instead.
+        SET(LIBSERIALPORT_DIR "${{CMAKE_CURRENT_SOURCE_DIR}}/libserialport")
         IF(${{CMAKE_SYSTEM_NAME}} STREQUAL Windows)
-            IF(${{CMAKE_SIZEOF_VOID_P}} EQUAL 8)
-                SET(LIBSERIALPORT_NAME "/libserialport/win64/libserialport.lib")
-            ELSEIF(${{CMAKE_SIZEOF_VOID_P}} EQUAL 4)
-                SET(LIBSERIALPORT_NAME "/libserialport/win32/libserialport.lib")
+            IF("${{MSVC_CXX_ARCHITECTURE_ID}}" MATCHES "^ARM")
+                MESSAGE(FATAL_ERROR "libserialport is not bundled for Windows ${{MSVC_CXX_ARCHITECTURE_ID}}")
+            ELSEIF(${{CMAKE_SIZEOF_VOID_P}} EQUAL 8)
+                SET(LIBSERIALPORT_NAME "${{LIBSERIALPORT_DIR}}/win_x86_64/libserialport.lib")
+            ELSE()
+                SET(LIBSERIALPORT_NAME "${{LIBSERIALPORT_DIR}}/win_i386/libserialport.lib")
+            ENDIF()
+            IF(MSVC AND NOT (MSVC_VERSION LESS 1900))
+                # The bundled library is built against the pre-2015 CRT
+                TARGET_SOURCES({library_target} PRIVATE legacy_stdio_compat.cpp)
+                SET(LIBSERIALPORT_NAME "${{LIBSERIALPORT_NAME}}" legacy_stdio_definitions)
             ENDIF()
         ELSEIF(${{CMAKE_SYSTEM_NAME}} STREQUAL Linux)
-            SET(LIBSERIALPORT_NAME "/libserialport/debian64/libserialport.a")
+            IF(("${{CMAKE_SYSTEM_PROCESSOR}}" MATCHES "^(x86_64|AMD64|amd64)$") AND (${{CMAKE_SIZEOF_VOID_P}} EQUAL 8))
+                SET(LIBSERIALPORT_NAME "${{LIBSERIALPORT_DIR}}/linux_x86_64/libserialport.a")
+            ELSE()
+                FIND_LIBRARY(LIBSERIALPORT_NAME NAMES libserialport.a)
+                IF(NOT LIBSERIALPORT_NAME)
+                    MESSAGE(FATAL_ERROR "libserialport is not bundled for Linux ${{CMAKE_SYSTEM_PROCESSOR}}, "
+                                        "install libserialport-dev (static libserialport.a is required)")
+                ENDIF()
+            ENDIF()
         ELSEIF(${{CMAKE_SYSTEM_NAME}} STREQUAL Darwin)
-            SET(LIBSERIALPORT_NAME "/libserialport/macos/libserialport.a")
+            IF(("${{CMAKE_SYSTEM_PROCESSOR}}" STREQUAL x86_64) AND (NOT CMAKE_OSX_ARCHITECTURES
+                                                               OR "${{CMAKE_OSX_ARCHITECTURES}}" STREQUAL x86_64))
+                SET(LIBSERIALPORT_NAME "${{LIBSERIALPORT_DIR}}/macosx_x86_64/libserialport.a")
+            ELSE()
+                MESSAGE(FATAL_ERROR "libserialport is bundled for macOS x86_64 only")
+            ENDIF()
             SET(MAC_FRAME "-framework CoreFoundation" "-framework IOKit")
         ENDIF()
         SET({library_name_uppercase}_LINK_LIBRARIES "${{{library_name_uppercase}_LINK_LIBRARIES}}"
-            "${{CMAKE_SOURCE_DIR}}${{LIBSERIALPORT_NAME}}" ${{MAC_FRAME}})
+            "${{LIBSERIALPORT_NAME}}" ${{MAC_FRAME}})
         TARGET_LINK_LIBRARIES({library_target} ${{{library_name_uppercase}_LINK_LIBRARIES}})
 
         SET({library_name_uppercase}_INCLUDE_DIRS ${{CMAKE_INSTALL_INCLUDEDIR}})
@@ -1484,6 +1518,29 @@ class _ClibBuilderImpl(ClangView):
             library_name_uppercase=self.__get_library_name().upper()
         ))
 
+    def generate_legacy_stdio_compat_file(self):
+        return dedent("""\
+        // The bundled libserialport.lib is built with an MSVC older than 2015. Since Visual Studio 2015
+        // the CRT has no __iob_func, provide it on top of the Universal CRT.
+        #if defined(_MSC_VER) && _MSC_VER >= 1900
+        #include <stdio.h>
+
+        extern "C" {
+        FILE* __cdecl __iob_func(void)
+        {
+            return __acrt_iob_func(0);
+        }
+
+        // Import pointer __imp___iob_func. On x86 C names get a leading underscore from the compiler.
+        #if defined(_M_IX86)
+        FILE* (__cdecl* _imp____iob_func)(void) = __iob_func;
+        #else
+        FILE* (__cdecl* __imp___iob_func)(void) = __iob_func;
+        #endif
+        }
+        #endif
+        """)
+
 
 def build(protocol, output):
     view = _ClibBuilderImpl(protocol)
@@ -1519,6 +1576,10 @@ def build(protocol, output):
         archive.writestr(
             join_path(path_prefix_in_archive, "example.cpp"),
             view.generate_example_file()
+        )
+        archive.writestr(
+            join_path(path_prefix_in_archive, "legacy_stdio_compat.cpp"),
+            view.generate_legacy_stdio_compat_file()
         )
         archive.writestr(
             join_path(path_prefix_in_archive, "cmake", "{}Config.cmake.in".format(view.name)),
