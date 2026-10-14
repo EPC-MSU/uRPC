@@ -352,6 +352,67 @@ class _ClibBuilderImpl(ClangView):
                 while (impl_by_handle.count(handle) != 0);
                 impl_by_handle[handle] = device;
             }
+            {PROJECT_NAME}_enumerate();
+
+            return handle;
+            """)
+        )
+
+    def __generate_open_force_func(self, signature_only=False):
+        descr = ""
+        if signature_only:
+            descr = dedent("""\
+            /**
+             * \\~english
+             * Open a device by name \\a name and return identifier of the device which can be used in calls.
+             * @param[in] name - A device name.
+             * Device name has form "com:port" or "xi-net://host/serial" or "udp://host:port".
+             * In case of USB-COM port the "port" is the OS device uri.
+             * For example "com:\\\\.\\COM3" in Windows or "com:///dev/ttyACM34" in Linux/Mac.
+             * In case of network device the "host" is an IPv4 address or fully qualified domain uri (FQDN),
+             * "serial" is the device serial number in hexadecimal system.
+             * For example "xi-net://192.168.0.1/00001234" or "xi-net://hostname.com/89ABCDEF".
+             * In case of ethernet udp-com adapter the "host" is an IPv4 address, "port" is network port
+             * For example: "udp://192.168.0.2:1024"
+             * Note: only one program may use COM-device in same time.
+             * If errors occur when opening device, you need to make sure that the COM port is in the system and
+             * device is not currently used by other programs.
+             * \\~russian
+             * Открывает устройство по имени \\a name и возвращает идентификатор устройства.
+             * @param[in] name - Имя устройства.
+             * Имя устройства имеет вид "com:port" или xi-net://host/serial или udp://host:port.
+             * Для COM устройства "port" это имя устройства в ОС.
+             * Например "com:\\\\.\\COM3" (Windows) или "com:///dev/tty/ttyACM34" (Linux/Mac).
+             * Для сетевого (XiNet) устройства "host" это IPv4 адрес или полностью определённое имя домена,
+             * "serial" это серийный номер устройства в шестнадцатеричной системе.
+             * Например "xi-net://192.168.0.1/00001234" или "xi-net://hostname.com/89ABCDEF".
+             * Для ethernet переходника com-udp "host" это IPv4 адрес переходника, "port" это порт переходника.
+             * Например "udp://192.168.0.2:1024"
+             * Замечание: в один момент времени COM устройство может использоваться только одной программой.
+             * Если при открытии устройства возникают ошибки, нужно убедиться, что COM-порт есть в системе и что это
+             * устройство в данный момент не используется другими программами
+             */\n""")
+        func_name = namespace_symbol(self.__protocol, "open_device_force")
+        return descr + self.__generate_function(
+            "device_t", func_name, "const char *uri",
+            body=None if signature_only else dedent("""\
+            device_t handle;
+            urpc_device_handle_t device;
+            device = urpc_device_create(uri);
+            if(device == NULL) {
+                return device_undefined;
+            }
+            {
+                std::lock_guard<std::mutex> lock(impl_by_handle_mutex);
+                do
+                {
+                    handle = rand();
+                }
+                while (impl_by_handle.count(handle) != 0);
+                impl_by_handle[handle] = device;
+            }
+            {PROJECT_NAME}_enumerate();
+            
             return handle;
             """)
         )
@@ -1064,6 +1125,7 @@ class _ClibBuilderImpl(ClangView):
 
         functions = ""
         functions += self.__generate_open_func(signature_only=for_header_inclusion) + "\n"
+        functions += self.__generate_open_force_func(signature_only=for_header_inclusion) + "\n"
         functions += self.__generate_lib_version_func(signature_only=for_header_inclusion) + "\n"
         for f in self.__functions:
             functions += self.__generate_command_func(f, signature_only=for_header_inclusion) + "\n"
