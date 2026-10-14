@@ -411,7 +411,6 @@ class _ClibBuilderImpl(ClangView):
                 while (impl_by_handle.count(handle) != 0);
                 impl_by_handle[handle] = device;
             }
-            {PROJECT_NAME}_enumerate();
             
             return handle;
             """)
