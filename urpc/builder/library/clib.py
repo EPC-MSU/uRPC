@@ -358,6 +358,49 @@ class _ClibBuilderImpl(ClangView):
             """)
         )
 
+    def __generate_vid_pid_correct_func(self, signature_only=False):
+        if signature_only:
+            return str()
+        func_name = "vid_pid_correct"
+        descr = ""
+        return descr + self.__generate_function(
+            "static bool", func_name, "const char *port_name_in_uri",
+            body=dedent("""\
+            static bool vid_pid_correct(const char *port_name_in_uri)
+            {
+                if (port_name_in_uri == NULL)
+                    return false;
+
+                struct sp_port **port_list;
+                if (sp_list_ports(&port_list) != SP_OK)
+                    return false;
+
+                bool found = false;
+                for (int i = 0; port_list[i] != NULL; i++)
+                {
+                    char libsp_name[256];
+                    char uri_name[256];
+                    normalize_port_name(sp_get_port_name(port_list[i]), libsp_name, sizeof(libsp_name));
+                    normalize_port_name(port_name_in_uri, uri_name, sizeof(uri_name));
+
+                    if (strcmp(libsp_name, uri_name) != 0)
+                        continue;
+
+                    int vid = 0, pid = 0;
+                    if (sp_get_port_usb_vid_pid(port_list[i], &vid, &pid) == SP_OK
+                        && vid == {PROJECT_NAME}_VID
+                        && pid == {PROJECT_NAME}_PID)
+                    {
+                        found = true;
+                    }
+                    break;
+                }
+
+                sp_free_port_list(port_list);
+                return found;
+            }""")
+        )
+
     def __generate_open_force_func(self, signature_only=False):
         descr = ""
         if signature_only:
