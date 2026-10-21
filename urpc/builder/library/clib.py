@@ -96,6 +96,16 @@ class _ClibBuilderImpl(ClangView):
         result += "\n} " + namespace_symbol(self.__protocol, argstruct.name) + ";\n"
         return result
 
+    def __generate_parsed_uri_struct(self):
+        return dedent("""
+            typedef struct 
+            {
+                const char *scheme_begin;
+                size_t scheme_len;
+                const char *rest;
+            } parsed_uri;\n
+            """)
+
     def __generate_enumerate_struct(self):
         return dedent("""
             // max number of devices
@@ -339,6 +349,17 @@ class _ClibBuilderImpl(ClangView):
             body=None if signature_only else dedent("""\
             device_t handle;
             urpc_device_handle_t device;
+
+            parsed_uri parsed;
+            if (!parse_uri(uri, &parsed))
+                return device_undefined;
+
+            if (scheme_is(&parsed, "com"))
+            {
+                if (!vid_pid_correct(parsed.rest))
+                    return device_unsupported;
+            }
+
             device = urpc_device_create(uri);
             if(device == NULL) {
                 return device_undefined;
@@ -352,10 +373,116 @@ class _ClibBuilderImpl(ClangView):
                 while (impl_by_handle.count(handle) != 0);
                 impl_by_handle[handle] = device;
             }
-            {PROJECT_NAME}_enumerate();
 
             return handle;
             """)
+        )
+
+    def __generate_vid_pid_correct_func(self, signature_only=False):
+        if signature_only:
+            return str()
+        func_name = "vid_pid_correct"
+        descr = ""
+        return descr + self.__generate_function(
+            "static bool", func_name, "const char *port_name_in_uri",
+            body=dedent("""\
+                if (port_name_in_uri == NULL)
+                    return false;
+
+                struct sp_port **port_list;
+                if (sp_list_ports(&port_list) != SP_OK)
+                    return false;
+
+                bool found = false;
+                for (int i = 0; port_list[i] != NULL; i++)
+                {
+                    char libsp_name[256];
+                    char uri_name[256];
+                    normalize_port_name(sp_get_port_name(port_list[i]), libsp_name, sizeof(libsp_name));
+                    normalize_port_name(port_name_in_uri, uri_name, sizeof(uri_name));
+
+                    if (strcmp(libsp_name, uri_name) != 0)
+                        continue;
+
+                    int vid = 0, pid = 0;
+                    if (sp_get_port_usb_vid_pid(port_list[i], &vid, &pid) == SP_OK
+                        && vid == {PROJECT_NAME}_VID
+                        && pid == {PROJECT_NAME}_PID)
+                    {
+                        found = true;
+                    }
+                    break;
+                }
+
+                sp_free_port_list(port_list);
+                return found;
+            """.replace("{PROJECT_NAME}", self.name.upper()))
+        )
+
+    def __generate_scheme_is_func(self, signature_only=False):
+        if signature_only:
+            return str()
+        func_name = "scheme_is"
+        descr = ""
+        return descr + self.__generate_function(
+            "static bool", func_name, "parsed_uri *u, const char *scheme",
+            body=dedent("""\
+                size_t len = strlen(scheme);
+                return u->scheme_len == len && strncmp(u->scheme_begin, scheme, len) == 0;
+                """)
+        )
+
+    def __generate_normalize_port_name_func(self, signature_only=False):
+        if signature_only:
+            return str()
+        func_name = "normalize_port_name"
+        descr = ""
+        return descr + self.__generate_function(
+            "static void", func_name, "const char *src, char *dst, size_t dst_size",
+                        body=dedent("""\
+                            if (src == NULL || dst_size == 0) { if (dst_size) dst[0] = '\\0'; return; }
+
+                        #ifdef _WIN32
+                            if (strncmp(src, "\\\\\\\\.\\\\", 4) == 0)
+                                src += 4;
+                            size_t i = 0;
+                            for (; src[i] != '\\0' && i + 1 < dst_size; i++)
+                                dst[i] = (char)toupper((unsigned char)src[i]);
+                            dst[i] = '\\0';
+                        #else
+                            strncpy(dst, src, dst_size - 1);
+                            dst[dst_size - 1] = '\\0';
+                        #endif
+                        """)
+        )
+
+    def __generate_parse_uri_func(self, signature_only=False):
+        if signature_only:
+            return str()
+        func_name = "parse_uri"
+        descr = ""
+        return descr + self.__generate_function(
+            "static bool", func_name, "const char *uri, parsed_uri *out",
+                        body=dedent("""\
+                            if (uri == NULL || out == NULL)
+                                return false;
+
+                            const char *colon = strchr(uri, ':');
+                            if (colon == NULL)
+                                return false;
+
+                            out->scheme_begin = uri;
+                            out->scheme_len = (size_t)(colon - uri);
+                            if (out->scheme_len == 0)
+                                return false;
+
+                            if (colon[1] == '/' && colon[2] == '/')
+                                out->rest = colon + 3;
+                            else
+                                out->rest = colon + 1;
+
+                            return true;
+                            """)
         )
 
     def __generate_open_force_func(self, signature_only=False):
@@ -1084,6 +1211,7 @@ class _ClibBuilderImpl(ClangView):
                 result += self.__generate_flagset(flagset)
 
             result += self.__generate_enumerate_struct()
+            result += self.__generate_parsed_uri_struct()
 
             for index, argstruct in enumerate(self.argstructs):
                 if index > 0:
@@ -1094,6 +1222,7 @@ class _ClibBuilderImpl(ClangView):
             #include <map>
             #include <mutex>
             #include <cstring>
+            #include <cctype>
             #include <zf_log.h>
             #include "urpc.h"
             #include "libserialport/libserialport.h"
@@ -1123,6 +1252,10 @@ class _ClibBuilderImpl(ClangView):
             }\n""")
 
         functions = ""
+        functions += self.__generate_parse_uri_func(signature_only=for_header_inclusion) + "\n"
+        functions += self.__generate_scheme_is_func(signature_only=for_header_inclusion) + "\n"
+        functions += self.__generate_normalize_port_name_func(signature_only=for_header_inclusion) + "\n"
+        functions += self.__generate_vid_pid_correct_func(signature_only=for_header_inclusion) + "\n"
         functions += self.__generate_open_func(signature_only=for_header_inclusion) + "\n"
         functions += self.__generate_open_force_func(signature_only=for_header_inclusion) + "\n"
         functions += self.__generate_lib_version_func(signature_only=for_header_inclusion) + "\n"
