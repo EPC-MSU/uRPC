@@ -263,7 +263,7 @@ void MainWindow::get_device_info_qt()
  */
 
 static const char * _err_list[] = { STR_result_ok_0,
-									STR_device_undefined_1, 
+                                    STR_result_error_1,
                                     STR_result_not_implemented_2,
                                     STR_result_value_error_3,
                                     STR_result_nodevice_4 ,

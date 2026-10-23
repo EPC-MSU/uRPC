@@ -1401,8 +1401,8 @@ class _ClibBuilderImpl(ClangView):
             calling_convention_macro_name=calling_convention_macro_name
         ) + dedent("""
         typedef int device_t;
-        #define device_undefined (-1)
-        #define device_unsupported (-2)
+        #define device_undefined (-11)
+        #define device_unsupported (-12)
         typedef int result_t;
         #define result_ok 0
         #define result_error (-1)
@@ -1412,8 +1412,8 @@ class _ClibBuilderImpl(ClangView):
         #define result_timeout (-5)
 
         #define STR_result_ok_0 "result_ok 0"
-        #define STR_device_undefined_1 "device_undefined (-1)"
-        #define STR_device_unsupported_2 "device_unsupported (-2)"
+        #define STR_device_undefined_11 "device_undefined (-11)"
+        #define STR_device_unsupported_12 "device_unsupported (-12)"
         #define STR_result_error_1 "result_error (-1)"
         #define STR_result_not_implemented_2 "result_not_implemented (-2)"
         #define STR_result_value_error_3 "result_value_error (-3)"
@@ -1628,7 +1628,11 @@ class _ClibBuilderImpl(ClangView):
                 SET(LIBSERIALPORT_NAME "/libserialport/win32/libserialport.lib")
             ENDIF()
         ELSEIF(${{CMAKE_SYSTEM_NAME}} STREQUAL Linux)
-            SET(LIBSERIALPORT_NAME "/libserialport/debian64/libserialport.a")
+            IF(${{CMAKE_SYSTEM_PROCESSOR}} STREQUAL aarch64)
+                SET(LIBSERIALPORT_NAME "/libserialport/debian_arm64/libserialport.a")
+            ELSE()
+                SET(LIBSERIALPORT_NAME "/libserialport/debian64/libserialport.a")
+            ENDIF()
         ELSEIF(${{CMAKE_SYSTEM_NAME}} STREQUAL Darwin)
             SET(LIBSERIALPORT_NAME "/libserialport/macos/libserialport.a")
             SET(MAC_FRAME "-framework CoreFoundation" "-framework IOKit")
