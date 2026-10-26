@@ -98,6 +98,16 @@ class _ClibBuilderImpl(ClangView):
         result += "\n} " + namespace_symbol(self.__protocol, argstruct.name) + ";\n"
         return result
 
+    def __generate_parsed_uri_struct(self):
+        return dedent("""
+            typedef struct 
+            {
+                const char *scheme_begin;
+                size_t scheme_len;
+                const char *rest;
+            } parsed_uri;\n
+            """)
+
     def __generate_enumerate_struct(self):
         return dedent("""
             // max number of devices
@@ -341,6 +351,17 @@ class _ClibBuilderImpl(ClangView):
             body=None if signature_only else dedent("""\
             device_t handle;
             urpc_device_handle_t device;
+
+            parsed_uri parsed;
+            if (!parse_uri(uri, &parsed))
+                return device_undefined;
+
+            if (scheme_is(&parsed, "com"))
+            {
+                if (!vid_pid_correct(parsed.rest))
+                    return device_unsupported;
+            }
+
             device = urpc_device_create(uri);
             if(device == NULL) {
                 return device_undefined;
@@ -354,6 +375,172 @@ class _ClibBuilderImpl(ClangView):
                 while (impl_by_handle.count(handle) != 0);
                 impl_by_handle[handle] = device;
             }
+
+            return handle;
+            """)
+        )
+
+    def __generate_vid_pid_correct_func(self, signature_only=False):
+        if signature_only:
+            return str()
+        func_name = "vid_pid_correct"
+        descr = ""
+        return descr + self.__generate_function(
+            "static bool", func_name, "const char *port_name_in_uri",
+            body=dedent("""\
+                if (port_name_in_uri == NULL)
+                    return false;
+
+                struct sp_port **port_list;
+                if (sp_list_ports(&port_list) != SP_OK)
+                    return false;
+
+                bool found = false;
+                for (int i = 0; port_list[i] != NULL; i++)
+                {
+                    char libsp_name[256];
+                    char uri_name[256];
+                    normalize_port_name(sp_get_port_name(port_list[i]), libsp_name, sizeof(libsp_name));
+                    normalize_port_name(port_name_in_uri, uri_name, sizeof(uri_name));
+
+                    if (strcmp(libsp_name, uri_name) != 0)
+                        continue;
+
+                    int vid = 0, pid = 0;
+                    if (sp_get_port_usb_vid_pid(port_list[i], &vid, &pid) == SP_OK
+                        && vid == {PROJECT_NAME}_VID
+                        && pid == {PROJECT_NAME}_PID)
+                    {
+                        found = true;
+                    }
+                    break;
+                }
+
+                sp_free_port_list(port_list);
+                return found;
+            """.replace("{PROJECT_NAME}", self.name.upper()))
+        )
+
+    def __generate_scheme_is_func(self, signature_only=False):
+        if signature_only:
+            return str()
+        func_name = "scheme_is"
+        descr = ""
+        return descr + self.__generate_function(
+            "static bool", func_name, "parsed_uri *u, const char *scheme",
+            body=dedent("""\
+                size_t len = strlen(scheme);
+                return u->scheme_len == len && strncmp(u->scheme_begin, scheme, len) == 0;
+                """)
+        )
+
+    def __generate_normalize_port_name_func(self, signature_only=False):
+        if signature_only:
+            return str()
+        func_name = "normalize_port_name"
+        descr = ""
+        return descr + self.__generate_function(
+            "static void", func_name, "const char *src, char *dst, size_t dst_size",
+                        body=dedent("""\
+                            if (src == NULL || dst_size == 0) { if (dst_size) dst[0] = '\\0'; return; }
+
+                        #ifdef _WIN32
+                            if (strncmp(src, "\\\\\\\\.\\\\", 4) == 0)
+                                src += 4;
+                            size_t i = 0;
+                            for (; src[i] != '\\0' && i + 1 < dst_size; i++)
+                                dst[i] = (char)toupper((unsigned char)src[i]);
+                            dst[i] = '\\0';
+                        #else
+                            strncpy(dst, src, dst_size - 1);
+                            dst[dst_size - 1] = '\\0';
+                        #endif
+                        """)
+        )
+
+    def __generate_parse_uri_func(self, signature_only=False):
+        if signature_only:
+            return str()
+        func_name = "parse_uri"
+        descr = ""
+        return descr + self.__generate_function(
+            "static bool", func_name, "const char *uri, parsed_uri *out",
+                        body=dedent("""\
+                            if (uri == NULL || out == NULL)
+                                return false;
+
+                            const char *colon = strchr(uri, ':');
+                            if (colon == NULL)
+                                return false;
+
+                            out->scheme_begin = uri;
+                            out->scheme_len = (size_t)(colon - uri);
+                            if (out->scheme_len == 0)
+                                return false;
+
+                            if (colon[1] == '/' && colon[2] == '/')
+                                out->rest = colon + 3;
+                            else
+                                out->rest = colon + 1;
+
+                            return true;
+                            """)
+        )
+
+    def __generate_open_force_func(self, signature_only=False):
+        descr = ""
+        if signature_only:
+            descr = dedent("""\
+            /**
+             * \\~english
+             * Open a device by name \\a name and return identifier of the device which can be used in calls.
+             * @param[in] name - A device name.
+             * Device name has form "com:port" or "xi-net://host/serial" or "udp://host:port".
+             * In case of USB-COM port the "port" is the OS device uri.
+             * For example "com:\\\\.\\COM3" in Windows or "com:///dev/ttyACM34" in Linux/Mac.
+             * In case of network device the "host" is an IPv4 address or fully qualified domain uri (FQDN),
+             * "serial" is the device serial number in hexadecimal system.
+             * For example "xi-net://192.168.0.1/00001234" or "xi-net://hostname.com/89ABCDEF".
+             * In case of ethernet udp-com adapter the "host" is an IPv4 address, "port" is network port
+             * For example: "udp://192.168.0.2:1024"
+             * Note: only one program may use COM-device in same time.
+             * If errors occur when opening device, you need to make sure that the COM port is in the system and
+             * device is not currently used by other programs.
+             * \\~russian
+             * Открывает устройство по имени \\a name и возвращает идентификатор устройства.
+             * @param[in] name - Имя устройства.
+             * Имя устройства имеет вид "com:port" или xi-net://host/serial или udp://host:port.
+             * Для COM устройства "port" это имя устройства в ОС.
+             * Например "com:\\\\.\\COM3" (Windows) или "com:///dev/tty/ttyACM34" (Linux/Mac).
+             * Для сетевого (XiNet) устройства "host" это IPv4 адрес или полностью определённое имя домена,
+             * "serial" это серийный номер устройства в шестнадцатеричной системе.
+             * Например "xi-net://192.168.0.1/00001234" или "xi-net://hostname.com/89ABCDEF".
+             * Для ethernet переходника com-udp "host" это IPv4 адрес переходника, "port" это порт переходника.
+             * Например "udp://192.168.0.2:1024"
+             * Замечание: в один момент времени COM устройство может использоваться только одной программой.
+             * Если при открытии устройства возникают ошибки, нужно убедиться, что COM-порт есть в системе и что это
+             * устройство в данный момент не используется другими программами
+             */\n""")
+        func_name = namespace_symbol(self.__protocol, "open_device_force")
+        return descr + self.__generate_function(
+            "device_t", func_name, "const char *uri",
+            body=None if signature_only else dedent("""\
+            device_t handle;
+            urpc_device_handle_t device;
+            device = urpc_device_create(uri);
+            if(device == NULL) {
+                return device_undefined;
+            }
+            {
+                std::lock_guard<std::mutex> lock(impl_by_handle_mutex);
+                do
+                {
+                    handle = rand();
+                }
+                while (impl_by_handle.count(handle) != 0);
+                impl_by_handle[handle] = device;
+            }
+            
             return handle;
             """)
         )
@@ -1026,6 +1213,7 @@ class _ClibBuilderImpl(ClangView):
                 result += self.__generate_flagset(flagset)
 
             result += self.__generate_enumerate_struct()
+            result += self.__generate_parsed_uri_struct()
 
             for index, argstruct in enumerate(self.argstructs):
                 if index > 0:
@@ -1036,6 +1224,7 @@ class _ClibBuilderImpl(ClangView):
             #include <map>
             #include <mutex>
             #include <cstring>
+            #include <cctype>
             #include <zf_log.h>
             #include "urpc.h"
             #include "libserialport/libserialport.h"
@@ -1065,7 +1254,12 @@ class _ClibBuilderImpl(ClangView):
             }\n""")
 
         functions = ""
+        functions += self.__generate_parse_uri_func(signature_only=for_header_inclusion) + "\n"
+        functions += self.__generate_scheme_is_func(signature_only=for_header_inclusion) + "\n"
+        functions += self.__generate_normalize_port_name_func(signature_only=for_header_inclusion) + "\n"
+        functions += self.__generate_vid_pid_correct_func(signature_only=for_header_inclusion) + "\n"
         functions += self.__generate_open_func(signature_only=for_header_inclusion) + "\n"
+        functions += self.__generate_open_force_func(signature_only=for_header_inclusion) + "\n"
         functions += self.__generate_lib_version_func(signature_only=for_header_inclusion) + "\n"
         for f in self.__functions:
             functions += self.__generate_command_func(f, signature_only=for_header_inclusion) + "\n"
@@ -1209,8 +1403,8 @@ class _ClibBuilderImpl(ClangView):
             calling_convention_macro_name=calling_convention_macro_name
         ) + dedent("""
         typedef int device_t;
-        #define device_undefined (-1)
-        #define device_unsupported (-2)
+        #define device_undefined (-11)
+        #define device_unsupported (-12)
         typedef int result_t;
         #define result_ok 0
         #define result_error (-1)
@@ -1220,8 +1414,8 @@ class _ClibBuilderImpl(ClangView):
         #define result_timeout (-5)
 
         #define STR_result_ok_0 "result_ok 0"
-        #define STR_device_undefined_1 "device_undefined (-1)"
-        #define STR_device_unsupported_2 "device_unsupported (-2)"
+        #define STR_device_undefined_11 "device_undefined (-11)"
+        #define STR_device_unsupported_12 "device_unsupported (-12)"
         #define STR_result_error_1 "result_error (-1)"
         #define STR_result_not_implemented_2 "result_not_implemented (-2)"
         #define STR_result_value_error_3 "result_value_error (-3)"
@@ -1446,7 +1640,11 @@ class _ClibBuilderImpl(ClangView):
                 SET(LIBSERIALPORT_NAME "/libserialport/win32/libserialport.lib")
             ENDIF()
         ELSEIF(${{CMAKE_SYSTEM_NAME}} STREQUAL Linux)
-            SET(LIBSERIALPORT_NAME "/libserialport/debian64/libserialport.a")
+            IF(${{CMAKE_SYSTEM_PROCESSOR}} STREQUAL aarch64)
+                SET(LIBSERIALPORT_NAME "/libserialport/debian_arm64/libserialport.a")
+            ELSE()
+                SET(LIBSERIALPORT_NAME "/libserialport/debian64/libserialport.a")
+            ENDIF()
         ELSEIF(${{CMAKE_SYSTEM_NAME}} STREQUAL Darwin)
             SET(LIBSERIALPORT_NAME "/libserialport/macos/libserialport.a")
             SET(MAC_FRAME "-framework CoreFoundation" "-framework IOKit")
