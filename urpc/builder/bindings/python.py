@@ -364,7 +364,8 @@ def _build_file(protocol, out):
         _NotImplemented = -2
         _ValueError = -3
         _NoDevice = -4
-        _DeviceUndefined = -1
+        _DeviceUndefined = -11
+        _DeviceUnsupported = -12
 
 
         class UrpcError(Exception):
@@ -387,6 +388,9 @@ def _build_file(protocol, out):
             pass
 
 
+        class UrpcDeviceUnsupportedError(UrpcError, RuntimeError):
+            pass
+
         class UrpcUnknownError(UrpcError, RuntimeError):
             pass
 
@@ -405,6 +409,8 @@ def _build_file(protocol, out):
                 raise UrpcNoDeviceError()
             elif result == _DeviceUndefined:
                 raise UrpcDeviceUndefinedError()
+            elif result == _DeviceUnsupported:
+                raise UrpcDeviceUnsupportedError()
             elif result != _Ok:
                 raise UrpcUnknownError()
 
@@ -614,6 +620,8 @@ def _build_file(protocol, out):
             handle = _lib.{}(self._uri)
             if handle.value == _DeviceUndefined:
                 raise UrpcDeviceUndefinedError()
+            elif handle.value == _DeviceUnsupported:
+                raise UrpcDeviceUnsupportedError()
 
             self._handle = handle
             return True

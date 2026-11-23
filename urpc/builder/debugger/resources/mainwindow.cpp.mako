@@ -50,14 +50,14 @@ MainWindow::MainWindow (QWidget *parent) :
     QObject::connect(ui->dcntButton,SIGNAL(clicked(bool)),this,SLOT(dconnectButton()));
 
     // ToolTip
-    #ifdef Q_OS_WIN32
+    #if defined(Q_OS_WIN32)
     this->comedit->setToolTip("Example:\ncom:\\\\.\\COM12\nxi-net://192.168.0.1/00001234");
-    #else
-        #ifdef Q_OS_LINUX
+    #elif defined(Q_OS_LINUX)
     this->comedit->setToolTip("Example:\ncom:///dev/tty/ttyACM34\nxi-net://192.168.0.1/00001234");
-        #else
+    #elif defined(__APPLE__)
+    this->comedit->setToolTip("Example:\ncom:///dev/tty.usbmodem000001234\nxi-net://192.168.0.1/00001234");
+    #else
     this->comedit->setToolTip("Example:\ncom:\\\\.\\COM12\ncom:///dev/tty/ttyACM34\nemu:///var/lib/ximc/virtual56.dat\nxi-net://192.168.0.1/00001234");
-        #endif
     #endif
 
     // Main tab widget
@@ -263,7 +263,7 @@ void MainWindow::get_device_info_qt()
  */
 
 static const char * _err_list[] = { STR_result_ok_0,
-									STR_device_undefined_1, 
+                                    STR_result_error_1,
                                     STR_result_not_implemented_2,
                                     STR_result_value_error_3,
                                     STR_result_nodevice_4 ,
